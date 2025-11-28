@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13: Datapath</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-size:0.8rem; color:#94a3b8; font-weight:400;">Exam Edition</span></div>
+    <div class="menu-label">Chapter 4. Datapath</div>
+    <div class="nav-item" onclick="showSection('sec-basics', this)"><span class="nav-icon">🧱</span> 0. 기초 다지기</div>
+    <div class="nav-item active" onclick="showSection('sec-intro', this)"><span class="nav-icon">📖</span> 1. 개요 & 기본 구조</div>
+    <div class="nav-item" onclick="showSection('sec-registers', this)"><span class="nav-icon">💾</span> 2. 레지스터 & 설계</div>
+    <div class="nav-item" onclick="showSection('sec-adders', this)"><span class="nav-icon">➕</span> 3. 가산기 & 지연</div>
+    <div class="nav-item" onclick="showSection('sec-comp', this)"><span class="nav-icon">⚖️</span> 4. 비교기 & 곱셈기</div>
+    <div class="nav-item" onclick="showSection('sec-sub', this)"><span class="nav-icon">➖</span> 5. 감산기 & 변환</div>
+    <div class="nav-item" onclick="showSection('sec-signed', this)"><span class="nav-icon">🔢</span> 6. 2의 보수 & Overflow</div>
+</div>
+
+<div class="main">
+    <div id="sec-basics" class="section-container">
+        <div class="header"><h1>0. 기초 다지기 (Prerequisites)</h1><p>데이터패스 설계를 위해 꼭 알아야 할 디지털 논리 기초</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('base-clock')">
+                <span class="card-icon">⏰</span>
+                <div class="tag-container"><span class="tag core">필수</span></div>
+                <h3>클럭과 D-플립플롭</h3>
+                <p>순차 회로의 심장인 Clock의 엣지(Edge)와 1비트 저장소 D-FF의 원리.</p>
+                <div class="btn-learn">상세 보기</div>
+            </div>
+            <div class="card" onclick="openModal('base-mux')">
+                <span class="card-icon">🔀</span>
+                <div class="tag-container"><span class="tag core">필수</span></div>
+                <h3>MUX와 디코더</h3>
+                <p>데이터의 길을 선택하는 MUX(스위치)와 주소를 해석하는 Decoder.</p>
+                <div class="btn-learn">상세 보기</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-intro" class="section-container active">
+        <div class="header"><h1>1. 데이터패스 개요</h1><p>컨트롤러와 데이터패스의 관계 및 RTL 설계의 필요성</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('intro-basic')">
+                <span class="card-icon">🏗️</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>왜 컴포넌트를 쓰는가?</h3>
+                <p>게이트 레벨 설계의 한계와 모듈화 설계.</p>
+                <div class="btn-learn">상세 학습 (p.26)</div>
+            </div>
+            <div class="card" onclick="openModal('intro-ctrl')">
+                <span class="card-icon">🎮</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>Controller vs Datapath</h3>
+                <p>제어 신호(Control Signal)와 데이터 버스(Data Bus)의 명확한 구분.</p>
+                <div class="btn-learn">상세 학습 (p.3)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-registers" class="section-container">
+        <div class="header"><h1>2. 레지스터 (Registers)</h1><p>데이터 저장, 이동, 변환을 담당하는 핵심 순차 회로 (2~3배 보강됨)</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('reg-load')">
+                <span class="card-icon">🔒</span>
+                <div class="tag-container"><span class="tag core">기본</span></div>
+                <h3>Load 제어 원리</h3>
+                <p>D-FF과 2x1 MUX를 이용한 값 유지(Hold) 및 로드(Load) 메커니즘.</p>
+                <div class="btn-learn">회로도 보기 (p.7)</div>
+            </div>
+            <div class="card" onclick="openModal('reg-shift')">
+                <span class="card-icon">↔️</span>
+                <div class="tag-container"><span class="tag exam">신규 추가</span></div>
+                <h3>시프트 레지스터 (Shift)</h3>
+                <p>직렬 통신과 연산에 쓰이는 Shift Right/Left 및 Rotate의 구조.</p>
+                <div class="btn-learn">구조 보기 (p.13)</div>
+            </div>
+            <div class="card" onclick="openModal('reg-multi')">
+                <span class="card-icon">🎛️</span>
+                <div class="tag-container"><span class="tag exam">★시험 1순위</span></div>
+                <h3>다기능 레지스터 & 우선순위</h3>
+                <p>Load, Shift, Clear가 동시에 들어올 때의 처리 순서(Priority) 설계.</p>
+                <div class="btn-learn">우선순위 표 (p.19)</div>
+            </div>
+            <div class="card" onclick="openModal('reg-apps')">
+                <span class="card-icon">🧩</span>
+                <div class="tag-container"><span class="tag">응용</span></div>
+                <h3>응용: 체커보드 & 무게측정</h3>
+                <p>디코더 타이밍과 글리치 방지용 레지스터의 디테일.</p>
+                <div class="btn-learn">예제 분석 (p.8, 11)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-adders" class="section-container">
+        <div class="header"><h1>3. 가산기 (Adders)</h1><p>산술 연산의 기본 단위와 하드웨어적 한계</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('add-logic')">
+                <span class="card-icon">➕</span>
+                <div class="tag-container"><span class="tag logic">논리식</span></div>
+                <h3>반가산기 & 전가산기</h3>
+                <p>Half Adder vs Full Adder의 진리표와 논리식(Sum, Carry) 완벽 정리.</p>
+                <div class="btn-learn">진리표 보기 (p.29)</div>
+            </div>
+            <div class="card" onclick="openModal('add-ripple')">
+                <span class="card-icon">🌊</span>
+                <div class="tag-container"><span class="tag exam">개념</span></div>
+                <h3>리플 캐리 가산기 & 지연</h3>
+                <p>Ripple Carry Adder의 구조와 캐리 전파 지연(Propagation Delay) 문제.</p>
+                <div class="btn-learn">지연 분석 (p.34)</div>
+            </div>
+            <div class="card" onclick="openModal('add-calc')">
+                <span class="card-icon">🧮</span>
+                <div class="tag-container"><span class="tag">예제</span></div>
+                <h3>DIP 스위치 계산기</h3>
+                <p>입력 장치의 불안정성(Glitch)을 레지스터로 해결하는 설계 기법.</p>
+                <div class="btn-learn">설계도 보기 (p.37)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-comp" class="section-container">
+        <div class="header"><h1>4. 비교기 & 곱셈기</h1><p>비트 비교 알고리즘과 배열 곱셈 구조</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('comp-mag')">
+                <span class="card-icon">⚖️</span>
+                <div class="tag-container"><span class="tag logic">논리</span></div>
+                <h3>비교기 (Comparator)</h3>
+                <p>일치(XNOR) 및 크기 비교(Magnitude)의 단계별(Stage) 논리 회로.</p>
+                <div class="btn-learn">회로 논리 (p.42)</div>
+            </div>
+            <div class="card" onclick="openModal('mult-array')">
+                <span class="card-icon">✖️</span>
+                <div class="tag-container"><span class="tag">구조</span></div>
+                <h3>배열 곱셈기</h3>
+                <p>부분 곱(Partial Product) 생성 원리와 가산기 배열을 이용한 합산.</p>
+                <div class="btn-learn">구조 보기 (p.50)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-sub" class="section-container">
+        <div class="header"><h1>5. 감산기 & 응용</h1><p>뺄셈 회로의 구현과 RGB 색상 변환 응용</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('sub-logic')">
+                <span class="card-icon">🛠️</span>
+                <div class="tag-container"><span class="tag exam">★핵심</span></div>
+                <h3>가감산기 (Adder/Subtractor)</h3>
+                <p>XOR 게이트를 이용해 덧셈기를 뺄셈기로 변환하는 마법의 회로.</p>
+                <div class="btn-learn">원리 학습 (p.66)</div>
+            </div>
+            <div class="card" onclick="openModal('sub-rgb')">
+                <span class="card-icon">🎨</span>
+                <div class="tag-container"><span class="tag">심화</span></div>
+                <h3>[예제] RGB to CMYK</h3>
+                <p>감산기, 비교기, MUX를 총동원한 색상 변환 알고리즘 하드웨어 설계.</p>
+                <div class="btn-learn">설계 분석 (p.56)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-signed" class="section-container">
+        <div class="header"><h1>6. 2의 보수 & Overflow</h1><p>음수 표현법과 연산 오류(Overflow) 하드웨어 탐지</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('sign-two')">
+                <span class="card-icon">1️⃣0️⃣</span>
+                <div class="tag-container"><span class="tag core">기본</span></div>
+                <h3>2의 보수 (Two's Complement)</h3>
+                <p>음수 표현의 표준. 비트 반전 후 +1의 의미와 연산의 편리함.</p>
+                <div class="btn-learn">계산법 (p.63)</div>
+            </div>
+            <div class="card" onclick="openModal('sign-over')">
+                <span class="card-icon">💥</span>
+                <div class="tag-container"><span class="tag exam">★1순위</span></div>
+                <h3>오버플로우 탐지법 2가지</h3>
+                <p>부호 비트 비교법 vs 캐리(Carry) 비교법. 정확한 판별 논리식.</p>
+                <div class="btn-learn">판별식 보기 (p.69)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle"></div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+    const modalTitles = {
+        'base-clock': '클럭과 D-플립플롭',
+        'base-mux': 'MUX와 디코더',
+        'intro-basic': '게이트 레벨 설계의 한계',
+        'intro-ctrl': 'Controller vs Datapath',
+        'reg-load': 'Load 제어 레지스터',
+        'reg-shift': '시프트 레지스터 구조',
+        'reg-multi': '다기능 레지스터 & 우선순위',
+        'reg-apps': '레지스터 응용 사례',
+        'add-logic': '반가산기 & 전가산기',
+        'add-ripple': '리플 캐리 가산기와 지연',
+        'add-calc': 'DIP 계산기 설계',
+        'comp-mag': '비교기 논리',
+        'mult-array': '배열 곱셈기',
+        'sub-logic': '가감산기 회로 원리',
+        'sub-rgb': 'RGB to CMYK 변환기',
+        'sign-two': '2의 보수법',
+        'sign-over': '오버플로우 탐지 로직'
+    };
+
+    // --- 데이터 (13장 내용) ---
+    const contents = {
+        // [Basics - New Section]
+        'base-clock': `
+            <h3>1. 클럭 (Clock)과 동기화</h3>
+            <p>데이터패스의 모든 부품은 지휘자의 지휘봉과 같은 <strong>클럭(CLK)</strong> 신호에 맞춰 움직입니다.</p>
+            <ul>
+                <li><strong>라이징 엣지 (Rising Edge):</strong> 클럭이 0에서 1로 변하는 찰나의 순간.</li>
+                <li><strong>동기화 (Synchronization):</strong> 대부분의 레지스터는 이 '라이징 엣지' 순간에만 입력을 낚아채서 저장합니다. 그 외의 시간에는 입력이 변해도 무시합니다. (안정성 보장)</li>
+            </ul>
+
+            <h3>2. D-플립플롭 (D-Flip Flop)</h3>
+            <p>1비트를 저장하는 가장 기본적인 메모리 소자입니다.</p>
+            <ul>
+                <li><strong>입력 (D):</strong> 저장하고 싶은 데이터 (Data)</li>
+                <li><strong>출력 (Q):</strong> 현재 저장된 값</li>
+                <li><strong>작동:</strong> 클럭이 뛸 때(Edge), D의 값이 Q로 복사됩니다. 다음 클럭이 뛸 때까지 Q는 변하지 않고 <strong>기억(Memory)</strong>됩니다.</li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 시험 포인트</h4>
+                <p>레지스터는 N개의 D-플립플롭을 묶어놓은 것입니다. (4비트 레지스터 = D-FF 4개)</p>
+            </div>
+        `,
+        'base-mux': `
+            <h3>1. 멀티플렉서 (MUX)</h3>
+            <p>여러 개의 입력 중 하나를 선택하여 출력하는 <strong>'디지털 스위치'</strong>입니다. 데이터패스에서 <strong>흐름 제어</strong>를 담당합니다.</p>
+            <ul>
+                <li><strong>2x1 MUX:</strong> 선택 신호(Select)가 0이면 A, 1이면 B를 통과시킵니다.</li>
+                <li><strong>용도:</strong> 
+                    <ul>
+                        <li>레지스터의 Load 기능 (새 값 vs 옛날 값 선택)</li>
+                        <li>가감산기 (B vs NOT B 선택)</li>
+                        <li>피드백 루프 제어</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>2. 디코더 (Decoder)</h3>
+            <p>n비트의 주소(Address)를 받아 2^n개의 출력 라인 중 <strong>하나만 활성화</strong>합니다.</p>
+            <ul>
+                <li><strong>예: 3x8 디코더</strong> - 입력이 <code>000</code>이면 0번 줄만 1, 나머지는 0이 됨.</li>
+                <li><strong>용도:</strong> 체커보드 예제처럼 여러 레지스터 중 <strong>"누구에게 데이터를 줄지"</strong> 선택할 때 사용합니다. (Enable 신호 생성)</li>
+            </ul>
+        `,
+        // [Intro]
+        'intro-basic': `
+            <div class="tech-note">
+                <h4>학습 포인트</h4>
+                <ul>
+                    <li>왜 32비트 덧셈기를 게이트(AND, OR)로만 만들 수 없는가?</li>
+                    <li>데이터패스(Datapath) 설계 방식의 효율성 이해</li>
+                </ul>
+            </div>
+            <h3>1. 게이트 레벨 설계의 한계</h3>
+            <p>만약 16비트 가산기(Adder)를 진리표(Truth Table)를 그려서 설계한다고 가정해 봅시다.</p>
+            <ul>
+                <li>입력: A(16비트) + B(16비트) = 32개 입력</li>
+                <li>진리표의 행(Row) 개수: <span class="math-block">2^{32} \approx 4,290,000,000 (42억 개)</span></li>
+            </ul>
+            <p>이 엄청난 크기의 진리표를 간소화(K-Map 등)하는 것은 불가능합니다. 따라서 우리는 <strong>'모듈화(Modular)'</strong> 방식을 사용합니다.</p>
+            
+            <h3>2. 데이터패스 설계 철학</h3>
+            <p>작은 블록(예: 1비트 가산기)을 먼저 만들고, 이것을 반복적으로 연결(Iterative Logic Array)하여 큰 시스템을 만듭니다. 이것이 '데이터패스 컴포넌트'입니다.</p>
+        `,
+        'intro-ctrl': `
+            <div class="exam-point">
+                <h4>🚩 시험 출제 포인트: 신호의 구분</h4>
+                <p>데이터 버스(굵은 선)와 제어 신호(가는 선)를 회로도에서 구별할 수 있어야 함.</p>
+            </div>
+            <h3>데이터패스와 컨트롤러의 역할 분담</h3>
+            <table>
+                <tr>
+                    <th width="30%">구분</th>
+                    <th>데이터패스 (Datapath)</th>
+                    <th>컨트롤러 (Controller)</th>
+                </tr>
+                <tr>
+                    <td><strong>비유</strong></td>
+                    <td>근육, 팔다리 (일하는 놈)</td>
+                    <td>뇌 (지시하는 놈)</td>
+                </tr>
+                <tr>
+                    <td><strong>신호 너비</strong></td>
+                    <td><strong>N-bit</strong> (예: 32비트, 64비트)</td>
+                    <td><strong>1-bit</strong> (On/Off)</td>
+                </tr>
+                <tr>
+                    <td><strong>예시</strong></td>
+                    <td>ALU, Register, Bus</td>
+                    <td>Load 신호, Shift 신호, Select 신호</td>
+                </tr>
+            </table>
+            <p>컨트롤러가 <code>Load = 1</code>이라는 1비트 명령을 내리면, 데이터패스(레지스터)는 32비트 데이터를 내부로 저장합니다.</p>
+        `,
+
+        // [Registers]
+        'reg-load': `
+            <h3>Load 기능을 가진 레지스터 구조</h3>
+            <p>기본 D-플립플롭은 클럭이 뛸 때마다 무조건 값이 바뀝니다. 값을 <strong>유지(Hold)</strong>하거나 <strong>로드(Load)</strong>하는 것을 선택하려면 <strong>2x1 MUX</strong>가 필요합니다.</p>
+            
+            <div class="math-block">
+                D_{next} = (Load \cdot Input) + (Load' \cdot Q_{current})
+            </div>
+
+            <canvas id="cvs_reg_load"></canvas>
+            
+            <ul>
+                <li><strong>Load = 0 (유지):</strong> MUX가 자신의 현재 값(Q)을 다시 입력으로 넣습니다. (Feedback Loop)</li>
+                <li><strong>Load = 1 (로드):</strong> MUX가 외부 입력(I)을 선택하여 저장합니다.</li>
+            </ul>
+        `,
+        'reg-shift': `
+            <h3>시프트 레지스터 (Shift Register)</h3>
+            <p>비트들을 옆으로 이동시키는 레지스터입니다. 직렬 통신이나 곱셈/나눗셈 연산에 필수적입니다.</p>
+
+            <table>
+                <tr>
+                    <th>동작</th>
+                    <th>설명</th>
+                    <th>회로 구현 특징</th>
+                </tr>
+                <tr>
+                    <td><strong>Shift Right (shr)</strong></td>
+                    <td>모든 비트가 오른쪽으로 이동. (MSB에는 0 또는 부호비트 삽입)</td>
+                    <td>Q3 → Q2, Q2 → Q1... 형태로 연결</td>
+                </tr>
+                <tr>
+                    <td><strong>Shift Left (shl)</strong></td>
+                    <td>모든 비트가 왼쪽으로 이동. (LSB에는 0 삽입)</td>
+                    <td>Q0 → Q1, Q1 → Q2... 형태로 연결</td>
+                </tr>
+                <tr>
+                    <td><strong>Rotate</strong></td>
+                    <td>밀려난 비트가 반대편 끝으로 다시 들어옴.</td>
+                    <td>Q0(LSB) 출력이 Q3(MSB) 입력으로 연결됨</td>
+                </tr>
+            </table>
+        `,
+        'reg-multi': `
+            <div class="exam-point">
+                <h4>🚩 시험 1순위: 우선순위(Priority)</h4>
+                <p>여러 제어 신호가 동시에 1일 때, 레지스터는 무엇을 먼저 수행해야 하는가? <strong>(Clear > Load > Shift)</strong> 순서가 일반적입니다.</p>
+            </div>
+
+            <h3>다기능 레지스터의 우선순위 설계</h3>
+            <p>다음은 4-기능 레지스터의 진리표 예시입니다. (Clear가 비동기/동기 방식에 따라 다를 수 있으나 보통 최우선입니다)</p>
+
+            <table>
+                <tr>
+                    <th>Clear</th>
+                    <th>Load</th>
+                    <th>Shift</th>
+                    <th>동작 (Operation)</th>
+                </tr>
+                <tr>
+                    <td><strong>1</strong></td>
+                    <td>X</td>
+                    <td>X</td>
+                    <td><strong>Reset (0으로 초기화)</strong> <br><span style="font-size:0.8em; color:red;">*나머지 입력 무시 (Don't Care)</span></td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td><strong>1</strong></td>
+                    <td>X</td>
+                    <td><strong>Parallel Load (값 적재)</strong></td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td><strong>1</strong></td>
+                    <td><strong>Shift (이동)</strong></td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td><strong>Hold (값 유지)</strong></td>
+                </tr>
+            </table>
+            <p>이 우선순위를 구현하기 위해 회로적으로는 <strong>Priority Encoder</strong>나 중첩된 MUX 구조, 또는 논리식(예: <code>S1 = Clear' * Load' * Shift</code>)을 사용합니다.</p>
+        `,
+        'reg-apps': `
+            <h3>응용 1: 무게 측정기 (Weight Sampler)</h3>
+            <ul>
+                <li><strong>문제:</strong> 센서 값은 계속 변함. 특정 시점의 값만 필요함.</li>
+                <li><strong>해결:</strong> 버튼을 누르는 순간(Load=1)에만 레지스터가 센서 값을 캡처(Capture)하고, 버튼을 떼면 그 값을 유지(Hold)하여 디스플레이에 보여줌.</li>
+            </ul>
+
+            <h3>응용 2: 체커보드 제어</h3>
+            <ul>
+                <li><strong>문제:</strong> 64개 LED를 동시에 켤 핀이 부족함 (CPU는 8비트 버스만 있음).</li>
+                <li><strong>해결 (Time Multiplexing):</strong> 
+                    1. 1번 줄 데이터 보냄 -> 디코더로 1번 레지스터만 Load (Enable 신호).<br>
+                    2. 2번 줄 데이터 보냄 -> 디코더로 2번 레지스터만 Load.<br>
+                    3. 이를 매우 빠르게 반복하면 사람 눈에는 동시에 켜진 것처럼 보임 (잔상 효과).
+                </li>
+            </ul>
+        `,
+
+        // [Adders]
+        'add-logic': `
+            <h3>반가산기 (Half Adder)</h3>
+            <p>두 비트(A, B)를 더해 합(S)과 캐리(C)를 생성. 이전 캐리(Cin)는 고려하지 않음.</p>
+            <div class="math-block">
+                Sum = A ⊕ B (XOR)<br>
+                Carry = A ⋅ B (AND)
+            </div>
+
+            <h3>전가산기 (Full Adder)</h3>
+            <p>두 비트(A, B)와 아랫단 캐리(Cin)까지 총 3비트를 더함.</p>
+            <table>
+                <tr><th>A</th><th>B</th><th>Cin</th><th>Cout</th><th>Sum</th></tr>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+                <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+                <tr><td colspan="5">... (나머지 생략)</td></tr>
+            </table>
+            <div class="math-block">
+                Sum = A ⊕ B ⊕ Cin<br>
+                Cout = AB + (A ⊕ B)Cin
+            </div>
+        `,
+        'add-ripple': `
+            <h3>리플 캐리 가산기 (Ripple Carry Adder)</h3>
+            <p>전가산기(FA) N개를 직렬로 연결한 구조. 구조가 단순하여 설계가 쉽습니다.</p>
+
+            <div class="exam-point">
+                <h4>🚩 단점: 전파 지연 (Propagation Delay)</h4>
+                <p>하위 비트에서 캐리가 생성되어 상위 비트로 전달될 때까지 기다려야 합니다. 이를 'Ripple' 현상이라고 합니다.</p>
+                <ul>
+                    <li>1번째 FA 계산 완료: 2ns</li>
+                    <li>2번째 FA 계산 완료: 4ns (1번째 캐리 기다림)</li>
+                    <li>32비트 가산기라면? 32 x 2ns = 64ns (매우 느림)</li>
+                </ul>
+            </div>
+            <canvas id="cvs_adder"></canvas>
+        `,
+        'add-calc': `
+            <h3>DIP 스위치 계산기 설계</h3>
+            <p>왜 가산기 출력단에 레지스터를 달았을까요?</p>
+            <ul>
+                <li><strong>글리치(Glitch) 방지:</strong> 사용자가 스위치를 조작하는 도중(0에서 1로 가는 중간 상태)에는 원치 않는 값들이 가산기를 통과하여 LED에 번쩍거릴 수 있습니다.</li>
+                <li><strong>동기화:</strong> 사용자가 입력을 마치고 '확인' 버튼을 누를 때(Load 신호), 안정된 결과값만 레지스터에 딱 한번 저장하여 깔끔하게 표시합니다.</li>
+            </ul>
+        `,
+
+        // [Comparators & Multipliers]
+        'comp-mag': `
+            <h3>비교기 논리 회로</h3>
+            
+            <h4>1. 일치 비교 (Equality)</h4>
+            <p>모든 비트가 같아야 함. <strong>XNOR</strong> 게이트(같으면 1)를 사용.</p>
+            <div class="math-block">
+                Eq = (A3 ⊙ B3) ⋅ (A2 ⊙ B2) ⋅ (A1 ⊙ B1) ⋅ (A0 ⊙ B0)
+            </div>
+
+            <h4>2. 크기 비교 (Magnitude)</h4>
+            <p>상위 비트(MSB)부터 비교하며 내려옵니다 (Cascading).</p>
+            <ul>
+                <li>상위 비트에서 승부가 났으면? 하위 비트는 무시. (Pass)</li>
+                <li>상위 비트가 동점이면? 현재 비트를 비교.</li>
+            </ul>
+            <div class="math-block">
+                GT_out = GT_in + (EQ_in ⋅ A ⋅ B')
+            </div>
+            <p>즉, 윗동네에서 이미 크다고 했거나(GT_in), 윗동네는 동점인데 내 자리에서 내가 1이고 쟤가 0이면(A=1, B=0) 내가 큰 것입니다.</p>
+        `,
+        'mult-array': `
+            <h3>배열 곱셈기 (Array Multiplier)</h3>
+            <p>사람이 손으로 곱셈하는 방식을 그대로 하드웨어로 옮긴 구조입니다.</p>
+            <ol>
+                <li><strong>부분 곱 생성 (Partial Product):</strong> AND 게이트를 사용합니다. 
+                    <br><code>A(1011) * B_bit(1)</code> = <code>1011</code>
+                    <br><code>A(1011) * B_bit(0)</code> = <code>0000</code>
+                </li>
+                <li><strong>합산:</strong> 생성된 부분 곱들을 전가산기(FA) 배열을 통해 비스듬하게 더해 나갑니다.</li>
+            </ol>
+            <p>속도는 느리지만 규칙적인 구조 덕분에 VLSI 설계에 유리합니다.</p>
+        `,
+
+        // [Subtractors]
+        'sub-logic': `
+            <div class="exam-point">
+                <h4>🚩 시험 핵심: 덧셈기로 뺄셈하기</h4>
+                <p>별도의 감산기를 만들지 않고, 가산기(Adder)와 XOR 게이트만으로 뺄셈을 구현합니다.</p>
+            </div>
+            
+            <h3>가감산기 (Adder/Subtractor) 원리</h3>
+            <p>공식: <code>A - B = A + (-B) = A + (NOT B) + 1</code> (2의 보수 이용)</p>
+            
+            <canvas id="cvs_sub"></canvas>
+
+            <ul>
+                <li><strong>제어 신호 (Sub):</strong> 0이면 덧셈, 1이면 뺄셈</li>
+                <li><strong>XOR 게이트의 역할:</strong>
+                    <ul>
+                        <li><code>B XOR 0 = B</code> (그대로)</li>
+                        <li><code>B XOR 1 = NOT B</code> (반전 -> 1의 보수)</li>
+                    </ul>
+                </li>
+                <li><strong>Cin 연결:</strong> Sub 신호를 가산기의 첫 캐리입력(Cin)에 연결하면, 뺄셈 모드일 때 자동으로 <strong>+1</strong>이 추가되어 2의 보수가 완성됩니다.</li>
+            </ul>
+        `,
+        'sub-rgb': `
+            <h3>[응용] RGB to CMYK 변환기</h3>
+            <p>프린터 잉크(CMY)를 절약하기 위해 검은색(K)을 추출하는 하드웨어 알고리즘입니다.</p>
+            
+            <h4>데이터패스 흐름 (Step-by-Step)</h4>
+            <ol>
+                <li><strong>보색 변환:</strong> 감산기 3개를 사용해 <code>255 - R</code>, <code>255 - G</code>, <code>255 - B</code>를 계산하여 임시 C, M, Y를 구합니다.</li>
+                <li><strong>최솟값 추출 (K):</strong> 비교기와 MUX로 구성된 'Minimum Finder'를 통해 C, M, Y 중 가장 작은 값을 찾습니다. 이 값이 <strong>K(Black)</strong>가 됩니다.</li>
+                <li><strong>최종 색상 계산:</strong> 다시 감산기 3개를 사용하여 <code>C - K</code>, <code>M - K</code>, <code>Y - K</code>를 계산합니다. (검은색 성분만큼 잉크를 뺌)</li>
+            </ol>
+        `,
+
+        // [Signed & Overflow]
+        'sign-two': `
+            <h3>2의 보수 (Two's Complement)</h3>
+            <p>디지털 시스템에서 음수를 다루는 표준입니다.</p>
+            <ul>
+                <li><strong>만드는 법:</strong> 모든 비트 반전(NOT) 후 + 1</li>
+                <li>예: <code>+3 (0011)</code> → 반전 <code>1100</code> → +1 → <code>-3 (1101)</code></li>
+                <li><strong>장점:</strong> 뺄셈을 덧셈 회로로 처리할 수 있습니다. (부호 비트 계산 불필요)</li>
+            </ul>
+        `,
+        'sign-over': `
+            <div class="exam-point">
+                <h4>🚩 시험 1순위: 오버플로우 판별식</h4>
+                <p>N비트로 표현 불가능한 결과가 나왔을 때를 탐지하는 두 가지 방법입니다. 둘 중 하나라도 만족하면 Overflow입니다.</p>
+            </div>
+
+            <h4>방법 1: 부호 비트 검사</h4>
+            <p>두 양수를 더했는데 음수가 나오거나, 두 음수를 더했는데 양수가 나오면 오버플로우입니다.</p>
+            <div class="math-block">
+                V = A_{sign} \cdot B_{sign} \cdot S_{sign}' + A_{sign}' \cdot B_{sign}' \cdot S_{sign}
+            </div>
+
+            <h4>방법 2: 캐리 비교 검사 (더 간단함)</h4>
+            <p>마지막 부호 비트로 들어가는 캐리(Cin)와 나오는 캐리(Cout)가 다르면 오버플로우입니다.</p>
+            <div class="math-block">
+                V = C_{n-1} \oplus C_{out}
+            </div>
+            
+            <canvas id="cvs_overflow"></canvas>
+            <p>위 그림처럼 마지막 두 캐리 라인을 XOR 게이트에 연결하면 끝입니다.</p>
+        `
+    };
+
+    // --- 그리기 함수 (13장 전용) ---
+    function runDrawing(id) {
+        if (id === 'reg-load') drawRegLoad();
+        else if (id === 'add-ripple') drawRippleAdder();
+        else if (id === 'sub-logic') drawSubtractor();
+        else if (id === 'sign-over') drawOverflow();
+    }
+
+    function drawRegLoad() {
+        const c = document.getElementById('cvs_reg_load'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        // MUX
+        ctx.strokeStyle = "#4f46e5";
+        ctx.beginPath(); ctx.moveTo(w/2-40, 40); ctx.lineTo(w/2+40, 40); ctx.lineTo(w/2+20, 90); ctx.lineTo(w/2-20, 90); ctx.closePath(); ctx.stroke();
+        ctx.fillStyle="#1e293b"; ctx.fillText("MUX", w/2-15, 70);
+
+        // D-FF
+        ctx.strokeRect(w/2-30, 120, 60, 40); ctx.fillText("D-FF", w/2-15, 145);
+        
+        // Lines
+        ctx.beginPath(); ctx.moveTo(w/2, 90); ctx.lineTo(w/2, 120); ctx.stroke(); // MUX to FF
+        ctx.fillText("Load (Select)", w/2+50, 65); // Select line text
+        
+        // Feedback
+        ctx.strokeStyle = "#64748b"; ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(w/2+30, 140); ctx.lineTo(w/2+80, 140); ctx.lineTo(w/2+80, 20); ctx.lineTo(w/2-20, 20); ctx.lineTo(w/2-20, 40); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillText("Feedback (Q)", w/2+85, 100);
+        
+        // Input
+        ctx.fillText("New Data (I)", w/2-100, 35);
+    }
+
+    function drawRippleAdder() {
+        const c = document.getElementById('cvs_adder'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 150;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="12px sans-serif";
+
+        for(let i=0; i<4; i++) {
+            let x = w/2 + (1.5-i)*70;
+            // FA Box
+            ctx.fillStyle = "#eff6ff"; ctx.fillRect(x-25, 50, 50, 50);
+            ctx.strokeStyle = "#4338ca"; ctx.strokeRect(x-25, 50, 50, 50);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("FA "+i, x-12, 80);
+            
+            // Carry Line
+            if(i<3) {
+                ctx.beginPath(); ctx.moveTo(x-25, 75); ctx.lineTo(x-45, 75); ctx.strokeStyle="#f43f5e"; ctx.stroke();
+                ctx.fillStyle="#f43f5e"; ctx.fillText("Delay", x-43, 70);
+            }
+        }
+        ctx.fillStyle = "#64748b"; ctx.fillText("<<< Carry Propagation Direction <<<", w/2-100, 130);
+    }
+
+    function drawSubtractor() {
+        const c = document.getElementById('cvs_sub'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        // Adder Box
+        ctx.strokeRect(w/2-50, 100, 100, 50); ctx.fillStyle="#1e293b"; ctx.fillText("Adder", w/2-20, 130);
+
+        // XOR Gate shape
+        ctx.strokeStyle = "#f43f5e"; 
+        ctx.beginPath(); ctx.arc(w/2+30, 50, 15, Math.PI, 0); ctx.stroke(); // Top curve
+        ctx.beginPath(); ctx.moveTo(w/2+15, 50); ctx.lineTo(w/2+30, 80); ctx.lineTo(w/2+45, 50); ctx.stroke(); // Bottom point
+        ctx.fillText("XOR", w/2+18, 45);
+
+        // Wiring
+        ctx.strokeStyle = "#334155";
+        ctx.beginPath(); ctx.moveTo(w/2+30, 80); ctx.lineTo(w/2+30, 100); ctx.stroke(); // XOR to Adder B
+        ctx.fillText("B Input", w/2+40, 20); 
+        ctx.fillText("Sub Signal (1)", w/2+60, 50);
+
+        // Cin connection
+        ctx.beginPath(); ctx.moveTo(w/2+80, 50); ctx.lineTo(w/2+80, 125); ctx.lineTo(w/2+50, 125); ctx.stroke();
+        ctx.fillText("Cin = 1", w/2+85, 120);
+    }
+
+    function drawOverflow() {
+        const c = document.getElementById('cvs_overflow'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 150;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        // Labels
+        ctx.fillStyle = "#1e293b"; 
+        ctx.fillText("Cin (Carry In to Sign Bit)", w/2-180, 40);
+        ctx.fillText("Cout (Carry Out from Sign Bit)", w/2-180, 90);
+
+        // XOR Gate logic drawing
+        ctx.strokeStyle = "#f43f5e";
+        let gx = w/2 + 50; let gy = 65;
+        
+        // Lines to gate
+        ctx.beginPath(); ctx.moveTo(w/2-20, 40); ctx.lineTo(gx, 55); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(w/2-20, 90); ctx.lineTo(gx, 75); ctx.stroke();
+
+        // XOR symbol (simplified)
+        ctx.beginPath(); ctx.arc(gx+10, gy, 20, -0.5*Math.PI, 0.5*Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(gx, gy-20); ctx.quadraticCurveTo(gx+10, gy, gx, gy+20); ctx.stroke();
+        
+        ctx.fillText("XOR", gx+5, gy+5);
+        
+        // Output
+        ctx.beginPath(); ctx.moveTo(gx+30, gy); ctx.lineTo(gx+60, gy); ctx.stroke();
+        ctx.fillStyle = "#be123c"; ctx.font="bold 14px sans-serif";
+        ctx.fillText("Overflow Flag", gx+65, gy+5);
+    }
+</script>
+</body>
+</html>

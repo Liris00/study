@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>디지털 시스템: ALU & 프로세서 설계 (시험대비 심화판)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-size:0.8rem; color:#94a3b8; font-weight:400;">Exam Edition</span></div>
+    <div class="menu-label">Chapter 4. Processor</div>
+    <div class="nav-item active" onclick="showSection('sec-alu', this)"><span class="nav-icon">🧮</span> 1. ALU & Register File</div>
+    <div class="nav-item" onclick="showSection('sec-buffer', this)"><span class="nav-icon">🚦</span> 2. Tri-state Buffer</div>
+    <div class="nav-item" onclick="showSection('sec-arch', this)"><span class="nav-icon">🏗️</span> 3. 프로세서 구조</div>
+    <div class="nav-item" onclick="showSection('sec-instr', this)"><span class="nav-icon">📜</span> 4. 명령어 & FSM</div>
+    <div class="nav-item" onclick="showSection('sec-ext', this)"><span class="nav-icon">🚀</span> 5. 확장 (심화)</div>
+</div>
+
+<div class="main">
+    <div id="sec-alu" class="section-container active">
+        <div class="header"><h1>1. ALU와 레지스터 파일</h1><p>데이터패스의 핵심 연산 유닛과 저장소 설계</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('alu-design')">
+                <span class="card-icon">➕</span>
+                <div class="tag-container"><span class="tag core">핵심</span></div>
+                <h3>ALU 설계 (Extender)</h3>
+                <p>단일 가산기(Adder) 앞에 로직을 붙여 뺄셈, 논리 연산(AND/OR)을 통합하는 원리.</p>
+                <div class="btn-learn">Extender 구조 보기 (p.4)</div>
+            </div>
+            <div class="card" onclick="openModal('rf-structure')">
+                <span class="card-icon">📚</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>레지스터 파일 (M × N)</h3>
+                <p>여러 레지스터를 하나로 묶어 효율적으로 읽고 쓰는 구조 (Write Decoder vs Read Mux).</p>
+                <div class="btn-learn">구조 상세 (p.9)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-buffer" class="section-container">
+        <div class="header"><h1>2. Tri-state Buffer & Bus</h1><p>다중 데이터 전송 시 충돌을 방지하는 필수 소자</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('tristate-logic')">
+                <span class="card-icon">🔌</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Tri-state 버퍼란?</h3>
+                <p>0, 1 외에 '끊어짐(High-Z)' 상태를 가지는 버퍼. 버스 공유의 핵심.</p>
+                <div class="btn-learn">진리표 보기 (p.11)</div>
+            </div>
+            <div class="card" onclick="openModal('tristate-app')">
+                <span class="card-icon">🚌</span>
+                <div class="tag-container"><span class="tag">응용</span></div>
+                <h3>거대 MUX 대체하기</h3>
+                <p>수많은 레지스터 출력을 하나의 버스로 연결할 때 MUX 대신 버퍼를 쓰는 이유.</p>
+                <div class="btn-learn">회로 비교 (p.10)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-arch" class="section-container">
+        <div class="header"><h1>3. 기본 프로세서 구조</h1><p>데이터패스와 컨트롤러의 결합</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('proc-basic')">
+                <span class="card-icon">🧠</span>
+                <div class="tag-container"><span class="tag exam">구조</span></div>
+                <h3>프로세서 3요소</h3>
+                <p>Datapath(RF+ALU), Control Unit, Memory(Instruction/Data)의 역할.</p>
+                <div class="btn-learn">전체 구조도 (p.18)</div>
+            </div>
+            <div class="card" onclick="openModal('cycle-steps')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag core">필수</span></div>
+                <h3>명령어 사이클 3단계</h3>
+                <p>Fetch(인출) → Decode(해석) → Execute(실행)의 흐름 완벽 정리.</p>
+                <div class="btn-learn">단계별 설명 (p.23)</div>
+            </div>
+        </div>
+    </div>
+    <div id="sec-instr" class="section-container">
+        <div class="header"><h1>4. 명령어 집합과 제어 FSM</h1><p>프로그래머블 프로세서를 움직이는 소프트웨어와 하드웨어의 접점</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('instr-set')">
+                <span class="card-icon">📝</span>
+                <div class="tag-container"><span class="tag logic">Code</span></div>
+                <h3>명령어 집합 (Machine Code)</h3>
+                <p>기계어(0과 1)와 어셈블리(MOV, ADD)의 매핑 및 비트 구조 해석.</p>
+                <div class="btn-learn">명령어 예시 (p.16)</div>
+            </div>
+            <div class="card" onclick="openModal('fsm-ctrl')">
+                <span class="card-icon">🕹️</span>
+                <div class="tag-container"><span class="tag exam">★심화</span></div>
+                <h3>Controller FSM 설계</h3>
+                <p>각 명령어(Opcode)에 따라 데이터패스 제어 신호를 생성하는 상태 머신.</p>
+                <div class="btn-learn">상태도 분석 (p.27)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-ext" class="section-container">
+        <div class="header"><h1>5. 프로세서 확장</h1><p>기능 추가를 위한 하드웨어 변경</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('ext-imm')">
+                <span class="card-icon">🔢</span>
+                <div class="tag-container"><span class="tag">응용</span></div>
+                <h3>상수 로드 (Load Constant)</h3>
+                <p>메모리가 아닌 명령어 자체에서 값을 가져오기 위한 MUX 확장.</p>
+                <div class="btn-learn">확장 원리 (p.21)</div>
+            </div>
+            <div class="card" onclick="openModal('ext-jmp')">
+                <span class="card-icon">🦘</span>
+                <div class="tag-container"><span class="tag logic">분기</span></div>
+                <h3>조건부 점프 (JMPZ)</h3>
+                <p>Zero flag 감지 로직(NOR gate)과 PC 값 변경 메커니즘.</p>
+                <div class="btn-learn">회로도 (p.21)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle"></div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+    const modalTitles = {
+        'alu-design': 'ALU와 Extender 설계',
+        'rf-structure': '레지스터 파일 내부 구조',
+        'tristate-logic': 'Tri-state Buffer 원리',
+        'tristate-app': 'Bus 연결 방식 비교',
+        'proc-basic': '프로세서 기본 아키텍처',
+        'cycle-steps': '명령어 처리 3단계',
+        'instr-set': '명령어 집합 구조',
+        'fsm-ctrl': '컨트롤러 FSM 상세',
+        'ext-imm': '상수(Immediate) 데이터 처리',
+        'ext-jmp': '조건부 분기(Jump) 구현'
+    };
+
+    // --- 데이터 (14장 내용) ---
+    const contents = {
+        // [ALU & Register File]
+        'alu-design': `
+            <h3>ALU (Arithmetic Logic Unit) 설계 철학</h3>
+            <p>개별 연산기(Adder, AND, OR)를 단순히 MUX로 묶으면 낭비가 심합니다. 대신 <strong>단일 Adder</strong> 앞에 <strong>ALU Extender</strong>를 배치하는 효율적인 설계를 사용합니다.</p>
+            
+            <div class="tech-note">
+                <h4>ALU Extender의 역할</h4>
+                <p>입력 A, B를 Adder가 처리하기 좋게 미리 변형합니다.</p>
+                <ul>
+                    <li><strong>덧셈 (A+B):</strong> A, B 그대로 통과, Cin=0</li>
+                    <li><strong>뺄셈 (A-B):</strong> A 통과, B 반전(1의 보수), Cin=1 (2의 보수 효과)</li>
+                    <li><strong>논리연산 (AND/OR):</strong> 수학적으로 덧셈기를 이용해 구현하거나, 별도 로직을 통합합니다. (자세한 건 진리표 참조)</li>
+                </ul>
+            </div>
+            <canvas id="cvs_alu"></canvas>
+        `,
+        'rf-structure': `
+            <h3>레지스터 파일 (Register File) 구조</h3>
+            <p>여러 개의 레지스터(예: 16개)를 마치 메모리처럼 주소를 이용해 읽고 쓰는 컴포넌트입니다.</p>
+            
+            <h4>쓰기 (Write) 동작</h4>
+            <ul>
+                <li><strong>입력:</strong> Write Data(32bit), Write Addr(4bit), Write Enable</li>
+                <li><strong>원리:</strong> <strong>Decoder</strong>를 사용하여 Write Addr에 해당하는 레지스터의 <code>Load</code> 신호만 1로 만듭니다.</li>
+            </ul>
+
+            <h4>읽기 (Read) 동작</h4>
+            <ul>
+                <li><strong>입력:</strong> Read Addr(4bit)</li>
+                <li><strong>원리:</strong> <strong>MUX</strong>를 사용하여 여러 레지스터 출력 중 하나를 선택합니다. (혹은 Tri-state Buffer 사용)</li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 시험 포인트: M × N 레지스터 파일</h4>
+                <p>M개의 레지스터가 있고, 각 레지스터는 N비트 크기입니다. 쓰기 포트는 1개지만, 읽기 포트는 보통 2개(A, B)를 둬서 ALU의 두 입력으로 바로 보냅니다.</p>
+            </div>
+        `,
+
+        // [Tri-state Buffer]
+        'tristate-logic': `
+            <h3>Tri-state Buffer (3상 버퍼)</h3>
+            <p>출력이 0, 1 외에 <strong>High-Z (고임피던스)</strong> 상태를 가질 수 있는 소자입니다.</p>
+            
+            <div class="math-block">
+                Enable = 1 : Output = Input (연결됨)<br>
+                Enable = 0 : Output = High-Z (끊어짐)
+            </div>
+
+            <h4>왜 필요한가? (Bus Contention)</h4>
+            <p>여러 부품이 하나의 선(Bus)을 공유할 때, 둘 이상의 부품이 동시에 0과 1을 출력하면 <strong>단락(Short Circuit)</strong>이 발생합니다. 사용하지 않는 부품은 회로에서 전기적으로 끊어버려야(High-Z) 안전합니다.</p>
+        `,
+        'tristate-app': `
+            <h3>거대 MUX vs Tri-state 버퍼</h3>
+            <p>레지스터 파일에서 16개의 레지스터 중 하나를 읽을 때:</p>
+            <ul>
+                <li><strong>MUX 방식:</strong> 16x1 MUX가 필요합니다. 입력선이 16 × 32 = 512개나 되어 배선이 복잡하고 혼잡(Congestion)해집니다.</li>
+                <li><strong>Tri-state 방식:</strong> 모든 레지스터 출력을 하나의 버스 선에 묶어두고, 읽고 싶은 레지스터의 버퍼만 Enable 합니다. 배선이 획기적으로 줄어듭니다.</li>
+            </ul>
+            <canvas id="cvs_tristate"></canvas>
+        `,
+
+        // [Processor Architecture]
+        'proc-basic': `
+            <h3>기본 프로세서 아키텍처</h3>
+            <p>프로세서는 크게 <strong>컨트롤러(뇌)</strong>와 <strong>데이터패스(몸)</strong>로 나뉩니다.</p>
+
+            <table>
+                <tr>
+                    <th>구성 요소</th>
+                    <th>역할</th>
+                </tr>
+                <tr>
+                    <td><strong>PC (Program Counter)</strong></td>
+                    <td>다음 실행할 명령어의 주소를 저장 (Fetch 단계마다 +1)</td>
+                </tr>
+                <tr>
+                    <td><strong>IR (Instruction Register)</strong></td>
+                    <td>현재 실행 중인 명령어를 저장</td>
+                </tr>
+                <tr>
+                    <td><strong>Register File (RF)</strong></td>
+                    <td>연산에 필요한 데이터를 임시 저장하는 빠른 메모리</td>
+                </tr>
+                <tr>
+                    <td><strong>ALU</strong></td>
+                    <td>실제 덧셈, 뺄셈 등을 수행</td>
+                </tr>
+                <tr>
+                    <td><strong>Controller</strong></td>
+                    <td>명령어를 해석(Decode)하여 각 부품에 제어 신호를 보냄</td>
+                </tr>
+            </table>
+        `,
+        'cycle-steps': `
+            <div class="exam-point">
+                <h4>🚩 시험 1순위: Instruction Cycle</h4>
+                <p>모든 명령어는 다음 3단계를 거쳐 수행됩니다.</p>
+            </div>
+
+            <ol>
+                <li><strong>Fetch (인출):</strong> 
+                    <ul>
+                        <li>메모리[PC]에서 명령어를 가져와 IR에 넣습니다.</li>
+                        <li>PC를 1 증가시켜 다음 명령어를 가리킵니다.</li>
+                    </ul>
+                </li>
+                <li><strong>Decode (해석):</strong> 
+                    <ul>
+                        <li>IR에 담긴 명령어가 덧셈인지, 로드인지 분석합니다.</li>
+                        <li>필요한 레지스터 주소 등을 추출합니다.</li>
+                    </ul>
+                </li>
+                <li><strong>Execute (실행):</strong> 
+                    <ul>
+                        <li>실제 데이터패스를 동작시킵니다. (예: RF에서 읽기 -> ALU 연산 -> RF에 쓰기)</li>
+                    </ul>
+                </li>
+            </ol>
+        `,
+
+        // [Instructions & FSM]
+        'instr-set': `
+            <h3>명령어 집합 (Instruction Set)</h3>
+            <p>프로세서가 이해하는 언어입니다. 예시(3-Instruction Processor)를 봅시다.</p>
+
+            <table>
+                <tr>
+                    <th>어셈블리 (Assembly)</th>
+                    <th>기계어 (Machine Code)</th>
+                    <th>의미</th>
+                </tr>
+                <tr>
+                    <td><code>MOV Ra, d</code></td>
+                    <td><code>0000 rrrr dddd...</code></td>
+                    <td>RF[Ra] = DataMemory[d] (Load)</td>
+                </tr>
+                <tr>
+                    <td><code>MOV d, Ra</code></td>
+                    <td><code>0001 rrrr dddd...</code></td>
+                    <td>DataMemory[d] = RF[Ra] (Store)</td>
+                </tr>
+                <tr>
+                    <td><code>ADD Ra, Rb, Rc</code></td>
+                    <td><code>0010 aaaa bbbb cccc</code></td>
+                    <td>RF[Ra] = RF[Rb] + RF[Rc]</td>
+                </tr>
+            </table>
+            <p>앞의 4비트(Opcode)가 명령의 종류를 결정합니다.</p>
+        `,
+        'fsm-ctrl': `
+            <h3>Controller FSM (유한 상태 머신)</h3>
+            <p>컨트롤러는 현재 상태(Fetch/Decode/Execute)와 명령어(Opcode)에 따라 제어 신호를 출력합니다.</p>
+            
+            <canvas id="cvs_fsm"></canvas>
+
+            <ul>
+                <li><strong>Fetch 상태:</strong> 메모리 Read 신호 = 1, IR Load 신호 = 1, PC Inc 신호 = 1</li>
+                <li><strong>Decode 상태:</strong> Opcode를 보고 다음 상태(Load, Store, Add 등)로 분기</li>
+                <li><strong>Execute 상태:</strong>
+                    <ul>
+                        <li><strong>Add:</strong> ALU Select를 덧셈으로, RF Write Enable을 1로 설정</li>
+                        <li><strong>Store:</strong> 메모리 Write Enable을 1로 설정</li>
+                    </ul>
+                </li>
+            </ul>
+        `,
+
+        // [Extension]
+        'ext-imm': `
+            <h3>확장 1: 상수 로드 (Load Constant)</h3>
+            <p><code>MOV R0, #5</code> 처럼 메모리가 아닌 명령어에 포함된 숫자(Immediate)를 레지스터에 넣고 싶을 때.</p>
+            <ul>
+                <li><strong>변경점:</strong> 레지스터 파일 입력 앞단에 <strong>MUX</strong>를 확장합니다.</li>
+                <li>기존: [Data Memory] or [ALU Result] (2x1 Mux)</li>
+                <li>확장: [Data Memory] or [ALU Result] or <strong>[IR의 하위 비트]</strong> (3x1 Mux)</li>
+            </ul>
+        `,
+        'ext-jmp': `
+            <h3>확장 2: 조건부 점프 (JMPZ)</h3>
+            <p><code>JMPZ R1, offset</code>: R1이 0이면 PC를 점프시킵니다. (if 문 구현)</p>
+            <ul>
+                <li><strong>Zero Check:</strong> 레지스터 출력단에 <strong>NOR 게이트</strong>를 달아 모든 비트가 0인지 검사합니다.</li>
+                <li><strong>PC Update:</strong> PC 입력단에 덧셈기를 달아, 조건 만족 시 <code>PC = PC + offset</code>을 수행합니다.</li>
+            </ul>
+            <div class="math-block">
+                Next_PC = (Zero_Flag) ? (PC + Offset) : (PC + 1)
+            </div>
+        `
+    };
+
+    // --- 그리기 함수 (14장 전용) ---
+    function runDrawing(id) {
+        if (id === 'alu-design') drawALU();
+        else if (id === 'tristate-app') drawTriState();
+        else if (id === 'fsm-ctrl') drawFSM();
+    }
+
+    function drawALU() {
+        const c = document.getElementById('cvs_alu'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        ctx.strokeRect(w/2-60, 40, 120, 40);
+        ctx.fillStyle = "#eff6ff"; ctx.fillRect(w/2-59, 41, 118, 38);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("ALU Extender", w/2-45, 65);
+
+        ctx.strokeRect(w/2-60, 110, 120, 50); ctx.fillText("Adder (Sum)", w/2-40, 140);
+
+        ctx.strokeStyle = "#4f46e5";
+        ctx.beginPath(); ctx.moveTo(w/2-30, 10); ctx.lineTo(w/2-30, 40); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(w/2+30, 10); ctx.lineTo(w/2+30, 40); ctx.stroke();
+        ctx.fillText("A", w/2-35, 25); ctx.fillText("B", w/2+35, 25);
+
+        ctx.beginPath(); ctx.moveTo(w/2-30, 80); ctx.lineTo(w/2-30, 110); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(w/2+30, 80); ctx.lineTo(w/2+30, 110); ctx.stroke();
+
+        ctx.fillStyle = "#f43f5e";
+        ctx.fillText("Control (Opcode)", w/2-140, 65);
+        ctx.beginPath(); ctx.moveTo(w/2-80, 60); ctx.lineTo(w/2-60, 60); ctx.stroke();
+    }
+
+    function drawTriState() {
+        const c = document.getElementById('cvs_tristate'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 150;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(50, h/2); ctx.lineTo(w-50, h/2); ctx.stroke();
+        ctx.fillText("Common Bus", w-140, h/2-10);
+
+        ctx.lineWidth = 2;
+        for(let i=0; i<3; i++) {
+            let x = 100 + i*150;
+            let y = h/2 - 40;
+
+            ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, y); ctx.stroke();
+            ctx.fillText("Reg"+i, x-15, 15);
+
+            ctx.beginPath(); ctx.moveTo(x-15, y); ctx.lineTo(x+15, y); ctx.lineTo(x, y+30); ctx.closePath(); ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(x, y+30); ctx.lineTo(x, h/2); ctx.stroke();
+
+            ctx.strokeStyle = "#f43f5e";
+            ctx.beginPath(); ctx.moveTo(x+10, y+15); ctx.lineTo(x+40, y+15); ctx.stroke();
+            ctx.strokeStyle = "#1e293b";
+            ctx.fillStyle = "#f43f5e"; ctx.fillText("En"+i, x+45, y+20);
+        }
+    }
+
+    function drawFSM() {
+        const c = document.getElementById('cvs_fsm'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="12px sans-serif";
+
+        const states = [
+            {x: w/4, y: h/2, txt: "Fetch"},
+            {x: w/2, y: h/2, txt: "Decode"},
+            {x: 3*w/4, y: 40, txt: "Load"},
+            {x: 3*w/4, y: 140, txt: "Add"}
+        ];
+
+        states.forEach(s => {
+            ctx.beginPath(); ctx.arc(s.x, s.y, 30, 0, Math.PI*2); ctx.stroke();
+            ctx.fillStyle = "#fff"; ctx.fill();
+            ctx.fillStyle = "#1e293b"; ctx.fillText(s.txt, s.x-15, s.y+5);
+        });
+
+        ctx.beginPath(); ctx.moveTo(states[0].x+30, states[0].y); ctx.lineTo(states[1].x-30, states[1].y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(states[1].x+20, states[1].y-20); ctx.lineTo(states[2].x-25, states[2].y+10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(states[1].x+20, states[1].y+20); ctx.lineTo(states[3].x-25, states[3].y-10); ctx.stroke();
+
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = "#94a3b8";
+        ctx.beginPath(); ctx.moveTo(states[2].x, states[2].y-30); ctx.quadraticCurveTo(w/2, 0, states[0].x, states[0].y-30); ctx.stroke();
+        ctx.fillText("Next Cycle", w/2-20, 20);
+        ctx.setLineDash([]);
+        ctx.strokeStyle = "#1e293b";
+    }
+</script>
+</body>
+</html>
