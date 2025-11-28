@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Memory Hierarchy II</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-size:0.8rem; color:#94a3b8; font-weight:400;">Exam Edition</span></div>
+    <div class="menu-label">Chapter 6. Memory Hierarchy</div>
+    <div class="nav-item active" onclick="showSection('sec-org', this)"><span class="nav-icon">🗄️</span> 1. 캐시 구조와 동작</div>
+    <div class="nav-item" onclick="showSection('sec-write', this)"><span class="nav-icon">✍️</span> 2. 쓰기 정책 & 성능</div>
+    <div class="nav-item" onclick="showSection('sec-mountain', this)"><span class="nav-icon">⛰️</span> 3. 메모리 마운틴</div>
+    <div class="nav-item" onclick="showSection('sec-matrix', this)"><span class="nav-icon">✖️</span> 4. 행렬 곱셈 최적화</div>
+    <div class="nav-item" onclick="showSection('sec-block', this)"><span class="nav-icon">🧱</span> 5. 블로킹 (Blocking)</div>
+</div>
+
+<div class="main">
+    <div id="sec-org" class="section-container active">
+        <div class="header"><h1>1. 캐시 메모리 구조</h1><p>Direct Mapped부터 Set Associative까지 캐시의 내부 동작 원리</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('direct-mapped')">
+                <span class="card-icon">📍</span>
+                <div class="tag-container"><span class="tag core">기초</span></div>
+                <h3>Direct Mapped Cache (E=1)</h3>
+                <p>가장 단순한 구조. 메모리 주소가 특정 라인 하나에만 매핑되는 방식.</p>
+                <div class="btn-learn">구조 및 예제 (p.6)</div>
+            </div>
+            <div class="card" onclick="openModal('set-associative')">
+                <span class="card-icon">🔍</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>Set Associative Cache</h3>
+                <p>하나의 Set에 여러 라인(E-way)을 두어 충돌을 줄이는 유연한 구조.</p>
+                <div class="btn-learn">동작 원리 (p.11)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-write" class="section-container">
+        <div class="header"><h1>2. 쓰기 정책과 성능 지표</h1><p>데이터 일관성 유지 방법과 캐시 성능 측정</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('write-policy')">
+                <span class="card-icon">📝</span>
+                <div class="tag-container"><span class="tag logic">정책</span></div>
+                <h3>Write Policy (Hit/Miss)</h3>
+                <p>Write-through vs Write-back, Write-allocate vs No-write-allocate.</p>
+                <div class="btn-learn">정책 비교 (p.16)</div>
+            </div>
+            <div class="card" onclick="openModal('cache-perf')">
+                <span class="card-icon">⏱️</span>
+                <div class="tag-container"><span class="tag core">공식</span></div>
+                <h3>캐시 성능 메트릭</h3>
+                <p>Miss Rate, Hit Time, Miss Penalty와 평균 접근 시간(AMAT).</p>
+                <div class="btn-learn">성능 수치 (p.18)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-mountain" class="section-container">
+        <div class="header"><h1>3. 메모리 마운틴 (Memory Mountain)</h1><p>공간 지역성과 시간 지역성의 시각화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('mountain-concept')">
+                <span class="card-icon">📉</span>
+                <div class="tag-container"><span class="tag exam">개념</span></div>
+                <h3>Memory Mountain이란?</h3>
+                <p>Stride(공간)와 Working Set Size(시간)에 따른 읽기 처리량(Throughput) 변화.</p>
+                <div class="btn-learn">그래프 해석 (p.22)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-matrix" class="section-container">
+        <div class="header"><h1>4. 행렬 곱셈과 루프 순서</h1><p>코드 작성 방식이 캐시 성능에 미치는 치명적 영향</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('loop-order')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag logic">코딩</span></div>
+                <h3>Loop Reordering (ijk)</h3>
+                <p>ijk, kij, jki 등 루프 순서 변경에 따른 Miss Rate의 드라마틱한 차이.</p>
+                <div class="btn-learn">순서별 분석 (p.31)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-block" class="section-container">
+        <div class="header"><h1>5. 블로킹 (Blocking)</h1><p>시간 지역성을 극대화하는 고급 최적화 기법</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('blocking-tech')">
+                <span class="card-icon">🧱</span>
+                <div class="tag-container"><span class="tag exam">★심화</span></div>
+                <h3>Blocking 기법</h3>
+                <p>큰 행렬을 캐시에 들어가는 작은 블록(B x B)으로 쪼개서 처리하는 방법.</p>
+                <div class="btn-learn">성능 분석 (p.43)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle"></div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+    // 페이지 로드 시 첫 번째 섹션이 표시되도록 보장
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstSection = document.getElementById('sec-org');
+        if (firstSection) {
+            firstSection.classList.add('active');
+        }
+        const firstNav = document.querySelector('.nav-item');
+        if (firstNav) {
+            firstNav.classList.add('active');
+        }
+    });
+
+    const modalTitles = {
+        'direct-mapped': 'Direct Mapped Cache 동작',
+        'set-associative': 'Set Associative Cache 동작',
+        'write-policy': '캐시 쓰기 정책 (Write Policy)',
+        'cache-perf': '캐시 성능 분석 (AMAT)',
+        'mountain-concept': 'The Memory Mountain',
+        'loop-order': '행렬 곱셈 루프 최적화',
+        'blocking-tech': '블로킹 (Blocking) 기법'
+    };
+
+    // --- 데이터 (6장 내용) ---
+    const contents = {
+        // [Cache Organization]
+        'direct-mapped': `
+            <h3>Direct Mapped Cache (E=1)</h3>
+            <p>각 메모리 블록이 캐시의 <strong>정해진 딱 한 곳</strong>(Set)에만 저장될 수 있는 구조입니다.</p>
+            <ul>
+                <li><strong>주소 매핑:</strong> <code>Set Index = Memory Address % Number of Sets</code></li>
+                <li><strong>구조:</strong> 주소를 <strong>Tag | Set Index | Block Offset</strong>으로 나눕니다.</li>
+                <li><strong>동작:</strong>
+                    <ol>
+                        <li>Index로 Set을 찾습니다.</li>
+                        <li>저장된 Tag와 주소의 Tag가 일치하는지, Valid 비트가 1인지 확인합니다.</li>
+                        <li>일치하면 Hit, 아니면 Miss (기존 데이터 교체).</li>
+                    </ol>
+                </li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 단점: 충돌 미스 (Conflict Miss)</h4>
+                <p>서로 다른 주소지만 같은 Index를 가지는 데이터들을 번갈아 접근하면, 캐시가 계속 교체되어 성능이 저하됩니다 (Thrashing).</p>
+            </div>
+        `,
+        'set-associative': `
+            <h3>E-way Set Associative Cache</h3>
+            <p>Direct Mapped의 유연성 부족을 해결하기 위해, 하나의 Set에 <strong>E개의 라인(Line)</strong>을 둡니다.</p>
+            <ul>
+                <li><strong>특징:</strong> 메모리 블록은 특정 Set의 <strong>어느 라인에도</strong> 들어갈 수 있습니다.</li>
+                <li><strong>검색:</strong> Set 내부의 모든 라인의 Tag를 <strong>동시에 비교</strong>합니다.</li>
+                <li><strong>교체 정책 (Replacement Policy):</strong> Set이 꽉 찼을 때 누구를 내쫓을지 결정해야 합니다. (예: LRU - Least Recently Used)</li>
+            </ul>
+            <canvas id="cvs_assoc"></canvas>
+            <p><em>* 위 그림은 2-Way Set Associative 구조를 보여줍니다.</em></p>
+        `,
+
+        // [Write & Performance]
+        'write-policy': `
+            <h3>캐시 쓰기 정책 (Write Policy)</h3>
+            <p>데이터를 쓸 때 캐시와 메인 메모리의 일관성을 어떻게 유지할 것인가?</p>
+            
+            <h4>1. Write Hit (캐시에 데이터가 있을 때)</h4>
+            <ul>
+                <li><strong>Write-Through:</strong> 캐시와 메모리에 <strong>동시에</strong> 씁니다. (안전하지만 느림)</li>
+                <li><strong>Write-Back:</strong> <strong>캐시에만</strong> 쓰고, 나중에 그 데이터가 쫓겨날 때(Eviction) 메모리에 씁니다. (빠르지만 Dirty Bit 관리 필요)</li>
+            </ul>
+
+            <h4>2. Write Miss (캐시에 데이터가 없을 때)</h4>
+            <ul>
+                <li><strong>Write-Allocate:</strong> 데이터를 메모리에서 캐시로 가져온 뒤 씁니다. (Write-Back과 짝꿍)</li>
+                <li><strong>No-Write-Allocate:</strong> 캐시를 건너뛰고 메모리에 직접 씁니다. (Write-Through와 짝꿍)</li>
+            </ul>
+        `,
+        'cache-perf': `
+            <h3>캐시 성능 지표</h3>
+            <div class="math-block">
+                Average Access Time = Hit Time + (Miss Rate × Miss Penalty)
+            </div>
+            <ul>
+                <li><strong>Hit Time:</strong> 캐시에서 데이터를 가져오는 시간 (매우 짧음, L1의 경우 1~2 cycle).</li>
+                <li><strong>Miss Rate:</strong> 캐시에 데이터가 없을 확률. (L1은 3~10% 정도).</li>
+                <li><strong>Miss Penalty:</strong> 메모리에서 데이터를 가져오는 비용 (매우 큼, 50~200 cycles).</li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 핵심: Miss Rate이 깡패다</h4>
+                <p>Miss Penalty가 워낙 크기 때문에, Hit Rate가 97%에서 99%로 2%만 올라도 평균 접근 속도는 <strong>2배</strong> 빨라질 수 있습니다.</p>
+            </div>
+        `,
+
+        // [Memory Mountain]
+        'mountain-concept': `
+            <h3>The Memory Mountain</h3>
+            <p>프로그램의 <strong>공간 지역성(Spatial Locality)</strong>과 <strong>시간 지역성(Temporal Locality)</strong>에 따른 메모리 대역폭(Read Throughput)을 3차원 산맥처럼 시각화한 그래프입니다.</p>
+            
+            <ul>
+                <li><strong>Ridges (능선) - 시간 지역성:</strong> Working Set Size(데이터 크기)가 작아서 L1, L2 캐시 안에 다 들어갈수록 성능이 높습니다. (그래프의 평평한 고원들)</li>
+                <li><strong>Slopes (비탈) - 공간 지역성:</strong> Stride(접근 간격)가 작을수록(예: stride-1) 캐시 블록 활용도가 높아 성능이 좋습니다. Stride가 커지면 비탈길을 따라 성능이 곤두박질칩니다.</li>
+            </ul>
+        `,
+
+        // [Matrix Multiplication]
+        'loop-order': `
+            <h3>행렬 곱셈 루프 순서 (Loop Reordering)</h3>
+            <p><code>for(i.. for(j.. for(k..)))</code> 3중 루프의 순서를 바꾸면 캐시 적중률이 달라집니다.</p>
+
+            <table>
+                <tr>
+                    <th>순서</th>
+                    <th>접근 패턴</th>
+                    <th>Misses / Iteration</th>
+                    <th>성능</th>
+                </tr>
+                <tr>
+                    <td><strong>ijk, jik</strong></td>
+                    <td>2 loads, 0 stores<br>(Row-wise, Column-wise 혼합)</td>
+                    <td>1.25</td>
+                    <td>중간</td>
+                </tr>
+                <tr>
+                    <td><strong>kij, ikj</strong></td>
+                    <td>2 loads, 1 store<br><strong>(모두 Stride-1 접근)</strong></td>
+                    <td>0.5</td>
+                    <td><strong>최고 (Best)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>jki, kji</strong></td>
+                    <td>2 loads, 1 store<br>(심각한 Column-wise 점프)</td>
+                    <td>2.0</td>
+                    <td>최악 (Worst)</td>
+                </tr>
+            </table>
+            <p><strong>결론:</strong> 내부 루프에서 <code>a[i][k]</code>, <code>b[k][j]</code>와 같이 인덱스가 순차적으로 변하도록(Spatial Locality) 코드를 짜야 합니다.</p>
+        `,
+
+        // [Blocking]
+        'blocking-tech': `
+            <h3>블로킹 (Blocking) 기법</h3>
+            <p>행렬이 커서 캐시에 다 안 들어갈 때, 행렬을 작은 <strong>블록(Sub-matrix)</strong> 단위로 쪼개서 처리하는 기법입니다.</p>
+
+            <div class="tech-note">
+                <h4>왜 쓰는가? (Temporal Locality)</h4>
+                <p>일반 행렬 곱셈은 한 줄을 다 읽고 다음 줄로 갈 때쯤이면, 앞부분 데이터가 캐시에서 이미 쫓겨나 있습니다. 블로킹을 쓰면 작은 블록 데이터를 캐시에 꽉 잡고(Load) 모든 연산을 끝낸 뒤(Reuse) 교체합니다.</p>
+            </div>
+
+            <canvas id="cvs_blocking"></canvas>
+
+            <ul>
+                <li><strong>No Blocking:</strong> Miss Rate = 9/8 * n³</li>
+                <li><strong>Blocking:</strong> Miss Rate = 1/(4B) * n³  (B는 블록 크기)</li>
+            </ul>
+            <p>블록 크기 B를 캐시 사이즈에 맞춰 키울수록 성능이 비약적으로 향상됩니다.</p>
+        `
+    };
+
+    // --- 그리기 함수 ---
+    function runDrawing(id) {
+        if (id === 'set-associative') drawAssociative();
+        else if (id === 'blocking-tech') drawBlocking();
+    }
+
+    function drawAssociative() {
+        const c = document.getElementById('cvs_assoc'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
+
+        // Set Box
+        ctx.strokeRect(50, 40, 500, 100);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("Set i", 20, 95);
+
+        // Line 0
+        ctx.fillStyle = "#eff6ff"; ctx.fillRect(60, 50, 200, 80);
+        ctx.strokeRect(60, 50, 200, 80);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("Way 0 (Line)", 110, 95);
+        ctx.strokeRect(70, 60, 40, 60); ctx.fillText("Tag", 75, 95);
+
+        // Line 1
+        ctx.fillStyle = "#eff6ff"; ctx.fillRect(340, 50, 200, 80);
+        ctx.strokeRect(340, 50, 200, 80);
+        ctx.fillStyle = "#1e293b"; ctx.fillText("Way 1 (Line)", 390, 95);
+        ctx.strokeRect(350, 60, 40, 60); ctx.fillText("Tag", 355, 95);
+
+        // Input Tag
+        ctx.fillText("Search Tag", 260, 20);
+        ctx.beginPath(); ctx.moveTo(300, 25); 
+        ctx.lineTo(90, 25); ctx.lineTo(90, 60); // to Way 0
+        ctx.moveTo(300, 25);
+        ctx.lineTo(370, 25); ctx.lineTo(370, 60); // to Way 1
+        ctx.stroke();
+
+        ctx.fillStyle = "#f43f5e"; ctx.fillText("Parallel Compare", 250, 160);
+    }
+
+    function drawBlocking() {
+        const c = document.getElementById('cvs_blocking'); if(!c) return;
+        const ctx = c.getContext('2d');
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="12px sans-serif";
+
+        // Matrix A
+        ctx.strokeRect(50, 30, 100, 100); ctx.fillText("Matrix A", 70, 20);
+        ctx.fillStyle = "#cbd5e1"; ctx.fillRect(50, 30, 100, 100);
+        // Block in A
+        ctx.fillStyle = "#f43f5e"; ctx.fillRect(50, 30, 30, 30); ctx.strokeRect(50, 30, 30, 30);
+        
+        ctx.fillStyle = "#1e293b"; ctx.fillText("*", 170, 80);
+
+        // Matrix B
+        ctx.strokeRect(200, 30, 100, 100); ctx.fillText("Matrix B", 220, 20);
+        ctx.fillStyle = "#cbd5e1"; ctx.fillRect(200, 30, 100, 100);
+        // Block in B
+        ctx.fillStyle = "#4f46e5"; ctx.fillRect(200, 30, 30, 30); ctx.strokeRect(200, 30, 30, 30);
+
+        // Arrow text
+        ctx.fillStyle = "#334155";
+        ctx.fillText("Compute B x B block", 100, 150);
+        ctx.fillText("Fit in Cache!", 115, 165);
+
+        // Connection lines
+        ctx.beginPath(); ctx.moveTo(65, 60); ctx.lineTo(65, 130); ctx.lineTo(150, 130); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(215, 60); ctx.lineTo(215, 130); ctx.lineTo(150, 130); ctx.stroke();
+    }
+</script>
+</body>
+</html>
