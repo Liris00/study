@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 10: System-Level I/O</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <!-- 
+    ⚠️ 중요: PDF 전체 페이지 확인
+    - PDF의 마지막 페이지 번호: 47
+    - 이 HTML에 포함된 마지막 페이지: 47
+    - 두 값이 일치합니다!
+    -->
+</head>
+<body data-first-section="sec-unix-io">
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Final Edition</span></div>
+    <div class="menu-label">Chapter 10. System-Level I/O</div>
+    <div class="nav-item active" onclick="showSection('sec-unix-io', this)"><span class="nav-icon">📚</span> 1. Unix I/O Overview</div>
+    <div class="nav-item" onclick="showSection('sec-functions', this)"><span class="nav-icon">⚙️</span> 2. Unix I/O Functions</div>
+    <div class="nav-item" onclick="showSection('sec-rio', this)"><span class="nav-icon">🛡️</span> 3. RIO Package</div>
+    <div class="nav-item" onclick="showSection('sec-metadata', this)"><span class="nav-icon">📋</span> 4. Metadata & Sharing</div>
+    <div class="nav-item" onclick="showSection('sec-stdio', this)"><span class="nav-icon">📝</span> 5. Standard I/O</div>
+    <div class="nav-item" onclick="showSection('sec-summary', this)"><span class="nav-icon">📚</span> 6. Summary</div>
+</div>
+
+<div class="main">
+    <!-- 섹션 1: Unix I/O Overview -->
+    <div id="sec-unix-io" class="section-container active">
+        <div class="header"><h1>1. Unix I/O Overview</h1><p>Unix I/O의 기본 개념과 파일 시스템</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('unix-io-overview')">
+                <span class="card-icon">📖</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Unix I/O Overview</h3>
+                <p>모든 I/O 장치가 파일로 표현되는 Unix의 우아한 설계.</p>
+                <div class="btn-learn">기본 개념 보기 (page 3~4)</div>
+            </div>
+            <div class="card" onclick="openModal('file-types')">
+                <span class="card-icon">📁</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>File Types</h3>
+                <p>Regular file, Directory, Socket 등 파일 타입의 종류.</p>
+                <div class="btn-learn">파일 타입 보기 (page 5)</div>
+            </div>
+            <div class="card" onclick="openModal('regular-files')">
+                <span class="card-icon">📄</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Regular Files</h3>
+                <p>Text files와 Binary files의 차이. EOL 표시자.</p>
+                <div class="btn-learn">일반 파일 보기 (page 6)</div>
+            </div>
+            <div class="card" onclick="openModal('directories')">
+                <span class="card-icon">📂</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Directories</h3>
+                <p>디렉토리 구조와 계층. . 와 .. 의 의미.</p>
+                <div class="btn-learn">디렉토리 보기 (page 7~8)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 2: Unix I/O Functions -->
+    <div id="sec-functions" class="section-container">
+        <div class="header"><h1>2. Unix I/O Functions</h1><p>파일 열기, 읽기, 쓰기 함수</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('opening-files')">
+                <span class="card-icon">🔓</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Opening Files</h3>
+                <p>open() 함수로 파일 열기. File descriptor 반환.</p>
+                <div class="btn-learn">open() 함수 보기 (page 10)</div>
+            </div>
+            <div class="card" onclick="openModal('closing-files')">
+                <span class="card-icon">🔒</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Closing Files</h3>
+                <p>close() 함수로 파일 닫기. 에러 처리 중요.</p>
+                <div class="btn-learn">close() 함수 보기 (page 11)</div>
+            </div>
+            <div class="card" onclick="openModal('reading-files')">
+                <span class="card-icon">📥</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Reading Files</h3>
+                <p>read() 함수로 파일 읽기. Short counts 처리.</p>
+                <div class="btn-learn">read() 함수 보기 (page 12)</div>
+            </div>
+            <div class="card" onclick="openModal('writing-files')">
+                <span class="card-icon">📤</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Writing Files</h3>
+                <p>write() 함수로 파일 쓰기. Short counts 가능.</p>
+                <div class="btn-learn">write() 함수 보기 (page 13)</div>
+            </div>
+            <div class="card" onclick="openModal('short-counts')">
+                <span class="card-icon">⚠️</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>On Short Counts</h3>
+                <p>Short counts가 발생하는 경우와 발생하지 않는 경우.</p>
+                <div class="btn-learn">Short counts 이해 (page 15)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 3: RIO Package -->
+    <div id="sec-rio" class="section-container">
+        <div class="header"><h1>3. RIO (Robust I/O) Package</h1><p>효율적이고 견고한 I/O 래퍼</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('rio-overview')">
+                <span class="card-icon">🛡️</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>RIO Package Overview</h3>
+                <p>Short counts를 처리하는 Robust I/O 패키지.</p>
+                <div class="btn-learn">RIO 개요 보기 (page 17)</div>
+            </div>
+            <div class="card" onclick="openModal('unbuffered-rio')">
+                <span class="card-icon">⚡</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Unbuffered RIO</h3>
+                <p>rio_readn, rio_writen 함수. 네트워크 소켓에 유용.</p>
+                <div class="btn-learn">Unbuffered RIO 보기 (page 18)</div>
+            </div>
+            <div class="card" onclick="openModal('buffered-rio')">
+                <span class="card-icon">📦</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Buffered RIO</h3>
+                <p>rio_readlineb, rio_readnb 함수. 텍스트 라인 읽기.</p>
+                <div class="btn-learn">Buffered RIO 보기 (page 17, 20~21)</div>
+            </div>
+            <div class="card" onclick="openModal('simple-unix-example')">
+                <span class="card-icon">📝</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Simple Unix I/O Example</h3>
+                <p>stdin을 stdout으로 한 바이트씩 복사하는 예제.</p>
+                <div class="btn-learn">예제 코드 보기 (page 14)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 4: Metadata & Sharing -->
+    <div id="sec-metadata" class="section-container">
+        <div class="header"><h1>4. Metadata, Sharing & Redirection</h1><p>파일 메타데이터와 파일 공유</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('file-metadata')">
+                <span class="card-icon">📊</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>File Metadata</h3>
+                <p>stat() 함수로 파일 메타데이터 조회. statcheck.c 예제.</p>
+                <div class="btn-learn">메타데이터 보기 (page 26~27)</div>
+            </div>
+            <div class="card" onclick="openModal('file-sharing')">
+                <span class="card-icon">🔗</span>
+                <div class="tag-container"><span class="tag exam">중요</span><span class="tag core">Interactive</span></div>
+                <h3>File Sharing</h3>
+                <p>fork() 후 파일 디스크립터 공유. Open file table 구조.</p>
+                <div class="btn-learn">파일 공유 보기 (page 29~31)</div>
+            </div>
+            <div class="card" onclick="openModal('io-redirection')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag exam">중요</span><span class="tag core">Interactive</span></div>
+                <h3>I/O Redirection</h3>
+                <p>dup2() 함수로 I/O 리다이렉션 구현. Shell 동작 원리.</p>
+                <div class="btn-learn">리다이렉션 보기 (page 32~34)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 5: Standard I/O -->
+    <div id="sec-stdio" class="section-container">
+        <div class="header"><h1>5. Standard I/O</h1><p>C 표준 라이브러리 입출력</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('stdio-overview')">
+                <span class="card-icon">📝</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Standard I/O Overview</h3>
+                <p>fopen, fread, fwrite 등 표준 입출력 함수.</p>
+                <div class="btn-learn">Standard I/O 보기 (page 36~37)</div>
+            </div>
+            <div class="card" onclick="openModal('stdio-buffering')">
+                <span class="card-icon">💾</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>Buffering in Standard I/O</h3>
+                <p>버퍼링의 동기와 동작 방식. strace 예제 포함.</p>
+                <div class="btn-learn">버퍼링 이해 (page 39~44)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 6: Summary -->
+    <div id="sec-summary" class="section-container">
+        <div class="header"><h1>6. Summary & Choosing I/O</h1><p>전체 요약 및 I/O 함수 선택 가이드</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('io-comparison')">
+                <span class="card-icon">⚖️</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>Unix I/O vs Standard I/O vs RIO</h3>
+                <p>각 I/O 방식의 장단점 비교.</p>
+                <div class="btn-learn">비교 분석 보기 (page 42~44)</div>
+            </div>
+            <div class="card" onclick="openModal('choosing-io')">
+                <span class="card-icon">💡</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>Choosing I/O Functions</h3>
+                <p>상황에 맞는 I/O 함수 선택 가이드.</p>
+                <div class="btn-learn">선택 가이드 보기 (page 45)</div>
+            </div>
+            <div class="card" onclick="openModal('binary-files')">
+                <span class="card-icon">⚠️</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>Working with Binary Files</h3>
+                <p>바이너리 파일 작업 시 주의사항.</p>
+                <div class="btn-learn">주의사항 보기 (page 46)</div>
+            </div>
+            <div class="card" onclick="openModal('key-concepts')">
+                <span class="card-icon">🔑</span>
+                <div class="tag-container"><span class="tag exam">핵심</span></div>
+                <h3>Key Concepts</h3>
+                <p>이번 챕터에서 반드시 알아야 할 핵심 개념들.</p>
+                <div class="btn-learn">핵심 정리 보기 (page 47)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 오버레이 -->
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/common.js"></script>
+
+<script>
+    // ============================================
+    // 1. 모달 제목 정의
+    // ============================================
+    window.modalTitles = {
+        'unix-io-overview': 'Unix I/O Overview',
+        'file-types': 'File Types',
+        'regular-files': 'Regular Files',
+        'directories': 'Directories',
+        'opening-files': 'Opening Files',
+        'closing-files': 'Closing Files',
+        'reading-files': 'Reading Files',
+        'writing-files': 'Writing Files',
+        'short-counts': 'On Short Counts',
+        'rio-overview': 'RIO Package Overview',
+        'unbuffered-rio': 'Unbuffered RIO',
+        'buffered-rio': 'Buffered RIO',
+        'simple-unix-example': 'Simple Unix I/O Example',
+        'file-metadata': 'File Metadata',
+        'file-sharing': 'File Sharing',
+        'io-redirection': 'I/O Redirection',
+        'stdio-overview': 'Standard I/O Overview',
+        'stdio-buffering': 'Buffering in Standard I/O',
+        'io-comparison': 'Unix I/O vs Standard I/O vs RIO',
+        'choosing-io': 'Choosing I/O Functions',
+        'binary-files': 'Working with Binary Files',
+        'key-concepts': 'Key Concepts'
+    };
+
+    // ============================================
+    // 2. 모달 콘텐츠 정의
+    // ============================================
+    window.contents = {
+        'unix-io-overview': `
+            <h3>Unix I/O Overview</h3>
+            <p><strong>Unix I/O:</strong> 커널이 제공하는 간단한 인터페이스</p>
+            <p><strong>File (파일):</strong> m개의 바이트 시퀀스 B₀, B₁, ..., Bₖ, ..., Bₘ₋₁</p>
+            <p>Unix의 우아한 설계: 모든 I/O 장치가 파일로 표현됩니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 모든 것이 파일</h4>
+                <ul>
+                    <li><strong>디스크 파티션:</strong> /dev/sda2</li>
+                    <li><strong>터미널:</strong> /dev/tty2</li>
+                    <li><strong>커널 이미지:</strong> /boot/vmlinuz-3.13.0-55-generic</li>
+                    <li><strong>커널 데이터 구조:</strong> /proc</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Unix I/O 함수</h4>
+                <ul>
+                    <li><strong>open(), close():</strong> 파일 열기/닫기</li>
+                    <li><strong>read(), write():</strong> 파일 읽기/쓰기</li>
+                    <li><strong>lseek():</strong> 현재 파일 위치 변경</li>
+                </ul>
+            </div>
+        `,
+
+        'file-types': `
+            <h3>File Types (파일 타입)</h3>
+            <p>각 파일은 시스템에서의 역할을 나타내는 타입을 가집니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 주요 파일 타입</h4>
+                <ul>
+                    <li><strong>Regular file (일반 파일):</strong> 임의의 데이터를 포함</li>
+                    <li><strong>Directory (디렉토리):</strong> 관련 파일 그룹의 인덱스</li>
+                    <li><strong>Socket (소켓):</strong> 다른 머신의 프로세스와 통신</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>기타 파일 타입</h4>
+                <ul>
+                    <li>Named pipes (FIFOs)</li>
+                    <li>Symbolic links</li>
+                    <li>Character and block devices</li>
+                </ul>
+            </div>
+        `,
+
+        'regular-files': `
+            <h3>Regular Files (일반 파일)</h3>
+            <p><strong>Regular file:</strong> 임의의 데이터를 포함하는 파일</p>
+            <p><strong>Text file (텍스트 파일):</strong> ASCII 또는 Unicode 문자만 포함</p>
+            <p><strong>Binary file (바이너리 파일):</strong> 그 외 모든 파일 (예: object files, JPEG images)</p>
+            
+            <div class="exam-point">
+                <h4>🚩 중요: 커널은 차이를 모름</h4>
+                <p>커널은 텍스트 파일과 바이너리 파일의 차이를 모릅니다. 애플리케이션에서 구분합니다.</p>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Text Line (텍스트 라인)</h4>
+                <p>텍스트 파일은 텍스트 라인의 시퀀스입니다. 텍스트 라인은 newline 문자('\n')로 종료되는 문자 시퀀스입니다.</p>
+                <ul>
+                    <li><strong>Newline:</strong> 0xa (ASCII line feed, LF)</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>EOL (End of Line) 표시자</h4>
+                <ul>
+                    <li><strong>Linux & Mac OS:</strong> '\n' (0xa) - line feed (LF)</li>
+                    <li><strong>Windows & Internet:</strong> '\r\n' (0xd 0xa) - carriage return (CR) + line feed (LF)</li>
+                </ul>
+            </div>
+        `,
+
+        'directories': `
+            <h3>Directories (디렉토리)</h3>
+            <p><strong>Directory:</strong> 링크 배열로 구성된 파일 인덱스</p>
+            <p>각 링크는 파일명을 파일에 매핑합니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 디렉토리 구조</h4>
+                <ul>
+                    <li><strong>. (dot):</strong> 자신을 가리키는 링크</li>
+                    <li><strong>.. (dot dot):</strong> 부모 디렉토리를 가리키는 링크</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>디렉토리 조작 명령어</h4>
+                <ul>
+                    <li><strong>mkdir:</strong> 빈 디렉토리 생성</li>
+                    <li><strong>ls:</strong> 디렉토리 내용 보기</li>
+                    <li><strong>rmdir:</strong> 빈 디렉토리 삭제</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Directory Hierarchy (디렉토리 계층)</h4>
+                <p>모든 파일은 루트 디렉토리 '/'로 고정된 계층 구조로 구성됩니다.</p>
+                <p>커널은 각 프로세스에 대해 <strong>current working directory (cwd)</strong>를 유지합니다. <code>cd</code> 명령어로 수정합니다.</p>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Pathnames (경로명)</h4>
+                <ul>
+                    <li><strong>Absolute pathname (절대 경로):</strong> '/'로 시작, 루트에서의 경로 (예: /home/droh/hello.c)</li>
+                    <li><strong>Relative pathname (상대 경로):</strong> 현재 작업 디렉토리에서의 경로 (예: ../home/droh/hello.c)</li>
+                </ul>
+            </div>
+        `,
+
+        'opening-files': `
+            <h3>Opening Files (파일 열기)</h3>
+            <p><strong>File descriptor (파일 디스크립터):</strong> 파일을 식별하는 작은 정수</p>
+            <p>파일을 열면 커널에 해당 파일에 접근할 준비가 되었음을 알립니다.</p>
+            
+            <pre><code><span class="code-type">int</span> fd; <span class="code-comment">/* file descriptor */</span>
+<span class="code-keyword">if</span> ((fd = <span class="code-function">open</span>("/etc/hosts", O_RDONLY)) < 0) {
+    <span class="code-function">perror</span>("open");
+    <span class="code-function">exit</span>(1);
+}</code></pre>
+            
+            <div class="tech-note">
+                <h4>open() 함수</h4>
+                <ul>
+                    <li><strong>반환값:</strong> 작은 정수 파일 디스크립터</li>
+                    <li><strong>fd == -1:</strong> 에러 발생</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 표준 파일 디스크립터</h4>
+                <p>Linux 셸에서 생성된 각 프로세스는 터미널과 연결된 세 개의 열린 파일로 시작합니다:</p>
+                <ul>
+                    <li><strong>0: stdin (standard input)</strong> - 표준 입력</li>
+                    <li><strong>1: stdout (standard output)</strong> - 표준 출력</li>
+                    <li><strong>2: stderr (standard error)</strong> - 표준 에러</li>
+                </ul>
+            </div>
+        `,
+
+        'closing-files': `
+            <h3>Closing Files (파일 닫기)</h3>
+            <p>파일을 닫으면 커널에 해당 파일 접근이 끝났음을 알립니다.</p>
+            
+            <pre><code><span class="code-type">int</span> fd; <span class="code-comment">/* file descriptor */</span>
+<span class="code-type">int</span> retval; <span class="code-comment">/* return value */</span>
+<span class="code-keyword">if</span> ((retval = <span class="code-function">close</span>(fd)) < 0) {
+    <span class="code-function">perror</span>("close");
+    <span class="code-function">exit</span>(1);
+}</code></pre>
+            
+            <div class="exam-point">
+                <h4>🚩 중요: 에러 처리</h4>
+                <p>이미 닫힌 파일을 닫는 것은 스레드 프로그램에서 재앙의 원인이 될 수 있습니다.</p>
+                <p><strong>교훈:</strong> <code>close()</code>와 같이 무해해 보이는 함수도 항상 반환 코드를 확인하세요!</p>
+            </div>
+        `,
+
+        'reading-files': `
+            <h3>Reading Files (파일 읽기)</h3>
+            <p>파일을 읽으면 현재 파일 위치에서 메모리로 바이트를 복사하고, 파일 위치를 업데이트합니다.</p>
+            
+            <pre><code><span class="code-type">char</span> buf[512];
+<span class="code-type">int</span> fd; <span class="code-comment">/* file descriptor */</span>
+<span class="code-type">int</span> nbytes; <span class="code-comment">/* number of bytes read */</span>
+<span class="code-comment">/* Open file fd ... */</span>
+<span class="code-comment">/* Then read up to 512 bytes from file fd */</span>
+<span class="code-keyword">if</span> ((nbytes = <span class="code-function">read</span>(fd, buf, <span class="code-function">sizeof</span>(buf))) < 0) {
+    <span class="code-function">perror</span>("read");
+    <span class="code-function">exit</span>(1);
+}</code></pre>
+            
+            <div class="tech-note">
+                <h4>read() 함수</h4>
+                <ul>
+                    <li><strong>반환값:</strong> 파일 fd에서 buf로 읽은 바이트 수</li>
+                    <li><strong>반환 타입:</strong> ssize_t (부호 있는 정수)</li>
+                    <li><strong>nbytes < 0:</strong> 에러 발생</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 중요: Short Counts</h4>
+                <p><strong>Short counts (nbytes < sizeof(buf))</strong>는 가능하며 에러가 아닙니다!</p>
+                <p>항상 short counts를 허용하도록 코드를 작성해야 합니다.</p>
+            </div>
+        `,
+
+        'writing-files': `
+            <h3>Writing Files (파일 쓰기)</h3>
+            <p>파일을 쓰면 메모리에서 현재 파일 위치로 바이트를 복사하고, 현재 파일 위치를 업데이트합니다.</p>
+            
+            <pre><code><span class="code-type">char</span> buf[512];
+<span class="code-type">int</span> fd; <span class="code-comment">/* file descriptor */</span>
+<span class="code-type">int</span> nbytes; <span class="code-comment">/* number of bytes written */</span>
+<span class="code-comment">/* Open the file fd ... */</span>
+<span class="code-comment">/* Then write up to 512 bytes from buf to file fd */</span>
+<span class="code-keyword">if</span> ((nbytes = <span class="code-function">write</span>(fd, buf, <span class="code-function">sizeof</span>(buf)) < 0) {
+    <span class="code-function">perror</span>("write");
+    <span class="code-function">exit</span>(1);
+}</code></pre>
+            
+            <div class="tech-note">
+                <h4>write() 함수</h4>
+                <ul>
+                    <li><strong>반환값:</strong> buf에서 파일 fd로 쓴 바이트 수</li>
+                    <li><strong>nbytes < 0:</strong> 에러 발생</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 중요: Short Counts</h4>
+                <p>읽기와 마찬가지로, <strong>short counts는 가능하며 에러가 아닙니다!</strong></p>
+            </div>
+        `,
+
+        'short-counts': `
+            <h3>On Short Counts (Short Counts에 대해)</h3>
+            <p><strong>Short count:</strong> 요청한 바이트 수보다 적게 읽거나 쓴 경우</p>
+            
+            <div class="exam-point">
+                <h4>🚩 Short Counts가 발생하는 경우</h4>
+                <ul>
+                    <li><strong>EOF (end-of-file) 읽기:</strong> 파일 끝에 도달</li>
+                    <li><strong>터미널에서 텍스트 라인 읽기:</strong> 한 번에 한 라인씩 읽음</li>
+                    <li><strong>네트워크 소켓 읽기/쓰기:</strong> 네트워크 지연으로 인해</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Short Counts가 발생하지 않는 경우</h4>
+                <ul>
+                    <li><strong>디스크 파일 읽기:</strong> EOF 제외</li>
+                    <li><strong>디스크 파일 쓰기:</strong> 항상 요청한 만큼 씀</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 Best Practice</h4>
+                <p><strong>항상 short counts를 허용하도록 코드를 작성하세요!</strong></p>
+                <p>이것이 RIO 패키지가 존재하는 이유입니다.</p>
+            </div>
+        `,
+
+        'rio-overview': `
+            <h3>RIO Package Overview</h3>
+            <p><strong>RIO (Robust I/O):</strong> 효율적이고 견고한 I/O를 제공하는 래퍼 함수 집합</p>
+            <p>Short counts에 취약한 네트워크 프로그램 같은 애플리케이션에 특히 유용합니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 RIO의 두 가지 종류</h4>
+                <ul>
+                    <li><strong>Unbuffered I/O:</strong> 바이너리 데이터의 비버퍼 입력/출력
+                        <ul>
+                            <li>rio_readn, rio_writen</li>
+                        </ul>
+                    </li>
+                    <li><strong>Buffered I/O:</strong> 텍스트 라인과 바이너리 데이터의 버퍼 입력
+                        <ul>
+                            <li>rio_readlineb, rio_readnb</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>RIO의 특징</h4>
+                <ul>
+                    <li>Buffered RIO 루틴은 <strong>thread-safe</strong>합니다</li>
+                    <li>같은 디스크립터에서 임의로 인터리브(interleave)할 수 있습니다</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>다운로드</h4>
+                <p>http://csapp.cs.cmu.edu/3e/code.html → src/csapp.c and include/csapp.h</p>
+            </div>
+        `,
+
+        'unbuffered-rio': `
+            <h3>Unbuffered RIO</h3>
+            <p>Unix read와 write와 동일한 인터페이스를 제공합니다.</p>
+            <p>네트워크 소켓에서 데이터 전송에 특히 유용합니다.</p>
+            
+            <pre><code><span class="code-type">#include</span> <span class="code-highlight">"csapp.h"</span>
+<span class="code-type">ssize_t</span> <span class="code-function">rio_readn</span>(<span class="code-type">int</span> fd, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> n);
+<span class="code-type">ssize_t</span> <span class="code-function">rio_writen</span>(<span class="code-type">int</span> fd, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> n);</code></pre>
+            
+            <div class="tech-note">
+                <h4>반환값</h4>
+                <ul>
+                    <li><strong>OK:</strong> 전송된 바이트 수</li>
+                    <li><strong>EOF (rio_readn만):</strong> 0</li>
+                    <li><strong>Error:</strong> -1</li>
+                </ul>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('interface', this)">인터페이스</button>
+                    <button class="tab-btn" onclick="window.switchTab('implementation', this)">구현 코드</button>
+                </div>
+                
+                <div id="tab-interface" class="tab-pane active">
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li><strong>rio_readn:</strong> EOF를 만날 때만 short count 반환</li>
+                            <li><strong>사용 시기:</strong> 읽을 바이트 수를 알고 있을 때만 사용</li>
+                            <li><strong>rio_writen:</strong> 절대 short count를 반환하지 않음</li>
+                            <li><strong>인터리브:</strong> 같은 디스크립터에서 rio_readn과 rio_writen을 임의로 인터리브 가능</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-implementation" class="tab-pane">
+                    <h4>rio_readn 구현</h4>
+                    <pre><code><span class="code-comment">/* rio_readn - Robustly read n bytes (unbuffered) */</span>
+<span class="code-type">ssize_t</span> <span class="code-function">rio_readn</span>(<span class="code-type">int</span> fd, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> n)
+{
+    <span class="code-type">size_t</span> nleft = n; <span class="code-comment">/* 남은 바이트 수 */</span>
+    <span class="code-type">ssize_t</span> nread; <span class="code-comment">/* 읽은 바이트 수 */</span>
+    <span class="code-type">char</span> *bufp = usrbuf; <span class="code-comment">/* 버퍼 포인터 */</span>
+    
+    <span class="code-keyword">while</span> (nleft > 0) {
+        <span class="code-keyword">if</span> ((nread = <span class="code-function">read</span>(fd, bufp, nleft)) < 0) {
+            <span class="code-keyword">if</span> (errno == EINTR) <span class="code-comment">/* 인터럽트로 인한 에러는 재시도 */</span>
+                nread = 0;
+            <span class="code-keyword">else</span>
+                <span class="code-keyword">return</span> -1; <span class="code-comment">/* 다른 에러 */</span>
+        } <span class="code-keyword">else</span> <span class="code-keyword">if</span> (nread == 0) <span class="code-comment">/* EOF */</span>
+            <span class="code-keyword">break</span>;
+        nleft -= nread;
+        bufp += nread;
+    }
+    <span class="code-keyword">return</span> (n - nleft); <span class="code-comment">/* 읽은 총 바이트 수 반환 */</span>
+}</code></pre>
+                    
+                    <h4>rio_writen 구현</h4>
+                    <pre><code><span class="code-comment">/* rio_writen - Robustly write n bytes (unbuffered) */</span>
+<span class="code-type">ssize_t</span> <span class="code-function">rio_writen</span>(<span class="code-type">int</span> fd, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> n)
+{
+    <span class="code-type">size_t</span> nleft = n; <span class="code-comment">/* 남은 바이트 수 */</span>
+    <span class="code-type">ssize_t</span> nwritten; <span class="code-comment">/* 쓴 바이트 수 */</span>
+    <span class="code-type">char</span> *bufp = usrbuf; <span class="code-comment">/* 버퍼 포인터 */</span>
+    
+    <span class="code-keyword">while</span> (nleft > 0) {
+        <span class="code-keyword">if</span> ((nwritten = <span class="code-function">write</span>(fd, bufp, nleft)) <= 0) {
+            <span class="code-keyword">if</span> (errno == EINTR) <span class="code-comment">/* 인터럽트로 인한 에러는 재시도 */</span>
+                nwritten = 0;
+            <span class="code-keyword">else</span>
+                <span class="code-keyword">return</span> -1; <span class="code-comment">/* 다른 에러 */</span>
+        }
+        nleft -= nwritten;
+        bufp += nwritten;
+    }
+    <span class="code-keyword">return</span> n; <span class="code-comment">/* 항상 n 바이트 반환 */</span>
+}</code></pre>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 구현 핵심</h4>
+                        <ul>
+                            <li><strong>while 루프:</strong> 요청한 모든 바이트를 읽거나 쓸 때까지 반복</li>
+                            <li><strong>EINTR 처리:</strong> 시그널로 인터럽트된 경우 재시도</li>
+                            <li><strong>rio_readn:</strong> EOF를 만나면 중단하고 읽은 바이트 수 반환</li>
+                            <li><strong>rio_writen:</strong> 항상 n 바이트를 쓰고 반환 (short count 없음)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'buffered-rio': `
+            <h3>Buffered RIO</h3>
+            <p>텍스트 라인과 바이너리 데이터의 버퍼 입력을 제공합니다.</p>
+            
+            <pre><code><span class="code-type">#include</span> <span class="code-highlight">"csapp.h"</span>
+<span class="code-type">void</span> <span class="code-function">rio_readinitb</span>(<span class="code-type">rio_t</span> *rp, <span class="code-type">int</span> fd);
+<span class="code-type">ssize_t</span> <span class="code-function">rio_readlineb</span>(<span class="code-type">rio_t</span> *rp, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> maxlen);
+<span class="code-type">ssize_t</span> <span class="code-function">rio_readnb</span>(<span class="code-type">rio_t</span> *rp, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> n);</code></pre>
+            
+            <div class="tech-note">
+                <h4>함수 설명</h4>
+                <ul>
+                    <li><strong>rio_readinitb:</strong> RIO 버퍼 초기화</li>
+                    <li><strong>rio_readlineb:</strong> 텍스트 라인 읽기 (newline까지)</li>
+                    <li><strong>rio_readnb:</strong> 최대 n바이트 읽기</li>
+                </ul>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('overview', this)">개요</button>
+                    <button class="tab-btn" onclick="window.switchTab('implementation', this)">구현 코드</button>
+                </div>
+                
+                <div id="tab-overview" class="tab-pane active">
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li>Buffered RIO는 내부 버퍼를 사용하여 효율성을 높입니다</li>
+                            <li>여러 번의 시스템 콜을 줄여줍니다</li>
+                            <li>Thread-safe하며 같은 디스크립터에서 인터리브 가능</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="easy-explain">
+                        <h4>💡 버퍼링 동작</h4>
+                        <ol>
+                            <li>rio_readinitb로 버퍼 초기화</li>
+                            <li>rio_readlineb/rio_readnb 호출 시 내부 버퍼에서 읽기</li>
+                            <li>버퍼가 비면 Unix read로 다시 채움</li>
+                            <li>이 과정을 반복하여 효율성 향상</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div id="tab-implementation" class="tab-pane">
+                    <h4>rio_t 구조체</h4>
+                    <pre><code><span class="code-comment">/* RIO 버퍼 구조체 */</span>
+<span class="code-keyword">typedef</span> <span class="code-type">struct</span> {
+    <span class="code-type">int</span> rio_fd; <span class="code-comment">/* 파일 디스크립터 */</span>
+    <span class="code-type">int</span> rio_cnt; <span class="code-comment">/* 버퍼에 남은 바이트 수 */</span>
+    <span class="code-type">char</span> *rio_bufptr; <span class="code-comment">/* 다음 읽을 바이트 포인터 */</span>
+    <span class="code-type">char</span> rio_buf[RIO_BUFSIZE]; <span class="code-comment">/* 내부 버퍼 */</span>
+} <span class="code-type">rio_t</span>;</code></pre>
+                    
+                    <h4>rio_readinitb 구현</h4>
+                    <pre><code><span class="code-comment">/* rio_readinitb - 버퍼 초기화 */</span>
+<span class="code-type">void</span> <span class="code-function">rio_readinitb</span>(<span class="code-type">rio_t</span> *rp, <span class="code-type">int</span> fd)
+{
+    rp->rio_fd = fd;
+    rp->rio_cnt = 0; <span class="code-comment">/* 버퍼 비어있음 */</span>
+    rp->rio_bufptr = rp->rio_buf; <span class="code-comment">/* 버퍼 시작 위치 */</span>
+}</code></pre>
+                    
+                    <h4>rio_readlineb 구현 (간략화)</h4>
+                    <pre><code><span class="code-comment">/* rio_readlineb - 텍스트 라인 읽기 (newline까지) */</span>
+<span class="code-type">ssize_t</span> <span class="code-function">rio_readlineb</span>(<span class="code-type">rio_t</span> *rp, <span class="code-type">void</span> *usrbuf, <span class="code-type">size_t</span> maxlen)
+{
+    <span class="code-type">int</span> n, rc;
+    <span class="code-type">char</span> c, *bufp = usrbuf;
+    
+    <span class="code-keyword">for</span> (n = 1; n < maxlen; n++) {
+        <span class="code-keyword">if</span> ((rc = <span class="code-function">rio_read</span>(rp, &c, 1)) == 1) { <span class="code-comment">/* 내부 버퍼에서 읽기 */</span>
+            *bufp++ = c;
+            <span class="code-keyword">if</span> (c == '\\n') <span class="code-comment">/* newline 만나면 종료 */</span>
+                <span class="code-keyword">break</span>;
+        } <span class="code-keyword">else</span> <span class="code-keyword">if</span> (rc == 0) { <span class="code-comment">/* EOF */</span>
+            <span class="code-keyword">if</span> (n == 1)
+                <span class="code-keyword">return</span> 0; <span class="code-comment">/* 아무것도 읽지 못함 */</span>
+            <span class="code-keyword">else</span>
+                <span class="code-keyword">break</span>; <span class="code-comment">/* 일부 읽음 */</span>
+        } <span class="code-keyword">else</span>
+            <span class="code-keyword">return</span> -1; <span class="code-comment">/* 에러 */</span>
+    }
+    *bufp = 0; <span class="code-comment">/* null 종료 */</span>
+    <span class="code-keyword">return</span> n;
+}</code></pre>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 구현 핵심</h4>
+                        <ul>
+                            <li><strong>내부 버퍼:</strong> rio_buf에 데이터를 미리 읽어둠</li>
+                            <li><strong>rio_read:</strong> 내부 버퍼에서 읽고, 비면 Unix read로 채움</li>
+                            <li><strong>rio_readlineb:</strong> newline 문자를 만날 때까지 한 바이트씩 읽음</li>
+                            <li><strong>효율성:</strong> 여러 번의 시스템 콜 대신 버퍼에서 읽어 성능 향상</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'simple-unix-example': `
+            <h3>Simple Unix I/O Example</h3>
+            <p>stdin을 stdout으로 한 바이트씩 복사하는 간단한 예제입니다.</p>
+            
+            <pre><code><span class="code-type">#include</span> <span class="code-highlight">"csapp.h"</span>
+<span class="code-type">int</span> <span class="code-function">main</span>(<span class="code-type">void</span>)
+{
+    <span class="code-type">char</span> c;
+    <span class="code-keyword">while</span>(<span class="code-function">Read</span>(STDIN_FILENO, &c, 1) != 0) <span class="code-comment">/* stdin에서 1바이트 읽기 */</span>
+        <span class="code-function">Write</span>(STDOUT_FILENO, &c, 1); <span class="code-comment">/* stdout에 1바이트 쓰기 */</span>
+    <span class="code-function">exit</span>(0);
+}</code></pre>
+            
+            <div class="easy-explain">
+                <h4>💡 동작 과정</h4>
+                <ol>
+                    <li>stdin에서 한 바이트씩 읽습니다</li>
+                    <li>읽은 바이트를 stdout에 씁니다</li>
+                    <li>EOF(0 반환)를 만날 때까지 반복합니다</li>
+                </ol>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 중요 포인트</h4>
+                <ul>
+                    <li><strong>STDIN_FILENO:</strong> 표준 입력 파일 디스크립터 (0)</li>
+                    <li><strong>STDOUT_FILENO:</strong> 표준 출력 파일 디스크립터 (1)</li>
+                    <li><strong>Read/Write:</strong> csapp.h의 래퍼 함수 (에러 처리 포함)</li>
+                    <li><strong>비효율적:</strong> 한 바이트씩 읽고 쓰므로 매우 느림 (시스템 콜이 많음)</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>사용 예시</h4>
+                <pre><code>linux> ./copystdin
+hello
+hello
+^D  <span class="code-comment">/* Ctrl-D로 EOF 입력 */</span></code></pre>
+            </div>
+        `,
+
+        'file-metadata': `
+            <h3>File Metadata (파일 메타데이터)</h3>
+            <p><strong>Metadata (메타데이터):</strong> 파일에 대한 정보 (타입, 크기, 권한 등)</p>
+            <p><strong>stat() 함수:</strong> 파일 메타데이터를 조회하는 함수</p>
+            
+            <pre><code><span class="code-type">#include</span> <span class="code-highlight">&lt;sys/stat.h&gt;</span>
+<span class="code-type">int</span> <span class="code-function">stat</span>(<span class="code-type">const</span> <span class="code-type">char</span> *filename, <span class="code-type">struct</span> stat *buf);</code></pre>
+            
+            <div class="tech-note">
+                <h4>stat 구조체 주요 필드</h4>
+                <ul>
+                    <li><strong>st_mode:</strong> 파일 타입 및 권한</li>
+                    <li><strong>st_size:</strong> 파일 크기</li>
+                    <li><strong>st_uid, st_gid:</strong> 소유자 ID</li>
+                </ul>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('overview', this)">개요</button>
+                    <button class="tab-btn" onclick="window.switchTab('example', this)">statcheck.c 예제</button>
+                </div>
+                
+                <div id="tab-overview" class="tab-pane active">
+                    <div class="tech-note">
+                        <h4>파일 타입 확인</h4>
+                        <pre><code><span class="code-type">struct</span> stat stat;
+<span class="code-function">stat</span>(filename, &stat);
+<span class="code-keyword">if</span> (<span class="code-function">S_ISREG</span>(stat.st_mode)) <span class="code-comment">/* 일반 파일 */</span>
+<span class="code-keyword">if</span> (<span class="code-function">S_ISDIR</span>(stat.st_mode)) <span class="code-comment">/* 디렉토리 */</span>
+<span class="code-keyword">if</span> (<span class="code-function">S_ISSOCK</span>(stat.st_mode)) <span class="code-comment">/* 소켓 */</span></code></pre>
+                    </div>
+                </div>
+                
+                <div id="tab-example" class="tab-pane">
+                    <h4>statcheck.c 예제</h4>
+                    <pre><code><span class="code-type">#include</span> <span class="code-highlight">"csapp.h"</span>
+
+<span class="code-type">int</span> <span class="code-function">main</span>(<span class="code-type">int</span> argc, <span class="code-type">char</span> **argv)
+{
+    <span class="code-type">struct</span> stat stat;
+    <span class="code-type">char</span> *type, *readok;
+    
+    <span class="code-function">Stat</span>(argv[1], &stat); <span class="code-comment">/* 파일 메타데이터 조회 */</span>
+    
+    <span class="code-comment">/* 파일 타입 확인 */</span>
+    <span class="code-keyword">if</span> (<span class="code-function">S_ISREG</span>(stat.st_mode))
+        type = "regular";
+    <span class="code-keyword">else</span> <span class="code-keyword">if</span> (<span class="code-function">S_ISDIR</span>(stat.st_mode))
+        type = "directory";
+    <span class="code-keyword">else</span>
+        type = "other";
+    
+    <span class="code-comment">/* 읽기 권한 확인 */</span>
+    <span class="code-keyword">if</span> ((stat.st_mode & S_IRUSR)) <span class="code-comment">/* 사용자 읽기 권한 */</span>
+        readok = "yes";
+    <span class="code-keyword">else</span>
+        readok = "no";
+    
+    <span class="code-function">printf</span>("type: %s, read: %s\\n", type, readok);
+    <span class="code-function">exit</span>(0);
+}</code></pre>
+                    
+                    <div class="tech-note">
+                        <h4>실행 예시</h4>
+                        <pre><code>linux> ./statcheck statcheck.c
+type: regular, read: yes
+linux> chmod 000 statcheck.c
+linux> ./statcheck statcheck.c
+type: regular, read: no
+linux> ./statcheck ..
+type: directory, read: yes</code></pre>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li><strong>S_ISREG, S_ISDIR:</strong> 매크로로 파일 타입 확인</li>
+                            <li><strong>stat.st_mode & S_IRUSR:</strong> 비트 연산으로 권한 확인</li>
+                            <li><strong>chmod:</strong> 파일 권한 변경 (000 = 모든 권한 제거)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'file-sharing': `
+            <h3>File Sharing (파일 공유)</h3>
+            <p>프로세스가 파일을 공유하는 방법을 이해하는 것이 중요합니다.</p>
+            
+            <canvas id="cvs_file_sharing"></canvas>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('overview', this)">개요</button>
+                    <button class="tab-btn" onclick="window.switchTab('fork', this)">fork()와 파일 공유</button>
+                    <button class="tab-btn" onclick="window.switchTab('sim', this)">시뮬레이션</button>
+                </div>
+                
+                <div id="tab-overview" class="tab-pane active">
+                    <div class="easy-explain">
+                        <h4>💡 파일 공유 방식</h4>
+                        <ul>
+                            <li><strong>두 개의 디스크립터가 같은 디스크 파일 공유:</strong> 같은 파일명으로 open()을 두 번 호출</li>
+                            <li><strong>fork() 후 파일 공유:</strong> 자식 프로세스가 부모의 열린 파일을 상속</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>Unix 커널의 파일 표현</h4>
+                        <ul>
+                            <li><strong>Descriptor table (프로세스별):</strong> 각 프로세스마다 파일 디스크립터 테이블</li>
+                            <li><strong>Open file table (시스템 전체):</strong> 열린 파일에 대한 정보 (refcnt 포함)</li>
+                            <li><strong>v-node table:</strong> 디스크 파일 정보</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-fork" class="tab-pane">
+                    <div class="exam-point">
+                        <h4>🚩 fork()와 파일 공유</h4>
+                        <p>자식 프로세스는 부모의 열린 파일을 상속받습니다.</p>
+                        <p><strong>주의:</strong> exec 함수는 상황을 변경하지 않습니다. (fcntl을 사용하여 변경 가능)</p>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>fork() 전</h4>
+                        <ul>
+                            <li>부모 프로세스의 descriptor table이 있음</li>
+                            <li>각 디스크립터는 open file table entry를 가리킴</li>
+                            <li>open file table entry는 v-node를 가리킴</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>fork() 후</h4>
+                        <ul>
+                            <li>자식의 descriptor table이 부모와 동일</li>
+                            <li>같은 open file table entry를 가리킴</li>
+                            <li>각 open file table entry의 <strong>refcnt가 +1</strong>됨</li>
+                            <li>같은 파일 위치(file position)를 공유</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 중요: 파일 위치 공유</h4>
+                        <p>부모와 자식이 같은 파일을 읽으면, 한쪽이 읽은 바이트만큼 다른 쪽의 파일 위치도 이동합니다!</p>
+                    </div>
+                </div>
+                
+                <div id="tab-sim" class="tab-pane">
+                    <p>fork() 후 파일 공유 과정을 단계별로 확인해보세요.</p>
+                    <div class="sim-box">
+                        <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                            <div style="text-align: center;">
+                                <div style="font-weight: 700; margin-bottom: 10px;">부모 프로세스</div>
+                                <div class="process-node parent" id="fork-parent">
+                                    Parent
+                                    <div class="label" id="parent-fd">fd 0, 1, 2</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-weight: 700; margin-bottom: 10px;">자식 프로세스</div>
+                                <div class="process-node child" id="fork-child" style="display: none;">
+                                    Child
+                                    <div class="label" id="child-fd">fd 0, 1, 2</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin: 20px 0; padding: 15px; background: #f1f5f9; border-radius: 12px;">
+                            <strong>Open File Table:</strong> <span id="refcnt-display" style="font-size: 1.2rem; color: var(--primary);">refcnt = 1</span>
+                        </div>
+                        <div class="sim-log" id="fork-log">👇 버튼을 눌러 fork() 후 파일 공유를 시뮬레이션하세요.</div>
+                        <div class="sim-controls">
+                            <button onclick="window.nextForkFileStep()">다음 단계 진행 ▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'io-redirection': `
+            <h3>I/O Redirection (I/O 리다이렉션)</h3>
+            <p><strong>I/O Redirection:</strong> 표준 입력/출력을 다른 파일로 변경하는 것</p>
+            <p><strong>dup2() 함수:</strong> I/O 리다이렉션을 구현하는 함수</p>
+            
+            <canvas id="cvs_io_redirection"></canvas>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('overview', this)">개요</button>
+                    <button class="tab-btn" onclick="window.switchTab('example', this)">예제</button>
+                    <button class="tab-btn" onclick="window.switchTab('sim', this)">시뮬레이션</button>
+                </div>
+                
+                <div id="tab-overview" class="tab-pane active">
+                    <div class="easy-explain">
+                        <h4>💡 Shell의 I/O 리다이렉션 구현</h4>
+                        <p><strong>질문:</strong> 셸은 어떻게 I/O 리다이렉션을 구현할까요?</p>
+                        <p><code>linux> ls > foo.txt</code></p>
+                        <p><strong>답:</strong> <code>dup2(oldfd, newfd)</code> 함수를 호출합니다.</p>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>dup2() 함수</h4>
+                        <pre><code><span class="code-type">int</span> <span class="code-function">dup2</span>(<span class="code-type">int</span> oldfd, <span class="code-type">int</span> newfd);</code></pre>
+                        <p>프로세스별 디스크립터 테이블 엔트리 <code>oldfd</code>를 엔트리 <code>newfd</code>로 복사합니다.</p>
+                        <ul>
+                            <li><strong>oldfd:</strong> 복사할 소스 디스크립터</li>
+                            <li><strong>newfd:</strong> 복사할 대상 디스크립터</li>
+                            <li><strong>동작:</strong> newfd가 이미 열려있으면 먼저 닫고, oldfd와 같은 파일을 가리키도록 설정</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>dup2(4, 1) 동작</h4>
+                        <table>
+                            <tr>
+                                <th>Before dup2(4, 1)</th>
+                                <th>After dup2(4, 1)</th>
+                            </tr>
+                            <tr>
+                                <td>fd 0: stdin</td>
+                                <td>fd 0: stdin</td>
+                            </tr>
+                            <tr>
+                                <td>fd 1: stdout → terminal</td>
+                                <td>fd 1: stdout → disk file</td>
+                            </tr>
+                            <tr>
+                                <td>fd 2: stderr</td>
+                                <td>fd 2: stderr</td>
+                            </tr>
+                            <tr>
+                                <td>fd 4: disk file</td>
+                                <td>fd 4: disk file</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="tab-example" class="tab-pane">
+                    <div class="exam-point">
+                        <h4>🚩 I/O Redirection 예제</h4>
+                        <ol>
+                            <li><strong>Step 1:</strong> stdout이 리다이렉션될 파일 열기 (자식에서 exec 전)</li>
+                            <li><strong>Step 2:</strong> dup2(4, 1) 호출 → fd=1(stdout)이 fd=4가 가리키는 디스크 파일을 참조</li>
+                        </ol>
+                    </div>
+                    
+                    <h4>Shell 리다이렉션 구현 코드</h4>
+                    <pre><code><span class="code-comment">/* ls > foo.txt 구현 */</span>
+<span class="code-type">int</span> pid;
+<span class="code-type">int</span> fd;
+
+<span class="code-keyword">if</span> ((pid = <span class="code-function">Fork</span>()) == 0) { <span class="code-comment">/* 자식 프로세스 */</span>
+    <span class="code-comment">/* Step 1: 리다이렉션할 파일 열기 */</span>
+    fd = <span class="code-function">Open</span>("foo.txt", O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
+    
+    <span class="code-comment">/* Step 2: stdout을 파일로 리다이렉션 */</span>
+    <span class="code-function">Dup2</span>(fd, STDOUT_FILENO); <span class="code-comment">/* dup2(fd, 1) */</span>
+    <span class="code-function">Close</span>(fd); <span class="code-comment">/* fd는 더 이상 필요 없음 */</span>
+    
+    <span class="code-comment">/* Step 3: exec로 ls 실행 */</span>
+    <span class="code-function">Execve</span>("/bin/ls", argv, environ);
+}
+<span class="code-function">Wait</span>(NULL); <span class="code-comment">/* 부모는 자식 종료 대기 */</span></code></pre>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li>자식 프로세스에서 exec <strong>전에</strong> 리다이렉션 설정</li>
+                            <li>dup2 후 원래 fd는 닫아도 됨 (stdout이 이미 파일을 가리킴)</li>
+                            <li>exec 후에도 리다이렉션은 유지됨</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-sim" class="tab-pane">
+                    <p>dup2() 동작을 단계별로 확인해보세요.</p>
+                    <div class="sim-box">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div>
+                                <div style="font-weight: 700; margin-bottom: 10px; text-align: center;">Before dup2(4, 1)</div>
+                                <div style="background: #fee2e2; padding: 15px; border-radius: 12px;">
+                                    <div>fd 0: stdin</div>
+                                    <div>fd 1: stdout → <span id="before-target" style="color: var(--primary);">terminal</span></div>
+                                    <div>fd 2: stderr</div>
+                                    <div>fd 4: disk file</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; margin-bottom: 10px; text-align: center;">After dup2(4, 1)</div>
+                                <div style="background: #dbeafe; padding: 15px; border-radius: 12px;">
+                                    <div>fd 0: stdin</div>
+                                    <div>fd 1: stdout → <span id="after-target" style="color: var(--primary);">terminal</span></div>
+                                    <div>fd 2: stderr</div>
+                                    <div>fd 4: disk file</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sim-log" id="dup2-log">👇 버튼을 눌러 dup2() 동작을 시뮬레이션하세요.</div>
+                        <div class="sim-controls">
+                            <button onclick="window.nextDup2Step()">다음 단계 진행 ▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'stdio-overview': `
+            <h3>Standard I/O Overview</h3>
+            <p><strong>Standard I/O:</strong> C 표준 라이브러리(libc.so)의 고수준 입출력 함수 모음</p>
+            
+            <div class="easy-explain">
+                <h4>💡 Standard I/O 함수 예시</h4>
+                <ul>
+                    <li><strong>파일 열기/닫기:</strong> fopen, fclose</li>
+                    <li><strong>바이트 읽기/쓰기:</strong> fread, fwrite</li>
+                    <li><strong>텍스트 라인 읽기/쓰기:</strong> fgets, fputs</li>
+                    <li><strong>포맷 읽기/쓰기:</strong> fscanf, fprintf</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Standard I/O Streams</h4>
+                <p>Standard I/O는 열린 파일을 <strong>stream (스트림)</strong>으로 모델링합니다.</p>
+                <p>스트림은 파일 디스크립터와 메모리 버퍼의 추상화입니다.</p>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 표준 스트림</h4>
+                <p>C 프로그램은 세 개의 열린 스트림으로 시작합니다 (stdio.h에 정의):</p>
+                <ul>
+                    <li><strong>stdin:</strong> 표준 입력 (descriptor 0)</li>
+                    <li><strong>stdout:</strong> 표준 출력 (descriptor 1)</li>
+                    <li><strong>stderr:</strong> 표준 에러 (descriptor 2)</li>
+                </ul>
+            </div>
+        `,
+
+        'stdio-buffering': `
+            <h3>Buffering in Standard I/O</h3>
+            <p><strong>Buffering (버퍼링):</strong> 효율성을 위해 여러 바이트를 한 번에 읽기/쓰기</p>
+            
+            <div class="easy-explain">
+                <h4>💡 버퍼링의 동기</h4>
+                <p>애플리케이션은 종종 한 번에 한 문자씩 읽거나 씁니다 (getc, putc, fgets 등).</p>
+                <p>하지만 Unix I/O 호출(read, write)은 비용이 큽니다 (> 10,000 clock cycles).</p>
+                <p><strong>해결책:</strong> 버퍼링된 읽기
+                    <ul>
+                        <li>Unix read로 바이트 블록을 가져옴</li>
+                        <li>사용자 입력 함수는 버퍼에서 한 바이트씩 가져옴</li>
+                        <li>버퍼가 비면 다시 채움</li>
+                    </ul>
+                </p>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('mechanism', this)">메커니즘</button>
+                    <button class="tab-btn" onclick="window.switchTab('strace', this)">strace 예제</button>
+                </div>
+                
+                <div id="tab-mechanism" class="tab-pane active">
+                    <div class="tech-note">
+                        <h4>버퍼 플러시 시점</h4>
+                        <p>버퍼는 다음 경우에 출력 fd로 플러시됩니다:</p>
+                        <ul>
+                            <li>"\\n" (newline) 문자</li>
+                            <li><code>fflush()</code> 호출</li>
+                            <li><code>exit()</code> 또는 <code>main()</code>에서 반환</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 버퍼링 확인 방법</h4>
+                        <p>Linux <code>strace</code> 프로그램을 사용하여 버퍼링을 직접 확인할 수 있습니다.</p>
+                    </div>
+                </div>
+                
+                <div id="tab-strace" class="tab-pane">
+                    <h4>버퍼링 확인 예제</h4>
+                    <pre><code><span class="code-type">#include</span> <span class="code-highlight">&lt;stdio.h&gt;</span>
+<span class="code-type">int</span> <span class="code-function">main</span>()
+{
+    <span class="code-function">printf</span>("h");
+    <span class="code-function">printf</span>("e");
+    <span class="code-function">printf</span>("l");
+    <span class="code-function">printf</span>("l");
+    <span class="code-function">printf</span>("o");
+    <span class="code-function">printf</span>("\\n"); <span class="code-comment">/* newline으로 버퍼 플러시 */</span>
+    <span class="code-function">fflush</span>(stdout);
+    <span class="code-function">exit</span>(0);
+}</code></pre>
+                    
+                    <div class="tech-note">
+                        <h4>strace 출력</h4>
+                        <pre><code>linux> strace ./hello
+execve("./hello", ["hello"], [/* ... */]).
+...
+write(1, "hello\\n", 6) = 6  <span class="code-comment">/* 한 번의 write 호출! */</span>
+...
+exit_group(0) = ?</code></pre>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li>5번의 <code>printf</code> 호출이 <strong>한 번의 write 시스템 콜</strong>로 변환됨</li>
+                            <li>버퍼에 "hello"가 모였다가 newline으로 플러시됨</li>
+                            <li>이것이 Standard I/O의 효율성입니다!</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>버퍼링 없이 실행하면?</h4>
+                        <p>각 <code>printf</code>마다 <code>write</code> 시스템 콜이 발생하여 매우 비효율적입니다.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'io-comparison': `
+            <h3>Unix I/O vs Standard I/O vs RIO</h3>
+            <p>세 가지 I/O 방식의 비교입니다.</p>
+            
+            <div class="tech-note">
+                <h4>계층 구조</h4>
+                <p>Standard I/O와 RIO는 모두 저수준 Unix I/O를 사용하여 구현됩니다.</p>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('unix', this)">Unix I/O</button>
+                    <button class="tab-btn" onclick="window.switchTab('stdio', this)">Standard I/O</button>
+                    <button class="tab-btn" onclick="window.switchTab('rio', this)">RIO</button>
+                </div>
+                
+                <div id="tab-unix" class="tab-pane active">
+                    <div class="exam-point">
+                        <h4>🚩 Unix I/O 장점</h4>
+                        <ul>
+                            <li>가장 일반적이고 오버헤드가 가장 낮은 I/O 형태</li>
+                            <li>모든 다른 I/O 패키지는 Unix I/O 함수를 사용하여 구현됨</li>
+                            <li>파일 메타데이터 접근 함수 제공</li>
+                            <li>async-signal-safe하여 시그널 핸들러에서 안전하게 사용 가능</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>Unix I/O 단점</h4>
+                        <ul>
+                            <li>Short counts 처리가 까다롭고 에러가 발생하기 쉬움</li>
+                            <li>텍스트 라인 효율적 읽기는 버퍼링이 필요하며, 이것도 까다롭고 에러가 발생하기 쉬움</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-stdio" class="tab-pane">
+                    <div class="exam-point">
+                        <h4>🚩 Standard I/O 장점</h4>
+                        <ul>
+                            <li>버퍼링으로 read/write 시스템 콜 수를 줄여 효율성 증가</li>
+                            <li>Short counts가 자동으로 처리됨</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>Standard I/O 단점</h4>
+                        <ul>
+                            <li>파일 메타데이터 접근 함수 제공 안 함</li>
+                            <li>async-signal-safe하지 않아 시그널 핸들러에 부적절</li>
+                            <li>네트워크 소켓 입출력에 부적절</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-rio" class="tab-pane">
+                    <div class="exam-point">
+                        <h4>🚩 RIO 장점</h4>
+                        <ul>
+                            <li>Short counts를 견고하게 처리</li>
+                            <li>네트워크 소켓에 적합</li>
+                            <li>Thread-safe</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'choosing-io': `
+            <h3>Choosing I/O Functions (I/O 함수 선택)</h3>
+            <p><strong>일반 규칙:</strong> 가능한 한 가장 높은 수준의 I/O 함수를 사용하세요.</p>
+            
+            <div class="exam-point">
+                <h4>🚩 Standard I/O 사용 시기</h4>
+                <ul>
+                    <li>디스크나 터미널 파일 작업 시</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 Raw Unix I/O 사용 시기</h4>
+                <ul>
+                    <li>시그널 핸들러 내부 (Unix I/O는 async-signal-safe)</li>
+                    <li>절대 최고 성능이 필요한 드문 경우</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 RIO 사용 시기</h4>
+                <ul>
+                    <li>네트워크 소켓 읽기/쓰기 시</li>
+                    <li><strong>주의:</strong> 소켓에서 Standard I/O 사용 피하기</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>Binary Files 작업 시 주의사항</h4>
+                <p>바이너리 파일에서 사용하면 안 되는 함수들:</p>
+                <ul>
+                    <li><strong>텍스트 지향 I/O:</strong> fgets, scanf, rio_readlineb (EOL 문자 해석)</li>
+                    <li><strong>문자열 함수:</strong> strlen, strcpy, strcat (바이트 값 0을 특수하게 해석)</li>
+                </ul>
+                <p>대신 rio_readn이나 rio_readnb 같은 함수를 사용하세요.</p>
+            </div>
+        `,
+
+        'binary-files': `
+            <h3>Working with Binary Files (바이너리 파일 작업)</h3>
+            <p>바이너리 파일을 다룰 때 주의해야 할 사항들입니다.</p>
+            
+            <div class="exam-point">
+                <h4>🚩 사용하면 안 되는 함수들</h4>
+                <ul>
+                    <li><strong>텍스트 지향 I/O:</strong> fgets, scanf, rio_readlineb
+                        <ul>
+                            <li>EOL 문자를 해석합니다</li>
+                            <li>바이너리 데이터에 '\n'이 포함될 수 있음</li>
+                        </ul>
+                    </li>
+                    <li><strong>문자열 함수:</strong> strlen, strcpy, strcat
+                        <ul>
+                            <li>바이트 값 0 (null 문자)을 문자열 종료로 해석</li>
+                            <li>바이너리 파일에는 null 바이트가 포함될 수 있음</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>바이너리 파일에 적합한 함수들</h4>
+                <ul>
+                    <li><strong>rio_readn, rio_readnb:</strong> 바이트 수를 정확히 지정</li>
+                    <li><strong>rio_writen:</strong> 정확한 바이트 수 쓰기</li>
+                    <li><strong>fread, fwrite:</strong> Standard I/O의 바이너리 함수</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 Best Practice</h4>
+                <p>바이너리 파일을 다룰 때는 항상 바이트 수를 정확히 지정하는 함수를 사용하세요!</p>
+            </div>
+        `,
+
+        'key-concepts': `
+            <h3>Key Concepts (핵심 정리)</h3>
+            <p>이번 챕터에서 반드시 알아야 할 핵심 개념들을 정리했습니다.</p>
+            
+            <div class="exam-point">
+                <h4>🚩 1. Unix I/O</h4>
+                <ul>
+                    <li><strong>open(), close():</strong> 파일 열기/닫기</li>
+                    <li><strong>read(), write():</strong> 파일 읽기/쓰기</li>
+                    <li><strong>lseek():</strong> 파일 위치 변경</li>
+                    <li><strong>File descriptor:</strong> 0(stdin), 1(stdout), 2(stderr)</li>
+                    <li><strong>모든 I/O 장치가 파일로 표현:</strong> /dev/*, /proc 등</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 2. Short Counts</h4>
+                <ul>
+                    <li><strong>발생:</strong> EOF, 터미널, 네트워크 소켓</li>
+                    <li><strong>발생 안 함:</strong> 디스크 파일 (EOF 제외)</li>
+                    <li><strong>항상 short counts를 허용하도록 코드 작성</strong></li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 3. RIO Package</h4>
+                <ul>
+                    <li><strong>rio_readn, rio_writen:</strong> Unbuffered, short counts 처리</li>
+                    <li><strong>rio_readlineb, rio_readnb:</strong> Buffered, 텍스트 라인 읽기</li>
+                    <li><strong>네트워크 소켓에 적합</strong></li>
+                    <li><strong>Thread-safe</strong></li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 4. File Sharing</h4>
+                <ul>
+                    <li><strong>fork():</strong> 자식이 부모의 열린 파일 상속, refcnt 증가</li>
+                    <li><strong>같은 파일 위치 공유:</strong> 한쪽이 읽으면 다른 쪽 위치도 이동</li>
+                    <li><strong>dup2():</strong> I/O 리다이렉션 구현</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 5. Standard I/O</h4>
+                <ul>
+                    <li><strong>버퍼링:</strong> 여러 바이트를 모아서 시스템 콜 수 감소</li>
+                    <li><strong>디스크/터미널 파일에 적합</strong></li>
+                    <li><strong>네트워크 소켓에 부적절</strong></li>
+                    <li><strong>버퍼 플러시:</strong> newline, fflush(), exit()</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 6. I/O 함수 선택</h4>
+                <ul>
+                    <li><strong>Standard I/O:</strong> 디스크/터미널 파일</li>
+                    <li><strong>Unix I/O:</strong> 시그널 핸들러, 최고 성능 필요 시</li>
+                    <li><strong>RIO:</strong> 네트워크 소켓</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>📝 시험 대비 체크리스트</h4>
+                <ul>
+                    <li>✅ Short counts가 발생하는 경우와 발생하지 않는 경우</li>
+                    <li>✅ RIO vs Standard I/O vs Unix I/O 선택 기준</li>
+                    <li>✅ fork() 후 파일 공유 메커니즘 (refcnt, 파일 위치 공유)</li>
+                    <li>✅ dup2()를 사용한 I/O 리다이렉션 구현</li>
+                    <li>✅ Standard I/O 버퍼링 동작 (strace로 확인)</li>
+                    <li>✅ 바이너리 파일 작업 시 주의사항</li>
+                    <li>✅ rio_readn, rio_readlineb 구현 원리</li>
+                </ul>
+            </div>
+        `
+    };
+
+    // ============================================
+    // 3. Canvas 다이어그램 그리기 함수들
+    // ============================================
+    
+    function drawFileSharing() {
+        var c = document.getElementById('cvs_file_sharing');
+        if (!c) {
+            console.warn('Canvas cvs_file_sharing not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 320;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // Process 1
+        ctx.fillStyle = "#4f46e5";
+        ctx.fillRect(50, 40, 200, 100);
+        ctx.strokeRect(50, 40, 200, 100);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Process 1", 120, 70);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Descriptor Table", 80, 95);
+        ctx.fillText("fd 0: stdin", 60, 115);
+        ctx.fillText("fd 1: stdout", 60, 130);
+        
+        // Process 2
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(350, 40, 200, 100);
+        ctx.strokeRect(350, 40, 200, 100);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("Process 2", 420, 70);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Descriptor Table", 380, 95);
+        ctx.fillText("fd 0: stdin", 360, 115);
+        ctx.fillText("fd 1: stdout", 360, 130);
+        
+        // Open File Table
+        ctx.fillStyle = "#e0e7ff";
+        ctx.fillRect(200, 180, 200, 80);
+        ctx.strokeRect(200, 180, 200, 80);
+        ctx.fillStyle = "#1e293b";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("Open File Table", 230, 205);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Entry 1: refcnt=2", 210, 225);
+        ctx.fillText("Entry 2: refcnt=1", 210, 240);
+        
+        // Disk File
+        ctx.fillStyle = "#fef3c7";
+        ctx.fillRect(250, 300, 100, 40);
+        ctx.strokeRect(250, 300, 100, 40);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("Disk File", 270, 325);
+        
+        // 화살표
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(150, 140);
+        ctx.lineTo(250, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(450, 140);
+        ctx.lineTo(350, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(300, 260);
+        ctx.lineTo(300, 300);
+        ctx.stroke();
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("fork() 후: 자식이 부모의 열린 파일 상속", 50, 370);
+    }
+    
+    function drawIORedirection() {
+        var c = document.getElementById('cvs_io_redirection');
+        if (!c) {
+            console.warn('Canvas cvs_io_redirection not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 360;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // Before dup2
+        ctx.fillStyle = "#fee2e2";
+        ctx.fillRect(50, 30, 200, 120);
+        ctx.strokeRect(50, 30, 200, 120);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("Before dup2(4, 1)", 80, 55);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("fd 0: stdin", 60, 80);
+        ctx.fillText("fd 1: stdout → terminal", 60, 100);
+        ctx.fillText("fd 2: stderr", 60, 120);
+        ctx.fillText("fd 4: disk file", 60, 140);
+        
+        // After dup2
+        ctx.fillStyle = "#dbeafe";
+        ctx.fillRect(350, 30, 200, 120);
+        ctx.strokeRect(350, 30, 200, 120);
+        ctx.fillStyle = "#1e293b";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("After dup2(4, 1)", 380, 55);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("fd 0: stdin", 360, 80);
+        ctx.fillText("fd 1: stdout → disk file", 360, 100);
+        ctx.fillText("fd 2: stderr", 360, 120);
+        ctx.fillText("fd 4: disk file", 360, 140);
+        
+        // Terminal
+        ctx.fillStyle = "#fef3c7";
+        ctx.fillRect(50, 180, 100, 60);
+        ctx.strokeRect(50, 180, 100, 60);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("Terminal", 70, 210);
+        
+        // Disk File
+        ctx.fillStyle = "#dbeafe";
+        ctx.fillRect(200, 180, 100, 60);
+        ctx.strokeRect(200, 180, 100, 60);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("Disk File", 220, 210);
+        
+        // 화살표 (Before)
+        ctx.strokeStyle = "#64748b";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(100, 150);
+        ctx.lineTo(100, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(250, 150);
+        ctx.lineTo(250, 180);
+        ctx.stroke();
+        
+        // 화살표 (After)
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(450, 150);
+        ctx.lineTo(300, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(450, 150);
+        ctx.lineTo(300, 210);
+        ctx.stroke();
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("dup2(4, 1): fd 1이 fd 4가 가리키는 파일을 참조", 50, 280);
+        ctx.fillText("결과: stdout이 터미널 대신 디스크 파일로 리다이렉션", 50, 300);
+    }
+    
+    // ============================================
+    // 4. 시뮬레이션 함수들
+    // ============================================
+    
+    // File Sharing 시뮬레이션
+    window.nextForkFileStep = function() {
+        var parent = document.getElementById('fork-parent');
+        var child = document.getElementById('fork-child');
+        var parentFd = document.getElementById('parent-fd');
+        var childFd = document.getElementById('child-fd');
+        var refcntDisplay = document.getElementById('refcnt-display');
+        var log = document.getElementById('fork-log');
+        
+        if (!parent || !child || !log || !refcntDisplay) return;
+        
+        if (window.simStep === 0) {
+            // 1단계: fork() 전
+            parentFd.textContent = 'fd 0, 1, 2';
+            child.style.display = 'none';
+            refcntDisplay.textContent = 'refcnt = 1';
+            log.innerHTML = "<strong>1단계:</strong> 부모 프로세스가 파일을 열었습니다. (refcnt = 1)";
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: fork() 호출
+            child.style.display = 'flex';
+            childFd.textContent = 'fd 0, 1, 2';
+            refcntDisplay.textContent = 'refcnt = 2';
+            log.innerHTML = "<strong>2단계:</strong> fork() 호출!<br>→ 자식 프로세스가 부모의 열린 파일을 상속받습니다.<br>→ Open file table entry의 <strong>refcnt가 2로 증가</strong>합니다.";
+            window.simStep++;
+        } else if (window.simStep === 2) {
+            // 3단계: 파일 위치 공유 설명
+            log.innerHTML = "<strong>3단계:</strong> 부모와 자식이 <strong>같은 파일 위치</strong>를 공유합니다!<br>→ 한쪽이 읽으면 다른 쪽의 파일 위치도 이동합니다.";
+            window.simStep++;
+        } else {
+            // 리셋
+            parentFd.textContent = 'fd 0, 1, 2';
+            child.style.display = 'none';
+            refcntDisplay.textContent = 'refcnt = 1';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+    
+    // I/O Redirection 시뮬레이션
+    window.nextDup2Step = function() {
+        var beforeTarget = document.getElementById('before-target');
+        var afterTarget = document.getElementById('after-target');
+        var log = document.getElementById('dup2-log');
+        
+        if (!beforeTarget || !afterTarget || !log) return;
+        
+        if (window.simStep === 0) {
+            // 1단계: 초기 상태
+            beforeTarget.textContent = 'terminal';
+            afterTarget.textContent = 'terminal';
+            log.innerHTML = "<strong>1단계:</strong> 초기 상태 - fd 1(stdout)은 터미널을 가리킵니다.";
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: 파일 열기
+            log.innerHTML = "<strong>2단계:</strong> 리다이렉션할 파일을 열었습니다. (fd 4)";
+            window.simStep++;
+        } else if (window.simStep === 2) {
+            // 3단계: dup2(4, 1) 호출
+            afterTarget.textContent = 'disk file';
+            afterTarget.style.color = 'var(--accent)';
+            log.innerHTML = "<strong>3단계:</strong> dup2(4, 1) 호출!<br>→ fd 1(stdout)이 이제 <strong>디스크 파일</strong>을 가리킵니다.<br>→ 이후 모든 stdout 출력이 파일로 리다이렉션됩니다.";
+            window.simStep++;
+        } else {
+            // 리셋
+            beforeTarget.textContent = 'terminal';
+            afterTarget.textContent = 'terminal';
+            afterTarget.style.color = 'var(--primary)';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+    
+    // 모달 열기 전처리
+    window.onModalOpening = function(id) {
+        if (id === 'file-sharing') {
+            setTimeout(function() {
+                var parent = document.getElementById('fork-parent');
+                var child = document.getElementById('fork-child');
+                var parentFd = document.getElementById('parent-fd');
+                var refcntDisplay = document.getElementById('refcnt-display');
+                var log = document.getElementById('fork-log');
+                if (parent && child && parentFd && refcntDisplay && log) {
+                    parentFd.textContent = 'fd 0, 1, 2';
+                    child.style.display = 'none';
+                    refcntDisplay.textContent = 'refcnt = 1';
+                    log.innerText = "👇 버튼을 눌러 fork() 후 파일 공유를 시뮬레이션하세요.";
+                    window.simStep = 0;
+                }
+            }, 50);
+        } else if (id === 'io-redirection') {
+            setTimeout(function() {
+                var beforeTarget = document.getElementById('before-target');
+                var afterTarget = document.getElementById('after-target');
+                var log = document.getElementById('dup2-log');
+                if (beforeTarget && afterTarget && log) {
+                    beforeTarget.textContent = 'terminal';
+                    afterTarget.textContent = 'terminal';
+                    afterTarget.style.color = 'var(--primary)';
+                    log.innerText = "👇 버튼을 눌러 dup2() 동작을 시뮬레이션하세요.";
+                    window.simStep = 0;
+                }
+            }, 50);
+        }
+    };
+    
+    // 캔버스 그리기 훅
+    window.runCanvasDrawing = function(id) {
+        if (id === 'file-sharing') drawFileSharing();
+        else if (id === 'io-redirection') drawIORedirection();
+    };
+</script>
+</body>
+</html>
+

@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter 13: Datapath</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 
-    ⚠️ 중요: PDF 전체 페이지 확인
-    - PDF의 마지막 페이지 번호: 71
-    - 이 HTML에 포함된 마지막 페이지: 70
-    - 두 값이 일치해야 합니다!
-    -->
 </head>
-<body data-first-section="sec-intro">
+<body>
 
 <div class="sidebar">
     <div class="brand">⚡ Logic Master<br><span style="font-size:0.8rem; color:#94a3b8; font-weight:400;">Exam Edition</span></div>
@@ -183,17 +177,17 @@
                 <div class="tag-container"><span class="tag exam">★1순위</span></div>
                 <h3>오버플로우 탐지법 2가지</h3>
                 <p>부호 비트 비교법 vs 캐리(Carry) 비교법. 정확한 판별 논리식.</p>
-                <div class="btn-learn">판별식 보기 (p.69~70)</div>
+                <div class="btn-learn">판별식 보기 (p.69)</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title" id="modalTitle"></div>
-            <button class="close-btn" onclick="window.closeModal()">✕</button>
+            <button class="close-btn" onclick="closeModal()">✕</button>
         </div>
         <div class="modal-body" id="modalBody"></div>
     </div>
@@ -201,10 +195,7 @@
 
 <script src="common.js"></script>
 <script>
-    // ============================================
-    // 1. 모달 제목 정의
-    // ============================================
-    window.modalTitles = {
+    const modalTitles = {
         'base-clock': '클럭과 D-플립플롭',
         'base-mux': 'MUX와 디코더',
         'intro-basic': '게이트 레벨 설계의 한계',
@@ -224,25 +215,18 @@
         'sign-over': '오버플로우 탐지 로직'
     };
 
-    // ============================================
-    // 2. 모달 콘텐츠 정의
-    // ============================================
+    // --- 데이터 (13장 내용) ---
     const contents = {
         // [Basics - New Section]
         'base-clock': `
-            <h3>클럭 (Clock)과 D-플립플롭</h3>
-            <p><strong>Clock (클럭):</strong> 순차 회로의 동작을 동기화하는 주기적 신호</p>
-            <p><strong>Rising Edge (라이징 엣지):</strong> 클럭이 0에서 1로 변하는 순간</p>
-            <p><strong>D-Flip Flop (D-플립플롭):</strong> 1비트를 저장하는 기본 메모리 소자</p>
-            
-            <h4>1. 클럭과 동기화</h4>
+            <h3>1. 클럭 (Clock)과 동기화</h3>
             <p>데이터패스의 모든 부품은 지휘자의 지휘봉과 같은 <strong>클럭(CLK)</strong> 신호에 맞춰 움직입니다.</p>
             <ul>
-                <li><strong>Rising Edge (라이징 엣지):</strong> 클럭이 0에서 1로 변하는 찰나의 순간.</li>
-                <li><strong>Synchronization (동기화):</strong> 대부분의 레지스터는 이 '라이징 엣지' 순간에만 입력을 낚아채서 저장합니다. 그 외의 시간에는 입력이 변해도 무시합니다. (안정성 보장)</li>
+                <li><strong>라이징 엣지 (Rising Edge):</strong> 클럭이 0에서 1로 변하는 찰나의 순간.</li>
+                <li><strong>동기화 (Synchronization):</strong> 대부분의 레지스터는 이 '라이징 엣지' 순간에만 입력을 낚아채서 저장합니다. 그 외의 시간에는 입력이 변해도 무시합니다. (안정성 보장)</li>
             </ul>
 
-            <h4>2. D-플립플롭 (D-Flip Flop)</h4>
+            <h3>2. D-플립플롭 (D-Flip Flop)</h3>
             <p>1비트를 저장하는 가장 기본적인 메모리 소자입니다.</p>
             <ul>
                 <li><strong>입력 (D):</strong> 저장하고 싶은 데이터 (Data)</li>
@@ -255,11 +239,7 @@
             </div>
         `,
         'base-mux': `
-            <h3>MUX와 디코더</h3>
-            <p><strong>MUX (Multiplexer, 멀티플렉서):</strong> 여러 입력 중 하나를 선택하여 출력하는 디지털 스위치</p>
-            <p><strong>Decoder (디코더):</strong> n비트 주소를 받아 2^n개의 출력 라인 중 하나만 활성화하는 회로</p>
-            
-            <h4>1. 멀티플렉서 (MUX)</h4>
+            <h3>1. 멀티플렉서 (MUX)</h3>
             <p>여러 개의 입력 중 하나를 선택하여 출력하는 <strong>'디지털 스위치'</strong>입니다. 데이터패스에서 <strong>흐름 제어</strong>를 담당합니다.</p>
             <ul>
                 <li><strong>2x1 MUX:</strong> 선택 신호(Select)가 0이면 A, 1이면 B를 통과시킵니다.</li>
@@ -272,7 +252,7 @@
                 </li>
             </ul>
 
-            <h4>2. 디코더 (Decoder)</h4>
+            <h3>2. 디코더 (Decoder)</h3>
             <p>n비트의 주소(Address)를 받아 2^n개의 출력 라인 중 <strong>하나만 활성화</strong>합니다.</p>
             <ul>
                 <li><strong>예: 3x8 디코더</strong> - 입력이 <code>000</code>이면 0번 줄만 1, 나머지는 0이 됨.</li>
@@ -281,10 +261,6 @@
         `,
         // [Intro]
         'intro-basic': `
-            <h3>게이트 레벨 설계의 한계</h3>
-            <p><strong>Gate-level Design (게이트 레벨 설계):</strong> 기본 논리 게이트(AND, OR, NOT)만을 사용한 설계 방식</p>
-            <p><strong>Datapath (데이터패스):</strong> 데이터를 처리하는 하드웨어 경로</p>
-            
             <div class="tech-note">
                 <h4>학습 포인트</h4>
                 <ul>
@@ -292,8 +268,7 @@
                     <li>데이터패스(Datapath) 설계 방식의 효율성 이해</li>
                 </ul>
             </div>
-            
-            <h4>1. 게이트 레벨 설계의 한계</h4>
+            <h3>1. 게이트 레벨 설계의 한계</h3>
             <p>만약 16비트 가산기(Adder)를 진리표(Truth Table)를 그려서 설계한다고 가정해 봅시다.</p>
             <ul>
                 <li>입력: A(16비트) + B(16비트) = 32개 입력</li>
@@ -301,22 +276,15 @@
             </ul>
             <p>이 엄청난 크기의 진리표를 간소화(K-Map 등)하는 것은 불가능합니다. 따라서 우리는 <strong>'모듈화(Modular)'</strong> 방식을 사용합니다.</p>
             
-            <h4>2. 데이터패스 설계 철학</h4>
+            <h3>2. 데이터패스 설계 철학</h3>
             <p>작은 블록(예: 1비트 가산기)을 먼저 만들고, 이것을 반복적으로 연결(Iterative Logic Array)하여 큰 시스템을 만듭니다. 이것이 '데이터패스 컴포넌트'입니다.</p>
         `,
         'intro-ctrl': `
-            <h3>Controller vs Datapath</h3>
-            <p><strong>Controller (컨트롤러):</strong> 제어 신호를 생성하여 데이터패스의 동작을 지시하는 회로</p>
-            <p><strong>Datapath (데이터패스):</strong> 실제 데이터를 처리하는 하드웨어 경로</p>
-            <p><strong>Control Signal (제어 신호):</strong> 데이터패스의 동작을 제어하는 1비트 신호</p>
-            <p><strong>Data Bus (데이터 버스):</strong> 데이터를 전송하는 N비트 신호선</p>
-            
             <div class="exam-point">
                 <h4>🚩 시험 출제 포인트: 신호의 구분</h4>
                 <p>데이터 버스(굵은 선)와 제어 신호(가는 선)를 회로도에서 구별할 수 있어야 함.</p>
             </div>
-            
-            <h4>데이터패스와 컨트롤러의 역할 분담</h4>
+            <h3>데이터패스와 컨트롤러의 역할 분담</h3>
             <table>
                 <tr>
                     <th width="30%">구분</th>
@@ -344,12 +312,7 @@
 
         // [Registers]
         'reg-load': `
-            <h3>Load 제어 레지스터</h3>
-            <p><strong>Load (로드):</strong> 레지스터에 새로운 값을 저장하는 제어 신호</p>
-            <p><strong>Hold (유지):</strong> 레지스터의 현재 값을 그대로 유지하는 동작</p>
-            <p><strong>Feedback Loop (피드백 루프):</strong> 출력을 다시 입력으로 연결하는 회로 경로</p>
-            
-            <h4>Load 기능을 가진 레지스터 구조</h4>
+            <h3>Load 기능을 가진 레지스터 구조</h3>
             <p>기본 D-플립플롭은 클럭이 뛸 때마다 무조건 값이 바뀝니다. 값을 <strong>유지(Hold)</strong>하거나 <strong>로드(Load)</strong>하는 것을 선택하려면 <strong>2x1 MUX</strong>가 필요합니다.</p>
             
             <div class="math-block">
@@ -365,11 +328,6 @@
         `,
         'reg-shift': `
             <h3>시프트 레지스터 (Shift Register)</h3>
-            <p><strong>Shift Register (시프트 레지스터):</strong> 비트들을 좌우로 이동시키는 레지스터</p>
-            <p><strong>Shift Right (우측 시프트):</strong> 모든 비트를 오른쪽으로 이동</p>
-            <p><strong>Shift Left (좌측 시프트):</strong> 모든 비트를 왼쪽으로 이동</p>
-            <p><strong>Rotate (회전):</strong> 밀려난 비트가 반대편 끝으로 다시 들어오는 동작</p>
-            
             <p>비트들을 옆으로 이동시키는 레지스터입니다. 직렬 통신이나 곱셈/나눗셈 연산에 필수적입니다.</p>
 
             <table>
@@ -396,16 +354,12 @@
             </table>
         `,
         'reg-multi': `
-            <h3>다기능 레지스터 & 우선순위</h3>
-            <p><strong>Priority (우선순위):</strong> 여러 제어 신호가 동시에 활성화될 때 처리 순서</p>
-            <p><strong>Clear (클리어):</strong> 레지스터를 0으로 초기화하는 신호</p>
-            
             <div class="exam-point">
                 <h4>🚩 시험 1순위: 우선순위(Priority)</h4>
                 <p>여러 제어 신호가 동시에 1일 때, 레지스터는 무엇을 먼저 수행해야 하는가? <strong>(Clear > Load > Shift)</strong> 순서가 일반적입니다.</p>
             </div>
 
-            <h4>다기능 레지스터의 우선순위 설계</h4>
+            <h3>다기능 레지스터의 우선순위 설계</h3>
             <p>다음은 4-기능 레지스터의 진리표 예시입니다. (Clear가 비동기/동기 방식에 따라 다를 수 있으나 보통 최우선입니다)</p>
 
             <table>
@@ -462,19 +416,14 @@
 
         // [Adders]
         'add-logic': `
-            <h3>반가산기 & 전가산기</h3>
-            <p><strong>Half Adder (반가산기):</strong> 두 비트를 더하여 합과 캐리를 생성하는 회로 (이전 캐리 미고려)</p>
-            <p><strong>Full Adder (전가산기):</strong> 두 비트와 이전 캐리를 모두 고려하여 합과 캐리를 생성하는 회로</p>
-            <p><strong>Carry (캐리):</strong> 덧셈 시 자리올림 값</p>
-            
-            <h4>반가산기 (Half Adder)</h4>
+            <h3>반가산기 (Half Adder)</h3>
             <p>두 비트(A, B)를 더해 합(S)과 캐리(C)를 생성. 이전 캐리(Cin)는 고려하지 않음.</p>
             <div class="math-block">
                 Sum = A ⊕ B (XOR)<br>
                 Carry = A ⋅ B (AND)
             </div>
 
-            <h4>전가산기 (Full Adder)</h4>
+            <h3>전가산기 (Full Adder)</h3>
             <p>두 비트(A, B)와 아랫단 캐리(Cin)까지 총 3비트를 더함.</p>
             <table>
                 <tr><th>A</th><th>B</th><th>Cin</th><th>Cout</th><th>Sum</th></tr>
@@ -489,11 +438,7 @@
             </div>
         `,
         'add-ripple': `
-            <h3>리플 캐리 가산기 & 지연</h3>
-            <p><strong>Ripple Carry Adder (리플 캐리 가산기):</strong> 전가산기를 직렬로 연결한 가산기 구조</p>
-            <p><strong>Propagation Delay (전파 지연):</strong> 신호가 한 단계에서 다음 단계로 전달되는데 걸리는 시간</p>
-            
-            <h4>리플 캐리 가산기 (Ripple Carry Adder)</h4>
+            <h3>리플 캐리 가산기 (Ripple Carry Adder)</h3>
             <p>전가산기(FA) N개를 직렬로 연결한 구조. 구조가 단순하여 설계가 쉽습니다.</p>
 
             <div class="exam-point">
@@ -509,22 +454,16 @@
         `,
         'add-calc': `
             <h3>DIP 스위치 계산기 설계</h3>
-            <p><strong>Glitch (글리치):</strong> 신호 전환 중 발생하는 짧은 불안정한 신호</p>
-            <p><strong>DIP Switch (DIP 스위치):</strong> 여러 개의 스위치가 하나의 패키지에 들어있는 입력 장치</p>
-            
-            <h4>가산기 출력단에 레지스터를 사용하는 이유</h4>
+            <p>왜 가산기 출력단에 레지스터를 달았을까요?</p>
             <ul>
-                <li><strong>Glitch 방지 (글리치 방지):</strong> 사용자가 스위치를 조작하는 도중(0에서 1로 가는 중간 상태)에는 원치 않는 값들이 가산기를 통과하여 LED에 번쩍거릴 수 있습니다.</li>
-                <li><strong>Synchronization (동기화):</strong> 사용자가 입력을 마치고 '확인' 버튼을 누를 때(Load 신호), 안정된 결과값만 레지스터에 딱 한번 저장하여 깔끔하게 표시합니다.</li>
+                <li><strong>글리치(Glitch) 방지:</strong> 사용자가 스위치를 조작하는 도중(0에서 1로 가는 중간 상태)에는 원치 않는 값들이 가산기를 통과하여 LED에 번쩍거릴 수 있습니다.</li>
+                <li><strong>동기화:</strong> 사용자가 입력을 마치고 '확인' 버튼을 누를 때(Load 신호), 안정된 결과값만 레지스터에 딱 한번 저장하여 깔끔하게 표시합니다.</li>
             </ul>
         `,
 
         // [Comparators & Multipliers]
         'comp-mag': `
-            <h3>비교기 논리</h3>
-            <p><strong>Comparator (비교기):</strong> 두 수의 크기를 비교하는 회로</p>
-            <p><strong>Equality (일치 비교):</strong> 두 수가 같은지 확인</p>
-            <p><strong>Magnitude Comparison (크기 비교):</strong> 두 수 중 어느 것이 큰지 확인</p>
+            <h3>비교기 논리 회로</h3>
             
             <h4>1. 일치 비교 (Equality)</h4>
             <p>모든 비트가 같아야 함. <strong>XNOR</strong> 게이트(같으면 1)를 사용.</p>
@@ -544,11 +483,7 @@
             <p>즉, 윗동네에서 이미 크다고 했거나(GT_in), 윗동네는 동점인데 내 자리에서 내가 1이고 쟤가 0이면(A=1, B=0) 내가 큰 것입니다.</p>
         `,
         'mult-array': `
-            <h3>배열 곱셈기</h3>
-            <p><strong>Array Multiplier (배열 곱셈기):</strong> 전가산기 배열을 사용한 곱셈기 구조</p>
-            <p><strong>Partial Product (부분 곱):</strong> 곱셈 과정에서 생성되는 중간 곱셈 결과</p>
-            
-            <h4>배열 곱셈기 (Array Multiplier)</h4>
+            <h3>배열 곱셈기 (Array Multiplier)</h3>
             <p>사람이 손으로 곱셈하는 방식을 그대로 하드웨어로 옮긴 구조입니다.</p>
             <ol>
                 <li><strong>부분 곱 생성 (Partial Product):</strong> AND 게이트를 사용합니다. 
@@ -562,16 +497,12 @@
 
         // [Subtractors]
         'sub-logic': `
-            <h3>가감산기 회로 원리</h3>
-            <p><strong>Adder/Subtractor (가감산기):</strong> 덧셈과 뺄셈을 모두 수행할 수 있는 회로</p>
-            <p><strong>Two's Complement (2의 보수):</strong> 음수를 표현하는 방법 (비트 반전 후 +1)</p>
-            
             <div class="exam-point">
                 <h4>🚩 시험 핵심: 덧셈기로 뺄셈하기</h4>
                 <p>별도의 감산기를 만들지 않고, 가산기(Adder)와 XOR 게이트만으로 뺄셈을 구현합니다.</p>
             </div>
             
-            <h4>가감산기 (Adder/Subtractor) 원리</h4>
+            <h3>가감산기 (Adder/Subtractor) 원리</h3>
             <p>공식: <code>A - B = A + (-B) = A + (NOT B) + 1</code> (2의 보수 이용)</p>
             
             <canvas id="cvs_sub"></canvas>
@@ -588,10 +519,7 @@
             </ul>
         `,
         'sub-rgb': `
-            <h3>[예제] RGB to CMYK 변환기</h3>
-            <p><strong>RGB (Red, Green, Blue):</strong> 빛의 삼원색을 사용한 색상 표현 방식</p>
-            <p><strong>CMYK (Cyan, Magenta, Yellow, Black):</strong> 잉크의 삼원색과 검은색을 사용한 색상 표현 방식</p>
-            
+            <h3>[응용] RGB to CMYK 변환기</h3>
             <p>프린터 잉크(CMY)를 절약하기 위해 검은색(K)을 추출하는 하드웨어 알고리즘입니다.</p>
             
             <h4>데이터패스 흐름 (Step-by-Step)</h4>
@@ -604,11 +532,7 @@
 
         // [Signed & Overflow]
         'sign-two': `
-            <h3>2의 보수법</h3>
-            <p><strong>Two's Complement (2의 보수):</strong> 디지털 시스템에서 음수를 표현하는 표준 방법</p>
-            <p><strong>One's Complement (1의 보수):</strong> 모든 비트를 반전한 값</p>
-            
-            <h4>2의 보수 (Two's Complement)</h4>
+            <h3>2의 보수 (Two's Complement)</h3>
             <p>디지털 시스템에서 음수를 다루는 표준입니다.</p>
             <ul>
                 <li><strong>만드는 법:</strong> 모든 비트 반전(NOT) 후 + 1</li>
@@ -617,10 +541,6 @@
             </ul>
         `,
         'sign-over': `
-            <h3>오버플로우 탐지 로직</h3>
-            <p><strong>Overflow (오버플로우):</strong> 연산 결과가 표현 가능한 범위를 초과하는 현상</p>
-            <p><strong>Sign Bit (부호 비트):</strong> 수의 부호를 나타내는 최상위 비트</p>
-            
             <div class="exam-point">
                 <h4>🚩 시험 1순위: 오버플로우 판별식</h4>
                 <p>N비트로 표현 불가능한 결과가 나왔을 때를 탐지하는 두 가지 방법입니다. 둘 중 하나라도 만족하면 Overflow입니다.</p>
@@ -640,243 +560,123 @@
             
             <canvas id="cvs_overflow"></canvas>
             <p>위 그림처럼 마지막 두 캐리 라인을 XOR 게이트에 연결하면 끝입니다.</p>
-            
-            <div class="tech-note">
-                <h4>📝 참고: Homework (p.71)</h4>
-                <p>9주차 과제: 4.3, 4.6, 4.15, 4.24</p>
-            </div>
         `
     };
-    
-    // window.contents로도 사용 가능하도록 설정
-    window.contents = contents;
 
-    // ============================================
-    // 3. 챕터별 특수 기능
-    // ============================================
-    
-    // ============================================
-    // Canvas 다이어그램 그리기 함수들
-    // ============================================
+    // --- 그리기 함수 (13장 전용) ---
+    function runDrawing(id) {
+        if (id === 'reg-load') drawRegLoad();
+        else if (id === 'add-ripple') drawRippleAdder();
+        else if (id === 'sub-logic') drawSubtractor();
+        else if (id === 'sign-over') drawOverflow();
+    }
 
-    // Load 제어 레지스터 회로도
     function drawRegLoad() {
-        const c = document.getElementById('cvs_reg_load');
-        if (!c) {
-            console.warn('Canvas cvs_reg_load not found');
-            return;
-        }
+        const c = document.getElementById('cvs_reg_load'); if(!c) return;
         const ctx = c.getContext('2d');
-        // clientWidth가 0이면 기본값 사용 (모달이 아직 표시되지 않은 경우)
-        const w = c.width = c.clientWidth || 600;
-        const h = c.height = 180;
-        ctx.clearRect(0, 0, w, h);
-        ctx.lineWidth = 2;
-        ctx.font = "14px sans-serif";
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
 
-        // MUX 그리기
+        // MUX
         ctx.strokeStyle = "#4f46e5";
-        ctx.beginPath();
-        ctx.moveTo(w/2-40, 40);
-        ctx.lineTo(w/2+40, 40);
-        ctx.lineTo(w/2+20, 90);
-        ctx.lineTo(w/2-20, 90);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fillStyle = "#1e293b";
-        ctx.fillText("MUX", w/2-15, 70);
+        ctx.beginPath(); ctx.moveTo(w/2-40, 40); ctx.lineTo(w/2+40, 40); ctx.lineTo(w/2+20, 90); ctx.lineTo(w/2-20, 90); ctx.closePath(); ctx.stroke();
+        ctx.fillStyle="#1e293b"; ctx.fillText("MUX", w/2-15, 70);
 
-        // D-FF 그리기
-        ctx.strokeRect(w/2-30, 120, 60, 40);
-        ctx.fillText("D-FF", w/2-15, 145);
+        // D-FF
+        ctx.strokeRect(w/2-30, 120, 60, 40); ctx.fillText("D-FF", w/2-15, 145);
         
-        // 연결선
-        ctx.beginPath();
-        ctx.moveTo(w/2, 90);
-        ctx.lineTo(w/2, 120);
-        ctx.stroke(); // MUX to FF
+        // Lines
+        ctx.beginPath(); ctx.moveTo(w/2, 90); ctx.lineTo(w/2, 120); ctx.stroke(); // MUX to FF
         ctx.fillText("Load (Select)", w/2+50, 65); // Select line text
         
-        // 피드백 루프
-        ctx.strokeStyle = "#64748b";
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(w/2+30, 140);
-        ctx.lineTo(w/2+80, 140);
-        ctx.lineTo(w/2+80, 20);
-        ctx.lineTo(w/2-20, 20);
-        ctx.lineTo(w/2-20, 40);
-        ctx.stroke();
+        // Feedback
+        ctx.strokeStyle = "#64748b"; ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(w/2+30, 140); ctx.lineTo(w/2+80, 140); ctx.lineTo(w/2+80, 20); ctx.lineTo(w/2-20, 20); ctx.lineTo(w/2-20, 40); ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillText("Feedback (Q)", w/2+85, 100);
         
-        // 입력 라벨
+        // Input
         ctx.fillText("New Data (I)", w/2-100, 35);
     }
 
-    // 리플 캐리 가산기 구조
     function drawRippleAdder() {
-        const c = document.getElementById('cvs_adder');
-        if (!c) {
-            console.warn('Canvas cvs_adder not found');
-            return;
-        }
+        const c = document.getElementById('cvs_adder'); if(!c) return;
         const ctx = c.getContext('2d');
-        const w = c.width = c.clientWidth || 600;
-        const h = c.height = 150;
-        ctx.clearRect(0, 0, w, h);
-        ctx.lineWidth = 2;
-        ctx.font = "12px sans-serif";
+        const w = c.width = c.clientWidth || 600; const h = c.height = 150;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="12px sans-serif";
 
-        // 전가산기 박스들 그리기
         for(let i=0; i<4; i++) {
             let x = w/2 + (1.5-i)*70;
             // FA Box
-            ctx.fillStyle = "#eff6ff";
-            ctx.fillRect(x-25, 50, 50, 50);
-            ctx.strokeStyle = "#4338ca";
-            ctx.strokeRect(x-25, 50, 50, 50);
-            ctx.fillStyle = "#1e293b";
-            ctx.fillText("FA "+i, x-12, 80);
+            ctx.fillStyle = "#eff6ff"; ctx.fillRect(x-25, 50, 50, 50);
+            ctx.strokeStyle = "#4338ca"; ctx.strokeRect(x-25, 50, 50, 50);
+            ctx.fillStyle = "#1e293b"; ctx.fillText("FA "+i, x-12, 80);
             
-            // 캐리 전파 라인
+            // Carry Line
             if(i<3) {
-                ctx.beginPath();
-                ctx.moveTo(x-25, 75);
-                ctx.lineTo(x-45, 75);
-                ctx.strokeStyle = "#f43f5e";
-                ctx.stroke();
-                ctx.fillStyle = "#f43f5e";
-                ctx.fillText("Delay", x-43, 70);
+                ctx.beginPath(); ctx.moveTo(x-25, 75); ctx.lineTo(x-45, 75); ctx.strokeStyle="#f43f5e"; ctx.stroke();
+                ctx.fillStyle="#f43f5e"; ctx.fillText("Delay", x-43, 70);
             }
         }
-        ctx.fillStyle = "#64748b";
-        ctx.fillText("<<< Carry Propagation Direction <<<", w/2-100, 130);
+        ctx.fillStyle = "#64748b"; ctx.fillText("<<< Carry Propagation Direction <<<", w/2-100, 130);
     }
 
-    // 가감산기 회로도
     function drawSubtractor() {
-        const c = document.getElementById('cvs_sub');
-        if (!c) {
-            console.warn('Canvas cvs_sub not found');
-            return;
-        }
+        const c = document.getElementById('cvs_sub'); if(!c) return;
         const ctx = c.getContext('2d');
-        const w = c.width = c.clientWidth || 600;
-        const h = c.height = 180;
-        ctx.clearRect(0, 0, w, h);
-        ctx.lineWidth = 2;
-        ctx.font = "14px sans-serif";
+        const w = c.width = c.clientWidth || 600; const h = c.height = 180;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
 
-        // 가산기 박스
-        ctx.strokeRect(w/2-50, 100, 100, 50);
-        ctx.fillStyle = "#1e293b";
-        ctx.fillText("Adder", w/2-20, 130);
+        // Adder Box
+        ctx.strokeRect(w/2-50, 100, 100, 50); ctx.fillStyle="#1e293b"; ctx.fillText("Adder", w/2-20, 130);
 
-        // XOR 게이트 모양
-        ctx.strokeStyle = "#f43f5e";
-        ctx.beginPath();
-        ctx.arc(w/2+30, 50, 15, Math.PI, 0);
-        ctx.stroke(); // Top curve
-        ctx.beginPath();
-        ctx.moveTo(w/2+15, 50);
-        ctx.lineTo(w/2+30, 80);
-        ctx.lineTo(w/2+45, 50);
-        ctx.stroke(); // Bottom point
+        // XOR Gate shape
+        ctx.strokeStyle = "#f43f5e"; 
+        ctx.beginPath(); ctx.arc(w/2+30, 50, 15, Math.PI, 0); ctx.stroke(); // Top curve
+        ctx.beginPath(); ctx.moveTo(w/2+15, 50); ctx.lineTo(w/2+30, 80); ctx.lineTo(w/2+45, 50); ctx.stroke(); // Bottom point
         ctx.fillText("XOR", w/2+18, 45);
 
-        // 배선
+        // Wiring
         ctx.strokeStyle = "#334155";
-        ctx.beginPath();
-        ctx.moveTo(w/2+30, 80);
-        ctx.lineTo(w/2+30, 100);
-        ctx.stroke(); // XOR to Adder B
-        ctx.fillText("B Input", w/2+40, 20);
+        ctx.beginPath(); ctx.moveTo(w/2+30, 80); ctx.lineTo(w/2+30, 100); ctx.stroke(); // XOR to Adder B
+        ctx.fillText("B Input", w/2+40, 20); 
         ctx.fillText("Sub Signal (1)", w/2+60, 50);
 
-        // Cin 연결
-        ctx.beginPath();
-        ctx.moveTo(w/2+80, 50);
-        ctx.lineTo(w/2+80, 125);
-        ctx.lineTo(w/2+50, 125);
-        ctx.stroke();
+        // Cin connection
+        ctx.beginPath(); ctx.moveTo(w/2+80, 50); ctx.lineTo(w/2+80, 125); ctx.lineTo(w/2+50, 125); ctx.stroke();
         ctx.fillText("Cin = 1", w/2+85, 120);
     }
 
-    // 오버플로우 탐지 회로
     function drawOverflow() {
-        const c = document.getElementById('cvs_overflow');
-        if (!c) {
-            console.warn('Canvas cvs_overflow not found');
-            return;
-        }
+        const c = document.getElementById('cvs_overflow'); if(!c) return;
         const ctx = c.getContext('2d');
-        const w = c.width = c.clientWidth || 600;
-        const h = c.height = 150;
-        ctx.clearRect(0, 0, w, h);
-        ctx.lineWidth = 2;
-        ctx.font = "14px sans-serif";
+        const w = c.width = c.clientWidth || 600; const h = c.height = 150;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="14px sans-serif";
 
-        // 라벨
-        ctx.fillStyle = "#1e293b";
+        // Labels
+        ctx.fillStyle = "#1e293b"; 
         ctx.fillText("Cin (Carry In to Sign Bit)", w/2-180, 40);
         ctx.fillText("Cout (Carry Out from Sign Bit)", w/2-180, 90);
 
-        // XOR 게이트 논리 회로 그리기
+        // XOR Gate logic drawing
         ctx.strokeStyle = "#f43f5e";
-        let gx = w/2 + 50;
-        let gy = 65;
+        let gx = w/2 + 50; let gy = 65;
         
-        // 게이트로 가는 선
-        ctx.beginPath();
-        ctx.moveTo(w/2-20, 40);
-        ctx.lineTo(gx, 55);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(w/2-20, 90);
-        ctx.lineTo(gx, 75);
-        ctx.stroke();
+        // Lines to gate
+        ctx.beginPath(); ctx.moveTo(w/2-20, 40); ctx.lineTo(gx, 55); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(w/2-20, 90); ctx.lineTo(gx, 75); ctx.stroke();
 
-        // XOR 심볼 (간소화)
-        ctx.beginPath();
-        ctx.arc(gx+10, gy, 20, -0.5*Math.PI, 0.5*Math.PI);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(gx, gy-20);
-        ctx.quadraticCurveTo(gx+10, gy, gx, gy+20);
-        ctx.stroke();
+        // XOR symbol (simplified)
+        ctx.beginPath(); ctx.arc(gx+10, gy, 20, -0.5*Math.PI, 0.5*Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(gx, gy-20); ctx.quadraticCurveTo(gx+10, gy, gx, gy+20); ctx.stroke();
         
         ctx.fillText("XOR", gx+5, gy+5);
         
-        // 출력
-        ctx.beginPath();
-        ctx.moveTo(gx+30, gy);
-        ctx.lineTo(gx+60, gy);
-        ctx.stroke();
-        ctx.fillStyle = "#be123c";
-        ctx.font = "bold 14px sans-serif";
+        // Output
+        ctx.beginPath(); ctx.moveTo(gx+30, gy); ctx.lineTo(gx+60, gy); ctx.stroke();
+        ctx.fillStyle = "#be123c"; ctx.font="bold 14px sans-serif";
         ctx.fillText("Overflow Flag", gx+65, gy+5);
     }
-    
-    // ============================================
-    // Canvas 그리기 훅
-    // ============================================
-    // digital/common.js의 runDrawing 함수와 호환성을 위해
-    // runDrawing 함수도 유지하되, window.runCanvasDrawing도 지원
-    function runDrawing(id) {
-        if (id === 'reg-load') {
-            drawRegLoad();
-        } else if (id === 'add-ripple') {
-            drawRippleAdder();
-        } else if (id === 'sub-logic') {
-            drawSubtractor();
-        } else if (id === 'sign-over') {
-            drawOverflow();
-        }
-    }
-    
-    // window.runCanvasDrawing도 지원 (최신 템플릿 호환)
-    window.runCanvasDrawing = runDrawing;
 </script>
 </body>
 </html>

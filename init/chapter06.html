@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Memory Hierarchy (Ultimate Edition)</title>
+    
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-first-section="sec-basic">
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Final Edition</span></div>
+    <div class="menu-label">Chapter 6. Memory Hierarchy</div>
+    <div class="nav-item active" onclick="showSection('sec-basic', this)"><span class="nav-icon">📚</span> 1. 캐시의 기본 원리</div>
+    <div class="nav-item" onclick="showSection('sec-mapping', this)"><span class="nav-icon">🗺️</span> 2. 매핑과 시뮬레이션</div>
+    <div class="nav-item" onclick="showSection('sec-perf', this)"><span class="nav-icon">📊</span> 3. 성능과 정책</div>
+    <div class="nav-item" onclick="showSection('sec-opt', this)"><span class="nav-icon">🚀</span> 4. 최적화 (Blocking)</div>
+</div>
+
+<div class="main">
+    <div id="sec-basic" class="section-container active">
+        <div class="header"><h1>1. 캐시 메모리 개요</h1><p>도서관 비유를 통한 계층 구조 이해</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('cache-concept')">
+                <span class="card-icon">🏰</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>캐시란 무엇인가?</h3>
+                <p>CPU와 메인 메모리 사이의 속도 차이를 줄여주는 고속 창고.</p>
+                <div class="btn-learn">쉬운 설명 보기</div>
+            </div>
+            <div class="card" onclick="openModal('cache-org')">
+                <span class="card-icon">🗂️</span>
+                <div class="tag-container"><span class="tag exam">구조</span></div>
+                <h3>S, E, B 구조</h3>
+                <p>Set, Line, Block으로 구성된 캐시의 주소 체계.</p>
+                <div class="btn-learn">상세 구조 (p.4)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-mapping" class="section-container">
+        <div class="header"><h1>2. 매핑 방식과 시뮬레이션</h1><p>충돌 미스 과정을 직접 체험해보세요.</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('direct-mapped')">
+                <span class="card-icon">🕹️</span>
+                <div class="tag-container"><span class="tag core">인터랙티브</span></div>
+                <h3>Direct Mapped (E=1)</h3>
+                <p>한 주소는 오직 한 곳에만! <strong>충돌 시뮬레이션</strong> 포함.</p>
+                <div class="btn-learn">시뮬레이션 시작 ▶</div>
+            </div>
+            <div class="card" onclick="openModal('set-associative')">
+                <span class="card-icon">🤝</span>
+                <div class="tag-container"><span class="tag exam">빈출</span></div>
+                <h3>Set Associative (E>1)</h3>
+                <p>유연성을 더해 충돌을 줄이는 방식. (2-way, 4-way...)</p>
+                <div class="btn-learn">동작 원리 (p.11)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-perf" class="section-container">
+        <div class="header"><h1>3. 쓰기 정책 & 메모리 마운틴</h1><p>데이터 일관성과 지역성(Locality) 시각화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('write-policy')">
+                <span class="card-icon">✍️</span>
+                <div class="tag-container"><span class="tag logic">정책</span></div>
+                <h3>Write Policy</h3>
+                <p>Write-Through vs Write-Back. 언제 메모리에 쓸 것인가?</p>
+                <div class="btn-learn">장단점 비교 (p.16)</div>
+            </div>
+            <div class="card" onclick="openModal('mountain')">
+                <span class="card-icon">⛰️</span>
+                <div class="tag-container"><span class="tag exam">그래프</span></div>
+                <h3>The Memory Mountain</h3>
+                <p>Stride(공간)와 Size(시간)에 따른 성능 변화 그래프 해석.</p>
+                <div class="btn-learn">그래프 해석 (p.25)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-opt" class="section-container">
+        <div class="header"><h1>4. 캐시 친화적 코드 & 블로킹</h1><p>코드 분석과 수식 유도를 통해 깊이 있게 학습하세요.</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('loop-order')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Loop Reordering</h3>
+                <p>ijk vs kij. <strong>실제 코드</strong>를 보며 미스율의 원인을 분석합니다.</p>
+                <div class="btn-learn">코드 분석 보기</div>
+            </div>
+            <div class="card" onclick="openModal('blocking')">
+                <span class="card-icon">🧱</span>
+                <div class="tag-container"><span class="tag exam">수식 유도</span></div>
+                <h3>Blocking (Tiling)</h3>
+                <p>큰 행렬을 작은 블록으로 쪼개기. <strong>미스율 공식 유도</strong> 과정 포함.</p>
+                <div class="btn-learn">상세 학습 (p.43)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/common.js"></script>
+
+<script>
+    // --- 1. 모달 제목 및 내용 정의 ---
+    window.modalTitles = {
+        'cache-concept': '캐시 메모리란?',
+        'cache-org': '캐시의 주소 구조 (S, E, B)',
+        'direct-mapped': 'Direct Mapped Cache 시뮬레이션',
+        'set-associative': 'Set Associative Cache 동작',
+        'write-policy': '쓰기 정책 (Write Policy)',
+        'mountain': '메모리 마운틴 (Memory Mountain)',
+        'loop-order': '루프 순서와 공간 지역성',
+        'blocking': '블로킹 (Blocking) 기법'
+    };
+
+    window.contents = {
+        'cache-concept': `
+            <h3>캐시 메모리 개요</h3>
+            <div class="easy-explain">
+                <h4>🎓 Univ AI의 쉬운 설명: 호텔 금고 비유</h4>
+                <p>Intel Core i7의 캐시 계층을 <strong>호텔 서비스</strong>에 비유해볼까요?</p>
+                <ul>
+                    <li><strong>L1 캐시 (개인 금고):</strong> 방 안에 있어서 가장 빠르지만, 아주 귀중한 소량만 넣을 수 있습니다. (접근: 4 cycle)</li>
+                    <li><strong>L2 캐시 (방 안의 옷장):</strong> 금고보다 크지만, 문을 열고 닫는 데 시간이 조금 더 걸립니다. (접근: 11 cycle)</li>
+                    <li><strong>L3 캐시 (호텔 로비 창고):</strong> 모든 투숙객(코어)이 공유하며 가장 큽니다. 로비까지 다녀와야 합니다. (접근: 30-40 cycle)</li>
+                    <li><strong>메인 메모리 (집):</strong> 호텔 밖 멀리 있는 집입니다. 한번 다녀오려면 아주 오래 걸립니다. (접근: 100+ cycle)</li>
+                </ul>
+            </div>
+            <p>CPU는 데이터를 찾을 때 <strong>L1 → L2 → L3 → 메모리</strong> 순서로 뒤집니다. 가까운 곳에서 찾을수록(Hit) 시스템 성능이 비약적으로 향상됩니다.</p>
+        `,
+        'cache-org': `
+            <h3>캐시 주소 구조 (S, E, B)</h3>
+            <div class="easy-explain">
+                <h4>📚 도서관 비유: 책 찾기</h4>
+                <p>거대한 도서관(메모리)에서 책(데이터)을 빠르게 찾기 위해 주소를 3부분으로 나눕니다.</p>
+                <ul>
+                    <li><strong>Set Index (S):</strong> <strong>'책장 번호'</strong>입니다. 주소를 보고 몇 번 책장으로 갈지 가장 먼저 결정합니다.</li>
+                    <li><strong>Tag (T):</strong> 책장에 꽂힌 책의 <strong>'제목(ID)'</strong>입니다. 내가 찾는 그 책이 맞는지 확인하는 용도입니다.</li>
+                    <li><strong>Block Offset (B):</strong> 책을 펼쳤을 때 <strong>'몇 페이지'</strong>를 읽을지 결정합니다.</li>
+                </ul>
+            </div>
+            <div class="math-block">
+                Address = [ Tag ] [ Set Index ] [ Block Offset ]
+            </div>
+            <ul>
+                <li>캐시 크기(C) = S × E × B (세트 수 × 라인 수 × 블록 크기)</li>
+                <li>유효 비트(Valid Bit): 해당 자리에 실제 데이터가 있는지(1) 쓰레기 값인지(0) 표시합니다.</li>
+            </ul>
+        `,
+        'direct-mapped': `
+            <h3>Direct Mapped Cache 시뮬레이션</h3>
+            <p>가장 단순하지만 충돌이 잦은 구조입니다. 주소 0번과 8번이 같은 <strong>Set 0</strong>에 매핑되어 서로를 밀어내는(Thrashing) 상황을 시뮬레이션합니다.</p>
+            <div class="sim-box">
+                <div class="cache-container">
+                    <div class="cache-slot-wrapper">
+                        <div class="slot-label">Set 0 (라인 1개뿐)</div>
+                        <div class="cache-slot" id="sim-slot">Empty</div>
+                    </div>
+                </div>
+                <div class="sim-log" id="sim-log">👇 아래 버튼을 눌러 시뮬레이션을 시작하세요.</div>
+                <div class="sim-controls">
+                    <button onclick="window.nextSimStep()">다음 단계 진행 ▶</button>
+                </div>
+            </div>
+            <div class="exam-point">
+                <h4>🚩 핵심: 충돌 미스 (Conflict Miss)</h4>
+                <p>서로 다른 데이터(0번, 8번)가 우연히 같은 Set Index를 가질 때 발생합니다. Direct Mapped는 자리가 하나뿐이라 기존 데이터를 무조건 쫓아내야 합니다.</p>
+            </div>
+        `,
+        'set-associative': `
+            <h3>E-way Set Associative Cache</h3>
+            <p>Direct Mapped의 단점을 해결하기 위해, 한 Set에 <strong>E개의 자리(Line)</strong>를 마련했습니다. 이제 자리가 부족할 일이 줄어듭니다.</p>
+            <div class="easy-explain">
+                <h4>💡 유연한 저장소</h4>
+                <p>마치 도서관 책장(Set) 한 칸에 책을 꽂을 자리가 2개(2-way) 있는 것과 같습니다. <br>
+                이미 한 자리가 찼더라도, 옆자리가 비어있으면 기존 책을 버리지 않고 새 책을 꽂을 수 있습니다.</p>
+            </div>
+            <canvas id="cvs_assoc"></canvas>
+            <ul>
+                <li><strong>병렬 검색:</strong> 해당 Set에 있는 E개의 Tag를 <strong>동시에 비교</strong>하므로 속도가 빠릅니다.</li>
+                <li><strong>교체 정책:</strong> 만약 E개의 자리가 다 찼다면? 보통 <strong>LRU (가장 오랫동안 안 쓴 것)</strong>를 버리고 새 데이터를 넣습니다.</li>
+            </ul>
+        `,
+        'write-policy': `
+            <h3>쓰기 정책 (Write Policy)</h3>
+            <p>캐시의 내용이 변경되었을 때, 메인 메모리에는 언제 반영할까요? 속도와 안전성 사이의 선택입니다.</p>
+            <table>
+                <tr>
+                    <th>방식</th>
+                    <th>설명</th>
+                    <th>장점 및 단점</th>
+                </tr>
+                <tr>
+                    <td><strong>Write-Through</strong></td>
+                    <td>캐시와 메모리에 <strong>동시에</strong> 씁니다.</td>
+                    <td>데이터가 항상 일치하여 안전하지만, 메모리 접근 속도가 느려 <strong>전체 성능이 저하</strong>됩니다.</td>
+                </tr>
+                <tr>
+                    <td><strong>Write-Back</strong></td>
+                    <td><strong>캐시에만</strong> 쓰고, 나중에 쫓겨날 때 메모리에 씁니다.</td>
+                    <td><strong>빠릅니다.</strong> 하지만 데이터가 변경되었음을 표시하는 'Dirty Bit' 관리가 필요합니다.</td>
+                </tr>
+            </table>
+            <div class="tech-note">
+                <h4>Write Miss 정책 (데이터가 캐시에 없을 때)</h4>
+                <ul>
+                    <li><strong>Write Allocate:</strong> 메모리에서 데이터를 캐시로 가져온 뒤 씁니다. (주로 Write-Back과 짝꿍)</li>
+                    <li><strong>No-Write Allocate:</strong> 캐시를 건너뛰고 메모리에 바로 씁니다. (주로 Write-Through와 짝꿍)</li>
+                </ul>
+            </div>
+        `,
+        'mountain': `
+            <h3>The Memory Mountain</h3>
+            <p>프로그램의 지역성(Locality)에 따른 데이터 처리 속도(Throughput)를 3차원 산맥처럼 시각화한 그래프입니다.</p>
+            <ul>
+                <li><strong>Ridges (능선) - 시간 지역성:</strong> 데이터 크기(Working Set)가 작아서 L1, L2 캐시 안에 쏙 들어갈수록 읽기 속도(높이)가 높습니다. 평평한 고원처럼 보입니다.</li>
+                <li><strong>Slopes (비탈) - 공간 지역성:</strong> Stride(보폭)가 작을수록(순차 접근) 성능이 좋습니다. Stride가 커지면 캐시 미스가 늘어나 비탈길을 따라 성능이 뚝 떨어집니다.</li>
+            </ul>
+            <p><strong>결론:</strong> 우리는 산의 정상(L1 캐시 영역)에 머무르도록 코드를 짜야 합니다.</p>
+        `,
+        'loop-order': `
+            <h3>행렬 곱셈 루프 순서 최적화</h3>
+            <div class="easy-explain">
+                <h4>🍳 요리사 비유: 재료 준비</h4>
+                <p>배열은 메모리에 가로로 쭉 나열되어 있습니다(Row-major). <br>
+                <strong>순서대로 읽는 것(Stride-1)</strong>은 재료를 순서대로 집는 것이고, <strong>건너뛰며 읽는 것</strong>은 재료 하나 집고 저 멀리 가서 다른 재료를 집어오는 격입니다.</p>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('summary', this)">요약표</button>
+                    <button class="tab-btn" onclick="window.switchTab('code', this)">상세 코드 분석</button>
+                </div>
+                
+                <div id="tab-summary" class="tab-pane active">
+                    <table>
+                        <tr><th>코드 순서</th><th>접근 패턴</th><th>Misses/Iter</th><th>성능</th></tr>
+                        <tr><td><code>kij</code>, <code>ikj</code></td><td><strong>Stride-1 (순차)</strong></td><td>0.5 (최소)</td><td>🚀 Best</td></tr>
+                        <tr><td><code>ijk</code>, <code>jik</code></td><td>혼합 (Row/Col)</td><td>1.25</td><td>Normal</td></tr>
+                        <tr><td><code>jki</code>, <code>kji</code></td><td><strong>Stride-N (점프)</strong></td><td>2.0 (최대)</td><td>🐢 Worst</td></tr>
+                    </table>
+                </div>
+
+                <div id="tab-code" class="tab-pane">
+                    <p><strong>Best Case (kij) 분석:</strong></p>
+                    <pre><code><span class="code-keyword">for</span> (k=0; k&lt;n; k++) {
+  <span class="code-keyword">for</span> (i=0; i&lt;n; i++) {
+    r = a[i][k]; <span class="code-comment">// k가 고정되므로 이 값은 레지스터에 유지됨 (Miss 0)</span>
+    <span class="code-keyword">for</span> (j=0; j&lt;n; j++)
+      <span class="code-highlight">c[i][j] += r * b[k][j];</span>
+      <span class="code-comment">// c[i][0], c[i][1]... (가로 순차 접근 -> Good!)</span>
+      <span class="code-comment">// b[k][0], b[k][1]... (가로 순차 접근 -> Good!)</span>
+  }
+}</code></pre>
+                    <p>메모리 구조(Row-major)와 동일하게 가로로 읽으므로 <strong>공간 지역성(Spatial Locality)</strong>이 최적화됩니다.</p>
+                </div>
+            </div>
+        `,
+        'blocking': `
+            <h3>블로킹 (Blocking) 기법</h3>
+            <p>행렬이 너무 커서 캐시에 다 안 들어간다면? <strong>작은 블록(Sub-matrix)</strong>으로 쪼개서 처리합시다.</p>
+
+            <div class="easy-explain">
+                <h4>📦 이삿짐 비유</h4>
+                <p>큰 짐을 한 번에 다 옮기려다간 지쳐서 다 떨어뜨립니다(Cache Miss). <br>
+                대신 <strong>작은 상자(Block)</strong>에 나눠 담아서 옮기면, 한 상자 안의 물건들은 내 손 닿는 곳(캐시)에 두고 빠르게 정리할 수 있죠.</p>
+            </div>
+
+            <canvas id="cvs_blocking"></canvas>
+            
+            <details>
+                <summary>📐 수식 유도 과정 보기 (클릭하여 펼치기)</summary>
+                <div class="derivation">
+                    <p><strong>1. No Blocking (기본):</strong></p>
+                    <p>행렬 크기 N이 캐시보다 훨씬 크면, 한 줄을 읽을 때마다 이전에 읽은 데이터가 캐시에서 쫓겨납니다.</p>
+                    <div class="math-block">Total Misses = 9/8 * N³</div>
+                    <p>미스율이 N³에 비례하여 매우 높습니다.</p>
+                    <br>
+                    <p><strong>2. Blocking (블록 크기 B):</strong></p>
+                    <p>블록(B x B) 단위로 계산하면, 해당 블록이 캐시에 머무는 동안 데이터를 최대한 재사용합니다.</p>
+                    <div class="math-block">Total Misses = N³ / (4 * B)</div>
+                    <p><strong>결론:</strong> 블록 크기 B가 클수록(캐시에 들어가는 한도 내에서) 분모가 커지므로 <strong>미스율이 감소</strong>합니다!</p>
+                </div>
+            </details>
+        `
+    };
+
+    // --- 3. 챕터별 특수 기능 ---
+
+    // 시뮬레이션 로직
+    window.nextSimStep = function() {
+        var slot = document.getElementById('sim-slot');
+        var log = document.getElementById('sim-log');
+        
+        if (!slot || !log) return;
+        
+        var steps = [
+            { text: "1. CPU: 주소 0 요청 (Miss!) -> 메모리에서 가져와 저장", val: "Data[0]", state: "filled" },
+            { text: "2. CPU: 주소 8 요청 (Miss!) -> 같은 자리(Set 0)라 충돌! Data[0] 쫓겨남", val: "Data[8]", state: "conflict" },
+            { text: "3. CPU: 주소 0 재요청 (Miss!) -> 아까 쫓겨나서 없네요. Data[8] 쫓겨남", val: "Data[0]", state: "conflict" },
+            { text: "결론: 자리가 하나라서 계속 싸움 (Thrashing 발생)", val: "Data[0]", state: "filled" }
+        ];
+
+        if (window.simStep >= steps.length) {
+            window.simStep = 0;
+            slot.className = "cache-slot";
+            slot.innerText = "Empty";
+            log.innerText = "다시 시작합니다. 버튼을 누르세요.";
+            return;
+        }
+
+        var curr = steps[window.simStep];
+        log.innerText = curr.text;
+        slot.innerText = curr.val;
+        
+        slot.className = "cache-slot";
+        void slot.offsetWidth; // 리플로우 강제 (애니메이션 재시작)
+        slot.classList.add(curr.state);
+
+        window.simStep++;
+    };
+
+    // 모달 열기 전처리: direct-mapped 모달이 열릴 때 시뮬레이션 초기화
+    window.onModalOpening = function(id) {
+        if (id === 'direct-mapped') {
+            setTimeout(function() {
+                var slot = document.getElementById('sim-slot');
+                var log = document.getElementById('sim-log');
+                if (slot && log) {
+                    slot.className = "cache-slot";
+                    slot.innerText = "Empty";
+                    log.innerText = "👇 아래 버튼을 눌러 시뮬레이션을 시작하세요.";
+                    window.simStep = 0;
+                }
+            }, 50);
+        }
+    };
+
+    // 캔버스 그리기 (common.js에서 호출됨)
+    window.runCanvasDrawing = function(id) {
+        if (id === 'set-associative') drawAssociative();
+        else if (id === 'blocking') drawBlocking();
+    };
+
+    function drawAssociative() {
+        var c = document.getElementById('cvs_assoc'); 
+        if(!c) {
+            console.warn('Canvas cvs_assoc not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        // clientWidth가 0이면 기본값 사용
+        var w = c.width = c.clientWidth || 600; 
+        var h = c.height = 240;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="bold 14px sans-serif";
+
+        // Set Box
+        ctx.strokeStyle = "#1e293b";
+        ctx.strokeRect(50, 60, 350, 120); 
+        ctx.fillStyle="#1e293b"; ctx.fillText("Set i (책장 한 칸)", 50, 50);
+
+        // Way 0
+        ctx.fillStyle="#e0e7ff"; ctx.fillRect(70, 80, 130, 80); 
+        ctx.strokeRect(70, 80, 130, 80);
+        ctx.fillStyle="#4f46e5"; ctx.fillText("Way 0 (빈자리 1)", 85, 125);
+        ctx.strokeRect(80, 90, 40, 60); ctx.fillStyle="#1e293b"; ctx.fillText("Tag", 88, 125);
+
+        // Way 1
+        ctx.fillStyle="#e0e7ff"; ctx.fillRect(250, 80, 130, 80); 
+        ctx.strokeRect(250, 80, 130, 80);
+        ctx.fillStyle="#4f46e5"; ctx.fillText("Way 1 (빈자리 2)", 265, 125);
+        ctx.strokeRect(260, 90, 40, 60); ctx.fillStyle="#1e293b"; ctx.fillText("Tag", 268, 125);
+
+        // Search Logic
+        ctx.beginPath();
+        ctx.moveTo(225, 20); ctx.lineTo(100, 20); ctx.lineTo(100, 80);
+        ctx.moveTo(225, 20); ctx.lineTo(350, 20); ctx.lineTo(350, 80);
+        ctx.strokeStyle = "#f43f5e"; ctx.lineWidth = 3; ctx.stroke();
+
+        ctx.fillStyle="#f43f5e"; ctx.fillText("입력 Tag를 동시에 비교!", 160, 25);
+    }
+
+    function drawBlocking() {
+        var c = document.getElementById('cvs_blocking'); 
+        if(!c) {
+            console.warn('Canvas cvs_blocking not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        // clientWidth가 0이면 기본값 사용
+        var w = c.width = c.clientWidth || 600; 
+        var h = c.height = 240;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="bold 14px sans-serif";
+
+        // Matrix A
+        ctx.strokeRect(40, 40, 120, 120); ctx.fillStyle="#1e293b"; ctx.fillText("Matrix A", 65, 30);
+        ctx.fillStyle="#cbd5e1"; ctx.fillRect(40, 40, 120, 120);
+        // Block in A
+        ctx.fillStyle="#f43f5e"; ctx.fillRect(40, 40, 40, 40); ctx.strokeRect(40, 40, 40, 40);
+        ctx.fillStyle="#fff"; ctx.fillText("BxB", 45, 65);
+
+        ctx.fillStyle="#1e293b"; ctx.font="20px sans-serif"; ctx.fillText("X", 180, 110);
+
+        // Matrix B
+        ctx.strokeRect(220, 40, 120, 120); ctx.font="bold 14px sans-serif"; ctx.fillText("Matrix B", 245, 30);
+        ctx.fillStyle="#cbd5e1"; ctx.fillRect(220, 40, 120, 120);
+        // Block in B
+        ctx.fillStyle="#4f46e5"; ctx.fillRect(220, 40, 40, 40); ctx.strokeRect(220, 40, 40, 40);
+        ctx.fillStyle="#fff"; ctx.fillText("BxB", 225, 65);
+
+        // Explanation
+        ctx.fillStyle="#334155"; 
+        ctx.fillText("작은 블록(Tile)만 캐시에 로드하여", 80, 200);
+        ctx.fillText("완전히 계산 끝날 때까지 재사용!", 90, 220);
+        
+        // Arrows
+        ctx.strokeStyle = "#64748b"; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(60, 80); ctx.lineTo(60, 180); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(240, 80); ctx.lineTo(240, 180); ctx.stroke();
+    }
+
+    // common.js가 자동으로 초기화하므로 추가 코드 불필요
+    // data-first-section="sec-basic" 속성으로 자동 처리됨
+</script>
+</body>
+</html>

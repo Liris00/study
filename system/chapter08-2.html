@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8-2: Signals and Nonlocal Jumps</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <!-- 
+    ⚠️ 중요: PDF 전체 페이지 확인
+    - PDF의 마지막 페이지 번호: 50
+    - 이 HTML에 포함된 마지막 페이지: 50
+    - 두 값이 일치합니다!
+    -->
+</head>
+<body data-first-section="sec-shells">
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Final Edition</span></div>
+    <div class="menu-label">Chapter 8-2. Signals & Nonlocal Jumps</div>
+    <div class="nav-item active" onclick="showSection('sec-shells', this)"><span class="nav-icon">🐚</span> 1. Shell Programs</div>
+    <div class="nav-item" onclick="showSection('sec-signals', this)"><span class="nav-icon">📡</span> 2. Signals</div>
+    <div class="nav-item" onclick="showSection('sec-handling', this)"><span class="nav-icon">⚙️</span> 3. Signal Handling</div>
+    <div class="nav-item" onclick="showSection('sec-sync', this)"><span class="nav-icon">🔒</span> 4. Synchronization</div>
+    <div class="nav-item" onclick="showSection('sec-nonlocal', this)"><span class="nav-icon">🔄</span> 5. Nonlocal Jumps</div>
+    <div class="nav-item" onclick="showSection('sec-summary', this)"><span class="nav-icon">📚</span> 6. Summary</div>
+</div>
+
+<div class="main">
+    <!-- 섹션 1: Shell Programs -->
+    <div id="sec-shells" class="section-container active">
+        <div class="header"><h1>1. Shell Programs & Multitasking</h1><p>셸 프로그램과 멀티태스킹의 이해</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('multitasking')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>멀티태스킹 (Multitasking)</h3>
+                <p>시스템이 여러 프로세스를 동시에 실행하는 방식. 프로세스 전환과 스케줄링.</p>
+                <div class="btn-learn">상세 설명 보기 (page 3~5)</div>
+            </div>
+            <div class="card" onclick="openModal('shell-basic')">
+                <span class="card-icon">🐚</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Shell Programs</h3>
+                <p>사용자를 대신해 프로그램을 실행하는 애플리케이션. sh, csh, bash 등.</p>
+                <div class="btn-learn">셸 구조 보기 (page 7)</div>
+            </div>
+            <div class="card" onclick="openModal('shell-eval')">
+                <span class="card-icon">⚙️</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Simple Shell eval</h3>
+                <p>기본적인 셸의 eval 함수 구현. fork, execve, wait의 활용.</p>
+                <div class="btn-learn">코드 분석 보기 (page 8)</div>
+            </div>
+            <div class="card" onclick="openModal('background-jobs')">
+                <span class="card-icon">⏳</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>Background Jobs</h3>
+                <p>포그라운드와 백그라운드 작업. 좀비 프로세스 문제와 해결책.</p>
+                <div class="btn-learn">문제점 분석 (page 9~11)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 2: Signals -->
+    <div id="sec-signals" class="section-container">
+        <div class="header"><h1>2. Signals</h1><p>프로세스 간 통신과 예외 처리 메커니즘</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('signal-concept')">
+                <span class="card-icon">📡</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Signal이란?</h3>
+                <p>프로세스에게 이벤트 발생을 알리는 작은 메시지. 예외와 인터럽트와 유사.</p>
+                <div class="btn-learn">기본 개념 보기 (page 13~14)</div>
+            </div>
+            <div class="card" onclick="openModal('signal-types')">
+                <span class="card-icon">📋</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>Signal Types</h3>
+                <p>SIGINT, SIGKILL, SIGSEGV, SIGALRM, SIGCHLD 등 주요 시그널 종류.</p>
+                <div class="btn-learn">시그널 표 보기 (page 13~14)</div>
+            </div>
+            <div class="card" onclick="openModal('sending-signals')">
+                <span class="card-icon">📤</span>
+                <div class="tag-container"><span class="tag logic">동작 원리</span></div>
+                <h3>Sending Signals</h3>
+                <p>시그널 전송 방법: kill 함수, 키보드 인터럽트, 하드웨어 예외 등.</p>
+                <div class="btn-learn">전송 메커니즘 (page 15, 20~23)</div>
+            </div>
+            <div class="card" onclick="openModal('receiving-signals')">
+                <span class="card-icon">📥</span>
+                <div class="tag-container"><span class="tag logic">동작 원리</span></div>
+                <h3>Receiving Signals</h3>
+                <p>시그널 수신과 처리. Default action, Ignore, Catch의 세 가지 방식.</p>
+                <div class="btn-learn">수신 처리 보기 (page 16, 24~25)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 3: Signal Handling -->
+    <div id="sec-handling" class="section-container">
+        <div class="header"><h1>3. Signal Handling</h1><p>시그널 핸들러 작성과 주의사항</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('signal-handler')">
+                <span class="card-icon">⚙️</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Signal Handler</h3>
+                <p>시그널 핸들러 함수 작성. signal 함수와 sigaction 사용법.</p>
+                <div class="btn-learn">핸들러 작성법 (page 27~40)</div>
+            </div>
+            <div class="card" onclick="openModal('pending-signals')">
+                <span class="card-icon">⚠️</span>
+                <div class="tag-container"><span class="tag exam">중요</span><span class="tag core">Interactive</span></div>
+                <h3>Pending Signals</h3>
+                <p>Pending signals는 큐에 저장되지 않음. 한 타입당 최대 하나만 pending.</p>
+                <div class="btn-learn">시뮬레이션 보기 (page 17~18, 32, 38)</div>
+            </div>
+            <div class="card" onclick="openModal('portable-handling')">
+                <span class="card-icon">🔧</span>
+                <div class="tag-container"><span class="tag logic">Best Practice</span></div>
+                <h3>Portable Signal Handling</h3>
+                <p>sigaction을 사용한 이식 가능한 시그널 처리. SA_RESTART 플래그.</p>
+                <div class="btn-learn">권장 방법 (page 40)</div>
+            </div>
+            <div class="card" onclick="openModal('sigsuspend')">
+                <span class="card-icon">⏸️</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>sigsuspend</h3>
+                <p>시그널을 기다리는 효율적인 방법. pause()의 문제점 해결.</p>
+                <div class="btn-learn">사용법 보기 (page 47~48)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 4: Synchronization -->
+    <div id="sec-sync" class="section-container">
+        <div class="header"><h1>4. Synchronization & Race Conditions</h1><p>시그널 핸들러와 메인 프로그램의 동기화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('race-conditions')">
+                <span class="card-icon">🏃</span>
+                <div class="tag-container"><span class="tag exam">중요</span><span class="tag core">Interactive</span></div>
+                <h3>Race Conditions</h3>
+                <p>시그널 핸들러와 메인 프로그램 간의 경쟁 상태. 동기화 문제.</p>
+                <div class="btn-learn">시뮬레이션 보기 (page 41~42)</div>
+            </div>
+            <div class="card" onclick="openModal('blocking-signals')">
+                <span class="card-icon">🚫</span>
+                <div class="tag-container"><span class="tag logic">해결책</span></div>
+                <h3>Blocking Signals</h3>
+                <p>sigprocmask를 사용한 시그널 블로킹. 크리티컬 섹션 보호.</p>
+                <div class="btn-learn">동기화 방법 (page 32~33)</div>
+            </div>
+            <div class="card" onclick="openModal('shell-sync')">
+                <span class="card-icon">🐚</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>Corrected Shell</h3>
+                <p>시그널 블로킹을 사용한 올바른 셸 구현. Race condition 해결.</p>
+                <div class="btn-learn">개선된 코드 (page 43~48)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 5: Nonlocal Jumps -->
+    <div id="sec-nonlocal" class="section-container">
+        <div class="header"><h1>5. Nonlocal Jumps</h1><p>프로세스 내 예외적 제어 흐름: setjmp와 longjmp</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('nonlocal-concept')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>Nonlocal Jumps란?</h3>
+                <p>함수 호출 스택을 건너뛰어 직접 다른 위치로 점프하는 메커니즘.</p>
+                <div class="btn-learn">기본 개념 보기 (page 49)</div>
+            </div>
+            <div class="card" onclick="openModal('setjmp-longjmp')">
+                <span class="card-icon">⚡</span>
+                <div class="tag-container"><span class="tag logic">코드 분석</span></div>
+                <h3>setjmp & longjmp</h3>
+                <p>setjmp로 복귀 지점 설정, longjmp로 해당 지점으로 점프.</p>
+                <div class="btn-learn">함수 사용법 (page 49)</div>
+            </div>
+            <div class="card" onclick="openModal('nonlocal-usage')">
+                <span class="card-icon">💡</span>
+                <div class="tag-container"><span class="tag logic">사용 사례</span></div>
+                <h3>사용 사례</h3>
+                <p>중첩 루프 탈출, 에러 처리, 예외 처리 등에 활용.</p>
+                <div class="btn-learn">실제 예제 보기 (page 49)</div>
+            </div>
+            <div class="card" onclick="openModal('nonlocal-caveats')">
+                <span class="card-icon">⚠️</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>주의사항</h3>
+                <p>volatile 변수, 레지스터 변수, 메모리 관리 등 주의할 점.</p>
+                <div class="btn-learn">주의사항 보기 (page 49)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 6: Summary & Review -->
+    <div id="sec-summary" class="section-container">
+        <div class="header"><h1>6. Summary & Review</h1><p>전체 내용 요약 및 핵심 정리</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('ecf-summary')">
+                <span class="card-icon">📚</span>
+                <div class="tag-container"><span class="tag core">요약</span></div>
+                <h3>ECF Summary</h3>
+                <p>Exceptional Control Flow의 전체 요약. Signals와 Nonlocal Jumps 정리.</p>
+                <div class="btn-learn">전체 요약 보기 (page 50)</div>
+            </div>
+            <div class="card" onclick="openModal('key-concepts')">
+                <span class="card-icon">🔑</span>
+                <div class="tag-container"><span class="tag exam">핵심</span></div>
+                <h3>Key Concepts</h3>
+                <p>이번 챕터에서 반드시 알아야 할 핵심 개념들.</p>
+                <div class="btn-learn">핵심 정리 보기 (page 50)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 오버레이 -->
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/common.js"></script>
+
+<script>
+    // ============================================
+    // 1. 모달 제목 정의
+    // ============================================
+    window.modalTitles = {
+        'multitasking': '멀티태스킹 (Multitasking)',
+        'shell-basic': 'Shell Programs',
+        'shell-eval': 'Simple Shell eval 함수',
+        'background-jobs': 'Background Jobs와 좀비 프로세스',
+        'signal-concept': 'Signal이란?',
+        'signal-types': 'Signal Types (시그널 종류)',
+        'sending-signals': 'Sending Signals (시그널 전송)',
+        'receiving-signals': 'Receiving Signals (시그널 수신)',
+        'signal-handler': 'Signal Handler 작성',
+        'pending-signals': 'Pending Signals (중요!)',
+        'portable-handling': 'Portable Signal Handling',
+        'sigsuspend': 'sigsuspend 함수',
+        'race-conditions': 'Race Conditions',
+        'blocking-signals': 'Blocking Signals',
+        'shell-sync': 'Corrected Shell (동기화)',
+        'nonlocal-concept': 'Nonlocal Jumps란?',
+        'setjmp-longjmp': 'setjmp & longjmp 함수',
+        'nonlocal-usage': 'Nonlocal Jumps 사용 사례',
+        'nonlocal-caveats': 'Nonlocal Jumps 주의사항',
+        'ecf-summary': 'ECF Summary (전체 요약)',
+        'key-concepts': 'Key Concepts (핵심 정리)'
+    };
+
+    // ============================================
+    // 2. 모달 콘텐츠 정의
+    // ============================================
+    window.contents = {
+        'multitasking': `
+            <h3>멀티태스킹 (Multitasking)</h3>
+            <p><strong>Multitasking (멀티태스킹):</strong> 여러 작업을 동시에 처리하는 것처럼 보이게 하는 기술</p>
+            <p>시스템이 여러 프로세스를 동시에 실행하는 방식입니다.</p>
+            
+            <canvas id="cvs_process_hierarchy"></canvas>
+            
+            <div class="easy-explain">
+                <h4>💡 멀티태스킹의 특징</h4>
+                <ul>
+                    <li><strong>동시 실행:</strong> 시스템은 많은 프로세스를 동시에 실행합니다.</li>
+                    <li><strong>프로세스 전환 (Context Switch):</strong> 정기적으로 한 프로세스에서 다른 프로세스로 전환합니다.</li>
+                    <li><strong>I/O 대기:</strong> I/O 리소스가 필요하거나 타이머 이벤트가 발생하면 프로세스를 일시 중단(Suspend)합니다.</li>
+                    <li><strong>재개 (Resume):</strong> I/O가 사용 가능하거나 스케줄링 우선순위가 주어지면 프로세스를 재개합니다.</li>
+                    <li><strong>동시 실행 착각:</strong> 사용자에게는 모든 프로세스가 동시에 실행되는 것처럼 보이지만, 실제로는 대부분의 시스템이 한 번에 하나의 프로세스만 실행합니다.</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p>프로세스 상태는 <strong>메모리 이미지 + 레지스터 값 + 프로그램 카운터</strong>를 포함합니다. <strong>Context Switch (문맥 교환)</strong>는 이 상태를 저장하고 복원하는 과정입니다.</p>
+            </div>
+        `,
+
+        'shell-basic': `
+            <h3>Shell Programs</h3>
+            <p><strong>Shell (셸):</strong> 사용자와 운영체제 사이의 인터페이스 역할을 하는 프로그램</p>
+            <p>셸은 사용자를 대신해 프로그램을 실행하는 애플리케이션 프로그램입니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 주요 Shell 종류</h4>
+                <ul>
+                    <li><strong>sh:</strong> Original Unix shell (Stephen Bourne, AT&T Bell Labs, 1977)</li>
+                    <li><strong>csh:</strong> BSD Unix C shell (tcsh: enhanced csh at CMU)</li>
+                    <li><strong>bash:</strong> "Bourne-Again" Shell (가장 널리 사용됨)</li>
+                </ul>
+            </div>
+            
+            <h4>기본 Shell 구조</h4>
+            <pre><code><span class="code-type">int</span> <span class="code-function">main</span>()
+{
+    <span class="code-type">char</span> cmdline[MAXLINE]; <span class="code-comment">/* 명령어 라인 */</span>
+    <span class="code-keyword">while</span> (1) {
+        <span class="code-comment">/* 읽기 */</span>
+        <span class="code-function">printf</span>("> ");
+        <span class="code-function">Fgets</span>(cmdline, MAXLINE, stdin);
+        <span class="code-keyword">if</span> (<span class="code-function">feof</span>(stdin))
+            <span class="code-function">exit</span>(0);
+        <span class="code-comment">/* 평가 및 실행 */</span>
+        <span class="code-function">eval</span>(cmdline);
+    }
+}</code></pre>
+            
+            <p>셸은 무한 루프로 명령어를 읽고(<code>read</code>), 평가하고(<code>eval</code>), 실행합니다.</p>
+        `,
+
+        'shell-eval': `
+            <h3>Simple Shell eval 함수</h3>
+            <p>기본적인 셸의 eval 함수 구현입니다.</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('code', this)">코드 분석</button>
+                    <button class="tab-btn" onclick="window.switchTab('explain', this)">동작 설명</button>
+                </div>
+                
+                <div id="tab-code" class="tab-pane active">
+                    <pre><code><span class="code-type">void</span> <span class="code-function">eval</span>(<span class="code-type">char</span> *cmdline)
+{
+    <span class="code-type">char</span> *argv[MAXARGS]; <span class="code-comment">/* execve()에 전달할 인자 리스트 */</span>
+    <span class="code-type">char</span> buf[MAXLINE]; <span class="code-comment">/* 수정된 명령어 라인을 저장 */</span>
+    <span class="code-type">int</span> bg; <span class="code-comment">/* 작업이 백그라운드(bg)인지 포그라운드(fg)인지 */</span>
+    <span class="code-type">pid_t</span> pid; <span class="code-comment">/* 프로세스 ID */</span>
+    
+    <span class="code-function">strcpy</span>(buf, cmdline);
+    bg = <span class="code-function">parseline</span>(buf, argv); <span class="code-comment">/* 명령어 파싱 및 bg 여부 확인 */</span>
+    <span class="code-keyword">if</span> (argv[0] == NULL)
+        <span class="code-keyword">return</span>; <span class="code-comment">/* 빈 줄은 무시 */</span>
+    
+    <span class="code-keyword">if</span> (!<span class="code-function">builtin_command</span>(argv)) { <span class="code-comment">/* 내장 명령어가 아니면 */</span>
+        <span class="code-keyword">if</span> ((pid = <span class="code-function">Fork</span>()) == 0) { <span class="code-comment">/* 자식 프로세스: 사용자 작업 실행 */</span>
+            <span class="code-keyword">if</span> (<span class="code-function">execve</span>(argv[0], argv, environ) < 0) {
+                <span class="code-function">printf</span>("%s: Command not found.\\n", argv[0]);
+                <span class="code-function">exit</span>(0);
+            }
+        }
+        <span class="code-comment">/* 부모 프로세스: 포그라운드 작업 종료 대기 */</span>
+        <span class="code-keyword">if</span> (!bg) { <span class="code-comment">/* 포그라운드 작업이면 */</span>
+            <span class="code-type">int</span> status;
+            <span class="code-keyword">if</span> (<span class="code-function">waitpid</span>(pid, &status, 0) < 0)
+                <span class="code-function">unix_error</span>("waitfg: waitpid error");
+        }
+        <span class="code-keyword">else</span> <span class="code-comment">/* 백그라운드 작업이면 */</span>
+            <span class="code-function">printf</span>("%d %s", pid, cmdline);
+    }
+    <span class="code-keyword">return</span>;
+}</code></pre>
+                </div>
+                
+                <div id="tab-explain" class="tab-pane">
+                    <div class="easy-explain">
+                        <h4>💡 동작 과정</h4>
+                        <ol>
+                            <li><strong>명령어 파싱:</strong> <code>parseline</code>으로 명령어를 파싱하고 백그라운드 여부를 확인합니다.</li>
+                            <li><strong>내장 명령어 확인:</strong> <code>builtin_command</code>로 내장 명령어인지 확인합니다.</li>
+                            <li><strong>프로세스 생성:</strong> <code>Fork()</code>로 자식 프로세스를 생성합니다.</li>
+                            <li><strong>프로그램 실행:</strong> 자식 프로세스에서 <code>execve</code>로 새 프로그램을 실행합니다.</li>
+                            <li><strong>대기:</strong> 포그라운드 작업이면 부모가 <code>waitpid</code>로 자식 종료를 기다립니다.</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <p>백그라운드 작업(<code>bg == 1</code>)이면 부모가 기다리지 않고 즉시 다음 명령어를 받을 수 있습니다. 하지만 이 경우 좀비 프로세스 문제가 발생할 수 있습니다!</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'background-jobs': `
+            <h3>Background Jobs와 좀비 프로세스 문제</h3>
+            <p><strong>Background Job (백그라운드 작업):</strong> 셸이 기다리지 않고 즉시 다음 명령어를 받을 수 있는 작업</p>
+            <p><strong>Foreground Job (포그라운드 작업):</strong> 셸이 종료될 때까지 기다리는 작업</p>
+            <p><strong>Zombie Process (좀비 프로세스):</strong> 종료되었지만 부모가 아직 수거(Reap)하지 않은 프로세스</p>
+            
+            <div class="easy-explain">
+                <h4>💡 Background Job이란?</h4>
+                <p>사용자는 보통 한 번에 하나의 명령어를 실행합니다. 하지만 일부 프로그램은 "오래" 실행됩니다.</p>
+                <ul>
+                    <li><strong>예시:</strong> <code>sleep 7200; rm /tmp/junk</code> - 2시간 후 파일 삭제</li>
+                    <li><strong>문제:</strong> 셸이 2시간 동안 멈춰있어야 함</li>
+                    <li><strong>해결:</strong> 백그라운드 작업으로 실행: <code>(sleep 7200; rm /tmp/junk) &</code></li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 Simple Shell의 문제점</h4>
+                <p>우리의 예제 셸은 포그라운드 작업을 올바르게 기다리고 수거(Reap)합니다. 하지만 <strong>백그라운드 작업</strong>은 어떻게 될까요?</p>
+                <ul>
+                    <li>백그라운드 작업이 종료되면 <strong>좀비(Zombie)가 됩니다</strong></li>
+                    <li>셸이 (일반적으로) 종료되지 않으므로 <strong>절대 수거되지 않습니다</strong></li>
+                    <li>메모리 누수로 커널 메모리가 고갈될 수 있습니다</li>
+                    <li>프로세스 할당량을 초과하면 <code>fork()</code>가 -1을 반환하여 새 명령어를 실행할 수 없게 됩니다</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>프로세스 할당량 확인</h4>
+                <pre><code>unix> limit maxproc    # csh syntax
+maxproc 202752
+unix> ulimit -u         # bash syntax
+202752</code></pre>
+            </div>
+            
+            <div class="easy-explain">
+                <h4>💡 해결책: Exceptional Control Flow</h4>
+                <p><strong>Exceptional Control Flow (예외적 제어 흐름):</strong> 정규 제어 흐름과 다른 방식의 제어 전환</p>
+                <p>셸은 백그라운드 작업이 언제 끝날지 알 수 없습니다. 정규 제어 흐름으로는 적시에 종료된 백그라운드 프로세스를 수거할 수 없습니다.</p>
+                <p><strong>해결:</strong> 커널이 백그라운드 프로세스가 완료되면 우리에게 알려줍니다. Unix에서 이 알림 메커니즘을 <strong>시그널(Signal)</strong>이라고 합니다.</p>
+            </div>
+        `,
+
+        'signal-concept': `
+            <h3>Signal이란?</h3>
+            <p><strong>Signal (시그널):</strong> 시스템에서 어떤 유형의 이벤트가 발생했음을 프로세스에 알리는 작은 메시지</p>
+            <p>시그널은 시스템에서 어떤 유형의 이벤트가 발생했음을 프로세스에 알리는 작은 메시지입니다.</p>
+            
+            <canvas id="cvs_signal_flow"></canvas>
+            
+            <div class="easy-explain">
+                <h4>💡 시그널의 특징</h4>
+                <ul>
+                    <li><strong>예외/인터럽트와 유사:</strong> 하드웨어 예외(Exception)나 인터럽트(Interrupt)와 비슷한 개념입니다.</li>
+                    <li><strong>커널에서 전송:</strong> 커널(Kernel)이 (때로는 다른 프로세스의 요청으로) 프로세스에 전송(Deliver)합니다.</li>
+                    <li><strong>정수 ID:</strong> 시그널 타입은 작은 정수 ID(1-30)로 식별됩니다.</li>
+                    <li><strong>최소한의 정보:</strong> 시그널에 포함된 정보는 ID와 도착 사실뿐입니다.</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p>시그널은 프로세스 레벨의 예외 처리 메커니즘입니다. 하드웨어 예외가 프로세서 레벨에서 처리되는 것처럼, 시그널은 프로세스 레벨에서 처리됩니다.</p>
+            </div>
+        `,
+
+        'signal-types': `
+            <h3>Signal Types (시그널 종류)</h3>
+            <p><strong>Terminate (종료):</strong> 프로세스를 즉시 종료</p>
+            <p><strong>Ignore (무시):</strong> 시그널을 무시하고 계속 실행</p>
+            <p><strong>Dump (덤프):</strong> 코어 덤프 파일 생성 후 종료</p>
+            <p>주요 시그널 타입과 기본 동작입니다.</p>
+            
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Default Action</th>
+                    <th>Corresponding Event</th>
+                </tr>
+                <tr>
+                    <td><strong>2</strong></td>
+                    <td>SIGINT</td>
+                    <td>Terminate</td>
+                    <td>Interrupt (인터럽트, 예: 키보드 Ctrl-C)</td>
+                </tr>
+                <tr>
+                    <td><strong>9</strong></td>
+                    <td>SIGKILL</td>
+                    <td>Terminate</td>
+                    <td>Kill program (프로그램 강제 종료, 무시/오버라이드 불가)</td>
+                </tr>
+                <tr>
+                    <td><strong>11</strong></td>
+                    <td>SIGSEGV</td>
+                    <td>Terminate & Dump</td>
+                    <td>Segmentation violation (세그멘테이션 위반)</td>
+                </tr>
+                <tr>
+                    <td><strong>14</strong></td>
+                    <td>SIGALRM</td>
+                    <td>Terminate</td>
+                    <td>Timer signal (타이머 시그널)</td>
+                </tr>
+                <tr>
+                    <td><strong>17</strong></td>
+                    <td>SIGCHLD</td>
+                    <td>Ignore</td>
+                    <td>Child stopped or terminated (자식 프로세스 중지 또는 종료)</td>
+                </tr>
+            </table>
+            
+            <div class="exam-point">
+                <h4>🚩 시험 핵심</h4>
+                <ul>
+                    <li><strong>SIGKILL (9):</strong> 무시하거나 오버라이드(Override)할 수 없습니다. 강제 종료에 사용됩니다.</li>
+                    <li><strong>SIGCHLD (17):</strong> 자식 프로세스가 종료되거나 중지될 때 부모에게 전송됩니다. 기본 동작은 무시입니다.</li>
+                    <li><strong>SIGINT (2):</strong> Ctrl-C로 전송됩니다. 대부분의 프로그램은 이를 catch(잡아서 처리)하여 정리 작업을 수행합니다.</li>
+                </ul>
+            </div>
+        `,
+
+        'sending-signals': `
+            <h3>Sending Signals (시그널 전송)</h3>
+            <p>커널은 대상 프로세스의 컨텍스트에 일부 상태를 업데이트하여 시그널을 전송(전달)합니다.</p>
+            
+            <canvas id="cvs_signal_send"></canvas>
+            
+            <div class="easy-explain">
+                <h4>💡 시그널 전송 이유</h4>
+                <ul>
+                    <li><strong>커널이 시스템 이벤트 감지:</strong> 0으로 나누기(SIGFPE) 또는 자식 프로세스 종료(SIGCHLD)</li>
+                    <li><strong>다른 프로세스가 요청:</strong> <code>kill</code> 함수를 사용하여 시그널 전송</li>
+                </ul>
+            </div>
+            
+            <h4>kill 함수</h4>
+            <pre><code><span class="code-type">int</span> <span class="code-function">kill</span>(<span class="code-type">pid_t</span> pid, <span class="code-type">int</span> sig);
+<span class="code-comment">/* pid > 0: 특정 프로세스에 전송
+   pid == 0: 같은 프로세스 그룹의 모든 프로세스에 전송
+   pid < 0: 프로세스 그룹 |pid|의 모든 프로세스에 전송 */</span></code></pre>
+            
+            <div class="tech-note">
+                <h4>키보드로 시그널 전송</h4>
+                <ul>
+                    <li><strong>Ctrl-C:</strong> SIGINT 전송 (포그라운드 프로세스 그룹)</li>
+                    <li><strong>Ctrl-Z:</strong> SIGTSTP 전송 (프로세스 중지)</li>
+                </ul>
+            </div>
+        `,
+
+        'receiving-signals': `
+            <h3>Receiving Signals (시그널 수신)</h3>
+            <p><strong>Asynchronous (비동기적):</strong> 메인 프로그램의 실행과 독립적으로 발생</p>
+            <p>프로세스가 시그널을 수신하면 세 가지 방식 중 하나로 처리합니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 시그널 처리 방식</h4>
+                <ol>
+                    <li><strong>Default Action (기본 동작):</strong> 시그널 타입에 따라 미리 정의된 기본 동작 수행
+                        <ul>
+                            <li>Terminate: 프로세스 종료</li>
+                            <li>Ignore: 무시</li>
+                            <li>Dump: 코어 덤프 후 종료</li>
+                            <li>Stop: 프로세스 중지</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ignore (무시):</strong> 시그널을 무시합니다</li>
+                    <li><strong>Catch (잡기):</strong> 사용자 정의 핸들러(Handler) 함수를 호출합니다</li>
+                </ol>
+            </div>
+            
+            <h4>signal 함수</h4>
+            <pre><code><span class="code-type">typedef</span> <span class="code-type">void</span> (*<span class="code-type">sighandler_t</span>)(<span class="code-type">int</span>);
+<span class="code-type">sighandler_t</span> <span class="code-function">signal</span>(<span class="code-type">int</span> signum, <span class="code-type">sighandler_t</span> handler);
+<span class="code-comment">/* handler == SIG_IGN: 무시
+   handler == SIG_DFL: 기본 동작
+   handler == 함수: 사용자 정의 핸들러 */</span></code></pre>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p>시그널 핸들러는 <strong>비동기적으로(Asynchronously)</strong> 호출됩니다. 메인 프로그램의 어느 지점에서든 호출될 수 있습니다.</p>
+            </div>
+        `,
+
+        'signal-handler': `
+            <h3>Signal Handler 작성</h3>
+            <p>시그널 핸들러는 시그널이 도착했을 때 호출되는 사용자 정의 함수입니다.</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('basic', this)">기본 예제</button>
+                    <button class="tab-btn" onclick="window.switchTab('sigchld', this)">SIGCHLD 핸들러</button>
+                </div>
+                
+                <div id="tab-basic" class="tab-pane active">
+                    <h4>기본 시그널 핸들러 예제</h4>
+                    <pre><code><span class="code-type">void</span> <span class="code-function">sigint_handler</span>(<span class="code-type">int</span> sig)
+{
+    <span class="code-function">printf</span>("Caught SIGINT!\\n");
+    <span class="code-function">exit</span>(0);
+}
+
+<span class="code-type">int</span> <span class="code-function">main</span>()
+{
+    <span class="code-comment">/* 시그널 핸들러 설치 */</span>
+    <span class="code-keyword">if</span> (<span class="code-function">signal</span>(SIGINT, sigint_handler) == SIG_ERR)
+        <span class="code-function">unix_error</span>("signal error");
+    
+    <span class="code-keyword">while</span> (1)
+        <span class="code-function">pause</span>(); <span class="code-comment">/* 시그널 수신 대기 */</span>
+}</code></pre>
+                </div>
+                
+                <div id="tab-sigchld" class="tab-pane">
+                    <h4>SIGCHLD 핸들러 예제</h4>
+                    <pre><code><span class="code-type">void</span> <span class="code-function">child_handler</span>(<span class="code-type">int</span> sig)
+{
+    <span class="code-type">int</span> olderrno = errno; <span class="code-comment">/* errno 백업 */</span>
+    <span class="code-type">pid_t</span> pid;
+    
+    <span class="code-keyword">while</span> ((pid = <span class="code-function">waitpid</span>(-1, NULL, 0)) > 0) { <span class="code-comment">/* 모든 종료된 자식 수거 */</span>
+        ccount--;
+        <span class="code-function">Sio_puts</span>("Handler reaped child ");
+        <span class="code-function">Sio_putl</span>((<span class="code-type">long</span>)pid);
+        <span class="code-function">Sio_puts</span>("\\n");
+    }
+    <span class="code-keyword">if</span> (errno != ECHILD)
+        <span class="code-function">Sio_error</span>("waitpid error");
+    errno = olderrno; <span class="code-comment">/* errno 복원 */</span>
+}</code></pre>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 중요: while 루프 사용</h4>
+                        <p>여러 자식이 동시에 종료될 수 있으므로, <code>waitpid</code>를 <strong>while 루프</strong>에서 호출하여 모든 종료된 자식을 수거(Reap)해야 합니다.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'pending-signals': `
+            <h3>Pending Signals (중요!)</h3>
+            <p><strong>Pending (대기 중인):</strong> 전송되었지만 아직 처리되지 않은 시그널</p>
+            <p><strong>Queue (큐):</strong> 대기열, 순서대로 저장하는 자료구조</p>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심: Pending signals는 큐에 저장되지 않음</h4>
+                <p>각 시그널 타입에 대해 <strong>하나의 비트</strong>만이 해당 시그널이 pending인지 여부를 나타냅니다.</p>
+                <p>따라서 <strong>특정 타입의 pending 시그널은 최대 하나</strong>입니다.</p>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('sim', this)">시뮬레이션</button>
+                    <button class="tab-btn" onclick="window.switchTab('explain', this)">설명</button>
+                </div>
+                
+                <div id="tab-sim" class="tab-pane active">
+                    <p>여러 자식 프로세스가 동시에 종료될 때 일어나는 일을 확인해보세요.</p>
+                    <div class="sim-box">
+                        <div class="process-container" id="pending-container">
+                            <div class="process-node parent">
+                                Parent
+                                <div class="label">Waiting</div>
+                            </div>
+                        </div>
+                        <div style="margin: 20px 0; padding: 15px; background: #f1f5f9; border-radius: 12px;">
+                            <strong>Pending SIGCHLD:</strong> <span id="pending-bit" style="font-size: 1.2rem; color: var(--primary);">0 (없음)</span>
+                        </div>
+                        <div class="sim-log" id="pending-log">👇 버튼을 눌러 여러 자식이 종료되는 상황을 시뮬레이션하세요.</div>
+                        <div class="sim-controls">
+                            <button onclick="window.nextPendingStep()">다음 단계 진행 ▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tab-explain" class="tab-pane">
+                    <div class="easy-explain">
+                        <h4>💡 문제 상황</h4>
+                        <p>여러 자식 프로세스가 동시에 종료되면:</p>
+                        <ul>
+                            <li>여러 SIGCHLD가 전송되지만</li>
+                            <li>Pending 비트는 하나만 설정됩니다</li>
+                            <li>핸들러는 <strong>한 번만</strong> 호출됩니다</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>잘못된 코드</h4>
+                        <pre><code><span class="code-type">void</span> <span class="code-function">child_handler</span>(<span class="code-type">int</span> sig)
+{
+    <span class="code-type">pid_t</span> pid;
+    pid = <span class="code-function">waitpid</span>(-1, NULL, 0); <span class="code-comment">/* 한 번만 호출! */</span>
+    ccount--;
+}</code></pre>
+                        <p>이 코드는 여러 자식이 종료되어도 하나만 수거합니다!</p>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>올바른 코드</h4>
+                        <pre><code><span class="code-type">void</span> <span class="code-function">child_handler</span>(<span class="code-type">int</span> sig)
+{
+    <span class="code-type">int</span> olderrno = errno; <span class="code-comment">/* errno 백업 */</span>
+    <span class="code-type">pid_t</span> pid;
+    <span class="code-keyword">while</span> ((pid = <span class="code-function">waitpid</span>(-1, NULL, 0)) > 0) { <span class="code-comment">/* 모든 자식 수거 */</span>
+        ccount--;
+    }
+    errno = olderrno; <span class="code-comment">/* errno 복원 */</span>
+}</code></pre>
+                        <p><strong>while 루프</strong>를 사용하여 모든 종료된 자식을 수거합니다.</p>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 결론</h4>
+                        <p><strong>시그널을 사용하여 이벤트(예: 자식 종료)를 카운트(Count)할 수 없습니다!</strong> 시그널은 "이벤트가 발생했다"는 사실만 알려줍니다.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'portable-handling': `
+            <h3>Portable Signal Handling</h3>
+            <p><strong>Portable (이식 가능한):</strong> 다른 시스템에서도 동일하게 작동하는</p>
+            <p><strong>Semantics (의미론):</strong> 프로그래밍 언어나 함수의 의미와 동작 방식</p>
+            <p>Unix 버전마다 시그널 처리 의미론이 다를 수 있습니다. 이식 가능한 코드를 작성하려면 <code>sigaction</code>을 사용해야 합니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 문제점들</h4>
+                <ul>
+                    <li>일부 오래된 시스템은 시그널을 catch한 후 동작을 기본값으로 복원(Restore)합니다</li>
+                    <li>일부 인터럽트된 시스템 콜은 <code>errno == EINTR</code>로 반환할 수 있습니다</li>
+                    <li>일부 시스템은 처리 중인 시그널 타입을 블로킹(Blocking)하지 않습니다</li>
+                </ul>
+            </div>
+            
+            <h4>권장 방법: sigaction 사용</h4>
+            <pre><code><span class="code-type">handler_t</span> *<span class="code-function">Signal</span>(<span class="code-type">int</span> signum, <span class="code-type">handler_t</span> *handler)
+{
+    <span class="code-type">struct</span> sigaction action, old_action;
+    
+    action.sa_handler = handler;
+    <span class="code-function">sigemptyset</span>(&action.sa_mask); <span class="code-comment">/* 처리 중인 시그널 타입 블로킹 */</span>
+    action.sa_flags = SA_RESTART; <span class="code-comment">/* 가능하면 시스템 콜 재시작 */</span>
+    
+    <span class="code-keyword">if</span> (<span class="code-function">sigaction</span>(signum, &action, &old_action) < 0)
+        <span class="code-function">unix_error</span>("Signal error");
+    
+    <span class="code-keyword">return</span> (old_action.sa_handler);
+}</code></pre>
+            
+            <div class="tech-note">
+                <h4>sigaction의 장점</h4>
+                <ul>
+                    <li><strong>sa_mask:</strong> 핸들러 실행 중 같은 타입의 시그널을 블로킹합니다</li>
+                    <li><strong>SA_RESTART:</strong> 가능하면 인터럽트된 시스템 콜을 자동으로 재시작(Restart)합니다</li>
+                    <li><strong>이식성:</strong> 모든 Unix 시스템에서 일관된 동작을 보장합니다</li>
+                </ul>
+            </div>
+        `,
+
+        'sigsuspend': `
+            <h3>sigsuspend 함수</h3>
+            <p><strong>Atomic (원자적):</strong> 중단 불가능한, 한 번에 완료되는 연산</p>
+            <p>시그널을 기다리는 효율적인 방법입니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 문제: pause()의 한계</h4>
+                <pre><code><span class="code-keyword">while</span> (!pid) <span class="code-comment">/* 경쟁 상태! */</span>
+    <span class="code-function">pause</span>();</code></pre>
+                <p>이 코드는 <strong>race condition (경쟁 상태)</strong>이 있습니다. <code>pause()</code> 호출 전에 시그널이 도착하면 영원히 기다릴 수 있습니다.</p>
+            </div>
+            
+            <h4>sigsuspend 함수</h4>
+            <pre><code><span class="code-type">int</span> <span class="code-function">sigsuspend</span>(<span class="code-keyword">const</span> <span class="code-type">sigset_t</span> *mask);</code></pre>
+            
+            <div class="tech-note">
+                <h4>sigsuspend의 동작</h4>
+                <p>다음과 <strong>원자적으로(중단 불가능하게)</strong> 동일합니다:</p>
+                <pre><code><span class="code-function">sigprocmask</span>(SIG_BLOCK, &mask, &prev);
+<span class="code-function">pause</span>();
+<span class="code-function">sigprocmask</span>(SIG_SETMASK, &prev, NULL);</code></pre>
+            </div>
+            
+            <h4>사용 예제</h4>
+            <pre><code><span class="code-type">int</span> <span class="code-function">main</span>(<span class="code-type">int</span> argc, <span class="code-type">char</span> **argv) {
+    <span class="code-type">sigset_t</span> mask, prev;
+    
+    <span class="code-comment">/* 시그널 핸들러 설치 */</span>
+    <span class="code-function">Signal</span>(SIGCHLD, sigchld_handler);
+    <span class="code-function">Signal</span>(SIGINT, sigint_handler);
+    
+    <span class="code-comment">/* 시그널 집합 초기화 및 SIGCHLD 추가 */</span>
+    <span class="code-function">Sigemptyset</span>(&mask);
+    <span class="code-function">Sigaddset</span>(&mask, SIGCHLD);
+    
+    <span class="code-keyword">while</span> (1) {
+        <span class="code-comment">/* SIGCHLD 블로킹 (자식 생성 전) */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_BLOCK, &mask, &prev);
+        
+        <span class="code-keyword">if</span> (<span class="code-function">Fork</span>() == 0) { <span class="code-comment">/* 자식 프로세스 */</span>
+            <span class="code-function">exit</span>(0);
+        }
+        
+        <span class="code-comment">/* SIGCHLD 수신 대기 (원자적으로 unblock하고 pause) */</span>
+        pid = 0;
+        <span class="code-keyword">while</span> (!pid)
+            <span class="code-function">Sigsuspend</span>(&prev); <span class="code-comment">/* 시그널 도착 시 깨어남 */</span>
+        
+        <span class="code-comment">/* 선택적으로 SIGCHLD 블로킹 해제 */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_SETMASK, &prev, NULL);
+        
+        <span class="code-comment">/* SIGCHLD 수신 후 작업 수행 */</span>
+        <span class="code-function">printf</span>(".");
+    }
+}</code></pre>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p><code>sigsuspend</code>는 시그널을 기다리는 <strong>효율적이고 안전한</strong> 방법입니다. 셸이 포그라운드 작업 종료를 기다리는 것과 유사합니다.</p>
+            </div>
+        `,
+
+        'race-conditions': `
+            <h3>Race Conditions</h3>
+            <p><strong>Race Condition (경쟁 상태):</strong> 두 개 이상의 프로세스나 스레드가 공유 자원에 동시에 접근할 때 발생하는 문제</p>
+            <p><strong>Synchronization (동기화):</strong> 여러 프로세스나 스레드의 실행 순서를 조절하는 것</p>
+            <p>시그널 핸들러와 메인 프로그램 간의 경쟁 상태 문제입니다.</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('sim', this)">시뮬레이션</button>
+                    <button class="tab-btn" onclick="window.switchTab('code', this)">코드 분석</button>
+                </div>
+                
+                <div id="tab-sim" class="tab-pane active">
+                    <p>부모가 <code>addjob</code>하기 전에 자식이 종료되면 어떤 문제가 발생하는지 확인해보세요.</p>
+                    <div class="sim-box">
+                        <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                            <div style="text-align: center;">
+                                <div style="font-weight: 700; margin-bottom: 10px;">부모 프로세스</div>
+                                <div class="process-node parent" id="race-parent">
+                                    Parent
+                                    <div class="label" id="parent-state">Fork() 호출</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-weight: 700; margin-bottom: 10px;">자식 프로세스</div>
+                                <div class="process-node child" id="race-child" style="display: none;">
+                                    Child
+                                    <div class="label" id="child-state">Running</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin: 20px 0; padding: 15px; background: #fff1f2; border-radius: 12px; border: 2px solid #fecdd3;">
+                            <strong>작업 리스트:</strong> <span id="job-list" style="font-size: 1.1rem; color: var(--accent);">[] (비어있음)</span>
+                        </div>
+                        <div class="sim-log" id="race-log">👇 버튼을 눌러 Race Condition을 시뮬레이션하세요.</div>
+                        <div class="sim-controls">
+                            <button onclick="window.nextRaceStep()">다음 단계 진행 ▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tab-code" class="tab-pane">
+                    <div class="exam-point">
+                        <h4>🚩 문제 상황</h4>
+                        <p>간단한 셸에서 미묘한 동기화 오류가 있습니다. 부모가 자식보다 먼저 실행된다고 가정합니다.</p>
+                    </div>
+                    
+                    <h4>잘못된 코드</h4>
+                    <pre><code><span class="code-type">int</span> <span class="code-function">main</span>(<span class="code-type">int</span> argc, <span class="code-type">char</span> **argv)
+{
+    <span class="code-type">int</span> pid;
+    <span class="code-function">Signal</span>(SIGCHLD, handler);
+    <span class="code-function">initjobs</span>(); <span class="code-comment">/* 작업 리스트 초기화 */</span>
+    
+    <span class="code-keyword">while</span> (1) {
+        <span class="code-keyword">if</span> ((pid = <span class="code-function">Fork</span>()) == 0) { <span class="code-comment">/* 자식 프로세스 */</span>
+            <span class="code-function">Execve</span>("/bin/date", argv, NULL);
+        }
+        <span class="code-function">addjob</span>(pid); <span class="code-comment">/* 작업 리스트에 자식 추가 */</span>
+    }
+}</code></pre>
+                    
+                    <div class="tech-note">
+                        <h4>Race Condition 시나리오</h4>
+                        <ol>
+                            <li>부모가 <code>Fork()</code> 호출</li>
+                            <li>자식이 즉시 종료 (부모가 <code>addjob</code> 호출하기 전)</li>
+                            <li>SIGCHLD 핸들러가 실행되어 <code>deletejob</code> 호출</li>
+                            <li>부모가 <code>addjob</code> 호출 (이미 삭제된 작업을 추가!)</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 해결책</h4>
+                        <p><code>fork</code> 전에 SIGCHLD를 블로킹하고, <code>addjob</code> 후에 unblock(블로킹 해제)해야 합니다.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'blocking-signals': `
+            <h3>Blocking Signals (시그널 블로킹)</h3>
+            <p><code>sigprocmask</code>를 사용하여 시그널을 블로킹할 수 있습니다.</p>
+            
+            <h4>sigprocmask 함수</h4>
+            <pre><code><span class="code-type">int</span> <span class="code-function">sigprocmask</span>(<span class="code-type">int</span> how, <span class="code-keyword">const</span> <span class="code-type">sigset_t</span> *set, <span class="code-type">sigset_t</span> *oldset);</code></pre>
+            
+            <div class="tech-note">
+                <h4>how 매개변수</h4>
+                <ul>
+                    <li><strong>SIG_BLOCK:</strong> set의 시그널을 blocked set에 추가</li>
+                    <li><strong>SIG_UNBLOCK:</strong> set의 시그널을 blocked set에서 제거</li>
+                    <li><strong>SIG_SETMASK:</strong> blocked set을 set으로 설정</li>
+                </ul>
+            </div>
+            
+            <h4>시그널 집합 조작 함수</h4>
+            <pre><code><span class="code-function">sigemptyset</span>(&mask);     <span class="code-comment">/* 빈 집합 */</span>
+<span class="code-function">sigfillset</span>(&mask);      <span class="code-comment">/* 모든 시그널 */</span>
+<span class="code-function">sigaddset</span>(&mask, SIGCHLD);  <span class="code-comment">/* SIGCHLD 추가 */</span>
+<span class="code-function">sigdelset</span>(&mask, SIGCHLD);  <span class="code-comment">/* SIGCHLD 제거 */</span></code></pre>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p>블로킹된 시그널은 <strong>pending</strong> 상태가 되지만, 블로킹이 해제될 때까지 전달되지 않습니다. 이를 사용하여 크리티컬 섹션을 보호할 수 있습니다.</p>
+            </div>
+        `,
+
+        'shell-sync': `
+            <h3>Corrected Shell (동기화된 셸)</h3>
+            <p>시그널 블로킹을 사용하여 race condition을 해결한 올바른 셸 구현입니다.</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('main', this)">main 함수</button>
+                    <button class="tab-btn" onclick="window.switchTab('handler', this)">핸들러</button>
+                </div>
+                
+                <div id="tab-main" class="tab-pane active">
+                    <h4>동기화된 main 함수</h4>
+                    <pre><code><span class="code-type">int</span> <span class="code-function">main</span>(<span class="code-type">int</span> argc, <span class="code-type">char</span> **argv)
+{
+    <span class="code-type">int</span> pid;
+    <span class="code-type">sigset_t</span> mask_all, mask_one, prev_one;
+    
+    <span class="code-comment">/* 시그널 집합 초기화 */</span>
+    <span class="code-function">Sigfillset</span>(&mask_all); <span class="code-comment">/* 모든 시그널 집합 */</span>
+    <span class="code-function">Sigemptyset</span>(&mask_one); <span class="code-comment">/* 빈 집합 */</span>
+    <span class="code-function">Sigaddset</span>(&mask_one, SIGCHLD); <span class="code-comment">/* SIGCHLD 추가 */</span>
+    
+    <span class="code-comment">/* 시그널 핸들러 설치 및 작업 리스트 초기화 */</span>
+    <span class="code-function">Signal</span>(SIGCHLD, handler);
+    <span class="code-function">initjobs</span>(); <span class="code-comment">/* 작업 리스트 초기화 */</span>
+    
+    <span class="code-keyword">while</span> (1) {
+        <span class="code-comment">/* 1단계: fork 전에 SIGCHLD 블로킹 (race condition 방지) */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_BLOCK, &mask_one, &prev_one);
+        
+        <span class="code-keyword">if</span> ((pid = <span class="code-function">Fork</span>()) == 0) { <span class="code-comment">/* 자식 프로세스 */</span>
+            <span class="code-comment">/* 자식은 부모의 blocked set을 상속받으므로 unblock 필요 */</span>
+            <span class="code-function">Sigprocmask</span>(SIG_SETMASK, &prev_one, NULL);
+            <span class="code-function">Execve</span>("/bin/date", argv, NULL);
+        }
+        
+        <span class="code-comment">/* 2단계: 부모 프로세스 - addjob 전에 모든 시그널 블로킹 */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_BLOCK, &mask_all, NULL);
+        <span class="code-function">addjob</span>(pid); <span class="code-comment">/* 작업 리스트에 자식 추가 (크리티컬 섹션) */</span>
+        
+        <span class="code-comment">/* 3단계: addjob 완료 후 SIGCHLD 블로킹 해제 */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_SETMASK, &prev_one, NULL);
+    }
+}</code></pre>
+                </div>
+                
+                <div id="tab-handler" class="tab-pane">
+                    <h4>SIGCHLD 핸들러</h4>
+                    <pre><code><span class="code-type">void</span> <span class="code-function">handler</span>(<span class="code-type">int</span> sig)
+{
+    <span class="code-type">int</span> olderrno = errno; <span class="code-comment">/* errno 백업 (시그널 핸들러는 비동기적이므로) */</span>
+    <span class="code-type">sigset_t</span> mask_all, prev_all;
+    <span class="code-type">pid_t</span> pid;
+    
+    <span class="code-comment">/* 모든 시그널 집합 초기화 */</span>
+    <span class="code-function">Sigfillset</span>(&mask_all);
+    
+    <span class="code-comment">/* 모든 종료된 자식을 수거 (while 루프 필수!) */</span>
+    <span class="code-keyword">while</span> ((pid = <span class="code-function">waitpid</span>(-1, NULL, 0)) > 0) {
+        <span class="code-comment">/* deletejob 호출 전에 모든 시그널 블로킹 (크리티컬 섹션 보호) */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_BLOCK, &mask_all, &prev_all);
+        <span class="code-function">deletejob</span>(pid); <span class="code-comment">/* 작업 리스트에서 자식 삭제 */</span>
+        <span class="code-function">Sigprocmask</span>(SIG_SETMASK, &prev_all, NULL); <span class="code-comment">/* 블로킹 해제 */</span>
+    }
+    
+    <span class="code-comment">/* errno 검증 및 복원 */</span>
+    <span class="code-keyword">if</span> (errno != ECHILD) <span class="code-comment">/* ECHILD는 더 이상 자식이 없다는 정상적인 상태 */</span>
+        <span class="code-function">Sio_error</span>("waitpid error");
+    errno = olderrno; <span class="code-comment">/* errno 복원 */</span>
+}</code></pre>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <ul>
+                            <li><strong>부모:</strong> <code>fork</code> 전에 SIGCHLD를 블로킹하고, <code>addjob</code> 후에 unblock(블로킹 해제)합니다.</li>
+                            <li><strong>자식:</strong> <code>execve</code> 전에 SIGCHLD를 unblock합니다 (자식은 부모의 blocked set을 상속받습니다).</li>
+                            <li><strong>핸들러:</strong> <code>deletejob</code> 호출 시 모든 시그널을 블로킹하여 보호합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'nonlocal-concept': `
+            <h3>Nonlocal Jumps란?</h3>
+            <p><strong>Nonlocal Jump (비지역 점프):</strong> 함수 호출 스택을 건너뛰어 직접 다른 위치로 점프하는 메커니즘</p>
+            <p><strong>Local Jump (지역 점프):</strong> 같은 함수 내에서의 점프 (goto 문 등)</p>
+            <p>Nonlocal jumps는 프로세스 내에서 예외적 제어 흐름을 제공합니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 왜 필요한가?</h4>
+                <p>일반적으로 함수는 호출 스택을 따라 순차적으로 반환됩니다. 하지만 때로는:</p>
+                <ul>
+                    <li><strong>에러 처리:</strong> 깊은 함수 호출 스택에서 에러가 발생하면, 모든 함수를 거슬러 올라가며 에러를 처리해야 합니다.</li>
+                    <li><strong>중첩 루프 탈출:</strong> 여러 겹의 루프에서 특정 조건이 만족되면 모든 루프를 한 번에 탈출하고 싶을 수 있습니다.</li>
+                    <li><strong>예외 처리:</strong> C++의 try-catch와 유사한 기능을 C에서 구현할 수 있습니다.</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심 포인트</h4>
+                <p>Nonlocal jumps는 <strong>프로세스 내에서만</strong> 작동합니다. 다른 프로세스로 점프할 수는 없습니다. (이는 Signals와의 차이점입니다)</p>
+            </div>
+        `,
+
+        'setjmp-longjmp': `
+            <h3>setjmp & longjmp 함수</h3>
+            <p><strong>setjmp:</strong> 복귀 지점을 설정하고 현재 실행 컨텍스트를 저장</p>
+            <p><strong>longjmp:</strong> 저장된 컨텍스트로 복귀하여 실행 재개</p>
+            
+            <canvas id="cvs_nonlocal_jump"></canvas>
+            
+            <h4>함수 시그니처</h4>
+            <pre><code><span class="code-type">#include</span> <span class="code-highlight">&lt;setjmp.h&gt;</span>
+
+<span class="code-type">int</span> <span class="code-function">setjmp</span>(<span class="code-type">jmp_buf</span> env); <span class="code-comment">/* 복귀 지점 설정, 처음 호출 시 0 반환 */</span>
+<span class="code-type">void</span> <span class="code-function">longjmp</span>(<span class="code-type">jmp_buf</span> env, <span class="code-type">int</span> val); <span class="code-comment">/* 저장된 지점으로 복귀, val은 setjmp의 반환값 */</span></code></pre>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('basic', this)">기본 예제</button>
+                    <button class="tab-btn" onclick="window.switchTab('explain', this)">동작 원리</button>
+                </div>
+                
+                <div id="tab-basic" class="tab-pane active">
+                    <h4>기본 사용 예제</h4>
+                    <pre><code><span class="code-type">#include</span> <span class="code-highlight">&lt;setjmp.h&gt;</span>
+<span class="code-type">#include</span> <span class="code-highlight">&lt;stdio.h&gt;</span>
+
+<span class="code-type">jmp_buf</span> env; <span class="code-comment">/* 복귀 지점 저장 */</span>
+
+<span class="code-type">void</span> <span class="code-function">foo</span>(<span class="code-type">int</span> n) {
+    <span class="code-keyword">if</span> (n < 0) {
+        <span class="code-function">printf</span>("에러 발생! 복귀합니다.\\n");
+        <span class="code-function">longjmp</span>(env, 1); <span class="code-comment">/* setjmp 위치로 복귀, 반환값은 1 */</span>
+    }
+    <span class="code-function">printf</span>("foo: %d\\n", n);
+}
+
+<span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-type">int</span> ret = <span class="code-function">setjmp</span>(env); <span class="code-comment">/* 복귀 지점 설정 */</span>
+    
+    <span class="code-keyword">if</span> (ret == 0) {
+        <span class="code-comment">/* 처음 호출: 정상 실행 */</span>
+        <span class="code-function">printf</span>("정상 실행 시작\\n");
+        <span class="code-function">foo</span>(10);
+        <span class="code-function">foo</span>(-5); <span class="code-comment">/* 에러 발생! */</span>
+    } <span class="code-keyword">else</span> {
+        <span class="code-comment">/* longjmp로 복귀: 에러 처리 */</span>
+        <span class="code-function">printf</span>("에러 처리 완료 (반환값: %d)\\n", ret);
+    }
+    
+    <span class="code-keyword">return</span> 0;
+}</code></pre>
+                </div>
+                
+                <div id="tab-explain" class="tab-pane">
+                    <div class="easy-explain">
+                        <h4>💡 동작 원리</h4>
+                        <ol>
+                            <li><strong>setjmp 호출:</strong> 현재 실행 컨텍스트(레지스터, 스택 포인터 등)를 <code>jmp_buf</code>에 저장하고 0을 반환합니다.</li>
+                            <li><strong>정상 실행:</strong> 프로그램이 계속 실행됩니다.</li>
+                            <li><strong>longjmp 호출:</strong> 저장된 컨텍스트로 복귀하고, <code>setjmp</code>가 <code>longjmp</code>의 두 번째 인자 값을 반환합니다.</li>
+                            <li><strong>복귀 후:</strong> <code>setjmp</code> 이후의 코드가 다시 실행되지만, 이번에는 0이 아닌 값을 받습니다.</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="exam-point">
+                        <h4>🚩 중요 포인트</h4>
+                        <ul>
+                            <li><strong>setjmp의 반환값:</strong> 처음 호출 시 0, longjmp로 복귀 시 longjmp의 두 번째 인자 값</li>
+                            <li><strong>longjmp의 두 번째 인자:</strong> 0이면 1로 변경됨 (0은 setjmp의 초기 반환값과 구분하기 위해)</li>
+                            <li><strong>스택 복원:</strong> longjmp는 스택을 복원하므로, setjmp와 longjmp 사이에 호출된 함수들의 스택 프레임이 사라집니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'nonlocal-usage': `
+            <h3>Nonlocal Jumps 사용 사례</h3>
+            <p>Nonlocal jumps는 다양한 상황에서 유용하게 사용됩니다.</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('nested', this)">중첩 루프 탈출</button>
+                    <button class="tab-btn" onclick="window.switchTab('error', this)">에러 처리</button>
+                </div>
+                
+                <div id="tab-nested" class="tab-pane active">
+                    <h4>중첩 루프 탈출</h4>
+                    <pre><code><span class="code-type">jmp_buf</span> env;
+
+<span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-type">int</span> i, j, k;
+    
+    <span class="code-keyword">if</span> (<span class="code-function">setjmp</span>(env) == 0) {
+        <span class="code-comment">/* 정상 실행 */</span>
+        <span class="code-keyword">for</span> (i = 0; i < 10; i++) {
+            <span class="code-keyword">for</span> (j = 0; j < 10; j++) {
+                <span class="code-keyword">for</span> (k = 0; k < 10; k++) {
+                    <span class="code-keyword">if</span> (i * j * k == 100) {
+                        <span class="code-function">printf</span>("조건 만족: %d, %d, %d\\n", i, j, k);
+                        <span class="code-function">longjmp</span>(env, 1); <span class="code-comment">/* 모든 루프 탈출 */</span>
+                    }
+                }
+            }
+        }
+    } <span class="code-keyword">else</span> {
+        <span class="code-comment">/* longjmp로 복귀 */</span>
+        <span class="code-function">printf</span>("모든 루프에서 탈출했습니다.\\n");
+    }
+    
+    <span class="code-keyword">return</span> 0;
+}</code></pre>
+                    <div class="exam-point">
+                        <h4>🚩 goto와의 차이</h4>
+                        <p><code>goto</code>는 같은 함수 내에서만 작동하지만, <code>longjmp</code>는 함수 경계를 넘어서 점프할 수 있습니다.</p>
+                    </div>
+                </div>
+                
+                <div id="tab-error" class="tab-pane">
+                    <h4>에러 처리</h4>
+                    <pre><code><span class="code-type">jmp_buf</span> error_env;
+
+<span class="code-type">void</span> <span class="code-function">deep_function</span>(<span class="code-type">int</span> depth) {
+    <span class="code-keyword">if</span> (depth > 10) {
+        <span class="code-function">printf</span>("깊이가 너무 깊습니다!\\n");
+        <span class="code-function">longjmp</span>(error_env, 1); <span class="code-comment">/* 에러 발생 시 즉시 복귀 */</span>
+    }
+    <span class="code-function">deep_function</span>(depth + 1); <span class="code-comment">/* 재귀 호출 */</span>
+}
+
+<span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-keyword">if</span> (<span class="code-function">setjmp</span>(error_env) == 0) {
+        <span class="code-function">deep_function</span>(0);
+    } <span class="code-keyword">else</span> {
+        <span class="code-comment">/* 에러 처리 */</span>
+        <span class="code-function">printf</span>("에러가 발생했습니다. 프로그램을 종료합니다.\\n");
+    }
+    <span class="code-keyword">return</span> 0;
+}</code></pre>
+                    <div class="easy-explain">
+                        <h4>💡 장점</h4>
+                        <p>깊은 함수 호출 스택에서 에러가 발생해도, 모든 함수를 거슬러 올라가며 에러 코드를 반환할 필요 없이 <strong>한 번에</strong> 에러 처리 지점으로 복귀할 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        `,
+
+        'nonlocal-caveats': `
+            <h3>Nonlocal Jumps 주의사항</h3>
+            <p>Nonlocal jumps를 사용할 때 주의해야 할 여러 가지 사항이 있습니다.</p>
+            
+            <div class="exam-point">
+                <h4>🚩 1. volatile 변수</h4>
+                <p><code>setjmp</code>와 <code>longjmp</code> 사이에서 변경된 지역 변수는 <strong>volatile</strong>로 선언해야 올바르게 동작합니다.</p>
+            </div>
+            
+            <div class="tech-note">
+                <h4>잘못된 예제</h4>
+                <pre><code><span class="code-type">jmp_buf</span> env;
+
+<span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-type">int</span> n = 10; <span class="code-comment">/* volatile이 아님! */</span>
+    
+    <span class="code-keyword">if</span> (<span class="code-function">setjmp</span>(env) == 0) {
+        n = 20; <span class="code-comment">/* 값 변경 */</span>
+        <span class="code-function">longjmp</span>(env, 1);
+    } <span class="code-keyword">else</span> {
+        <span class="code-function">printf</span>("n = %d\\n", n); <span class="code-comment">/* 예상: 20, 실제: 10 (또는 예측 불가) */</span>
+    }
+}</code></pre>
+                <p>이 코드는 예측할 수 없는 동작을 할 수 있습니다!</p>
+            </div>
+            
+            <div class="tech-note">
+                <h4>올바른 예제</h4>
+                <pre><code><span class="code-type">jmp_buf</span> env;
+
+<span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-keyword">volatile</span> <span class="code-type">int</span> n = 10; <span class="code-comment">/* volatile로 선언 */</span>
+    
+    <span class="code-keyword">if</span> (<span class="code-function">setjmp</span>(env) == 0) {
+        n = 20; <span class="code-comment">/* 값 변경 */</span>
+        <span class="code-function">longjmp</span>(env, 1);
+    } <span class="code-keyword">else</span> {
+        <span class="code-function">printf</span>("n = %d\\n", n); <span class="code-comment">/* 올바르게 20 출력 */</span>
+    }
+}</code></pre>
+                <p><strong>volatile</strong> 키워드를 사용하면 컴파일러가 해당 변수를 레지스터에 최적화하지 않고 메모리에 저장하므로, longjmp 후에도 변경된 값을 유지합니다.</p>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 2. 레지스터 변수</h4>
+                <p><code>register</code> 키워드로 선언된 변수는 <code>setjmp</code>/<code>longjmp</code>와 함께 사용하면 안 됩니다. 레지스터 값은 복원되지 않습니다.</p>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 3. 스택 프레임 소멸</h4>
+                <p><code>longjmp</code>는 스택을 복원하므로, <code>setjmp</code>와 <code>longjmp</code> 사이에 호출된 함수들의 스택 프레임이 사라집니다. 이로 인해:</p>
+                <ul>
+                    <li>동적 할당된 메모리는 해제되지 않을 수 있습니다 (메모리 누수)</li>
+                    <li>파일 포인터가 제대로 닫히지 않을 수 있습니다</li>
+                    <li>RAII 패턴이 작동하지 않습니다</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 4. Signals와의 상호작용</h4>
+                <p>시그널 핸들러 내에서 <code>longjmp</code>를 호출하면 안 됩니다. 시그널 핸들러는 비동기적으로 호출되므로, 예측할 수 없는 동작을 일으킬 수 있습니다.</p>
+            </div>
+            
+            <div class="easy-explain">
+                <h4>💡 권장 사항</h4>
+                <ul>
+                    <li>가능하면 <code>setjmp</code>/<code>longjmp</code> 대신 구조화된 에러 처리 방법을 사용하세요</li>
+                    <li>C++에서는 예외 처리(Exception Handling)를 사용하는 것이 더 안전합니다</li>
+                    <li>반드시 사용해야 한다면, volatile 변수와 메모리 관리에 주의하세요</li>
+                </ul>
+            </div>
+        `,
+
+        'ecf-summary': `
+            <h3>ECF Summary (Exceptional Control Flow 요약)</h3>
+            <p><strong>ECF (Exceptional Control Flow):</strong> 정규 제어 흐름과 다른 방식의 제어 전환</p>
+            <p>이번 챕터에서 다룬 Exceptional Control Flow의 전체 요약입니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 ECF의 다양한 형태</h4>
+                <ul>
+                    <li><strong>Exceptions:</strong> 하드웨어와 운영체제 커널 소프트웨어 레벨</li>
+                    <li><strong>Process Context Switch:</strong> 하드웨어 타이머와 커널 소프트웨어</li>
+                    <li><strong>Signals:</strong> 커널 소프트웨어 레벨 (이번 챕터에서 다룸)</li>
+                    <li><strong>Nonlocal Jumps:</strong> 애플리케이션 코드 레벨 (이번 챕터에서 다룸)</li>
+                </ul>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('signals', this)">Signals 요약</button>
+                    <button class="tab-btn" onclick="window.switchTab('nonlocal', this)">Nonlocal Jumps 요약</button>
+                </div>
+                
+                <div id="tab-signals" class="tab-pane active">
+                    <h4>Signals 요약</h4>
+                    <div class="exam-point">
+                        <h4>🚩 Signals의 핵심</h4>
+                        <ul>
+                            <li><strong>정의:</strong> 프로세스에게 이벤트 발생을 알리는 작은 메시지</li>
+                            <li><strong>전송:</strong> 커널이 프로세스 컨텍스트를 업데이트하여 전송</li>
+                            <li><strong>처리:</strong> Default action, Ignore, Catch 세 가지 방식</li>
+                            <li><strong>Pending signals:</strong> 큐에 저장되지 않음, 한 타입당 최대 하나만 pending</li>
+                            <li><strong>동기화:</strong> 시그널 블로킹을 사용하여 race condition 방지</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>주요 함수들</h4>
+                        <ul>
+                            <li><code>kill(pid, sig)</code>: 시그널 전송</li>
+                            <li><code>signal(signum, handler)</code>: 시그널 핸들러 설치</li>
+                            <li><code>sigaction(signum, action, old_action)</code>: 이식 가능한 시그널 처리</li>
+                            <li><code>sigprocmask(how, set, oldset)</code>: 시그널 블로킹</li>
+                            <li><code>sigsuspend(mask)</code>: 시그널을 기다리는 효율적인 방법</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="tab-nonlocal" class="tab-pane">
+                    <h4>Nonlocal Jumps 요약</h4>
+                    <div class="exam-point">
+                        <h4>🚩 Nonlocal Jumps의 핵심</h4>
+                        <ul>
+                            <li><strong>정의:</strong> 함수 호출 스택을 건너뛰어 직접 다른 위치로 점프</li>
+                            <li><strong>setjmp:</strong> 복귀 지점 설정 및 컨텍스트 저장</li>
+                            <li><strong>longjmp:</strong> 저장된 컨텍스트로 복귀</li>
+                            <li><strong>사용 사례:</strong> 중첩 루프 탈출, 에러 처리, 예외 처리</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tech-note">
+                        <h4>주의사항</h4>
+                        <ul>
+                            <li><strong>volatile 변수:</strong> setjmp/longjmp 사이에서 변경된 변수는 volatile로 선언</li>
+                            <li><strong>레지스터 변수:</strong> register 변수는 사용하지 말 것</li>
+                            <li><strong>스택 복원:</strong> longjmp는 스택을 복원하므로 메모리 관리 주의</li>
+                            <li><strong>Signals와의 상호작용:</strong> 시그널 핸들러 내에서 longjmp 사용 금지</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 ECF의 중요성</h4>
+                <p>Exceptional Control Flow는 현대 컴퓨터 시스템의 핵심입니다:</p>
+                <ul>
+                    <li><strong>시스템 레벨:</strong> 프로세스 관리, 가상 메모리, I/O 처리</li>
+                    <li><strong>애플리케이션 레벨:</strong> 에러 처리, 이벤트 기반 프로그래밍</li>
+                    <li><strong>프로그래머:</strong> ECF를 이해해야 효율적이고 안전한 프로그램을 작성할 수 있습니다</li>
+                </ul>
+            </div>
+        `,
+
+        'key-concepts': `
+            <h3>Key Concepts (핵심 정리)</h3>
+            <p>이번 챕터에서 반드시 알아야 할 핵심 개념들을 정리했습니다.</p>
+            
+            <div class="exam-point">
+                <h4>🚩 1. Multitasking & Shells</h4>
+                <ul>
+                    <li><strong>Multitasking:</strong> 여러 프로세스를 동시에 실행하는 것처럼 보이게 하는 기술</li>
+                    <li><strong>Context Switch:</strong> 프로세스 간 전환 시 상태 저장 및 복원</li>
+                    <li><strong>Shell:</strong> 사용자를 대신해 프로그램을 실행하는 애플리케이션</li>
+                    <li><strong>Background/Foreground Jobs:</strong> 백그라운드 작업은 좀비 프로세스 문제 발생 가능</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 2. Signals</h4>
+                <ul>
+                    <li><strong>Signal:</strong> 프로세스에게 이벤트 발생을 알리는 작은 메시지 (1-30 ID)</li>
+                    <li><strong>Pending signals:</strong> 큐에 저장되지 않음, 비트 하나만 사용</li>
+                    <li><strong>Signal Handler:</strong> while 루프로 모든 종료된 자식 수거 필수</li>
+                    <li><strong>Signal Blocking:</strong> sigprocmask로 크리티컬 섹션 보호</li>
+                    <li><strong>sigsuspend:</strong> 시그널을 기다리는 효율적이고 안전한 방법</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 3. Synchronization</h4>
+                <ul>
+                    <li><strong>Race Condition:</strong> 시그널 핸들러와 메인 프로그램 간의 경쟁 상태</li>
+                    <li><strong>해결책:</strong> fork 전에 SIGCHLD 블로킹, addjob 후 unblock</li>
+                    <li><strong>핸들러 보호:</strong> deletejob 호출 시 모든 시그널 블로킹</li>
+                </ul>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 4. Nonlocal Jumps</h4>
+                <ul>
+                    <li><strong>setjmp:</strong> 복귀 지점 설정, 처음 호출 시 0 반환</li>
+                    <li><strong>longjmp:</strong> 저장된 지점으로 복귀, setjmp가 val 반환</li>
+                    <li><strong>volatile:</strong> setjmp/longjmp 사이에서 변경된 변수는 volatile 필수</li>
+                    <li><strong>사용 사례:</strong> 중첩 루프 탈출, 에러 처리</li>
+                </ul>
+            </div>
+            
+            <div class="tech-note">
+                <h4>📝 시험 대비 체크리스트</h4>
+                <ul>
+                    <li>✅ Pending signals는 큐에 저장되지 않는다는 사실</li>
+                    <li>✅ Signal handler에서 while 루프로 모든 자식 수거</li>
+                    <li>✅ Race condition 해결을 위한 시그널 블로킹 순서</li>
+                    <li>✅ setjmp/longjmp의 반환값 동작 방식</li>
+                    <li>✅ volatile 변수의 필요성</li>
+                    <li>✅ sigsuspend의 원자적 동작</li>
+                </ul>
+            </div>
+            
+            <div class="easy-explain">
+                <h4>💡 실전 팁</h4>
+                <ul>
+                    <li><strong>Signals:</strong> 가능하면 sigaction을 사용하여 이식 가능한 코드 작성</li>
+                    <li><strong>Nonlocal Jumps:</strong> 가능하면 사용을 피하고, 구조화된 에러 처리 방법 사용</li>
+                    <li><strong>디버깅:</strong> 시그널과 nonlocal jumps는 디버깅이 어려우므로 신중하게 사용</li>
+                    <li><strong>문서화:</strong> 복잡한 ECF 사용 시 반드시 주석으로 설명</li>
+                </ul>
+            </div>
+        `
+    };
+
+    // ============================================
+    // 3. 챕터별 특수 기능 (시뮬레이션)
+    // ============================================
+    
+    // Pending Signals 시뮬레이션
+    window.nextPendingStep = function() {
+        var container = document.getElementById('pending-container');
+        var log = document.getElementById('pending-log');
+        var pendingBit = document.getElementById('pending-bit');
+        
+        if (!container || !log || !pendingBit) return;
+        
+        if (window.simStep === 0) {
+            // 1단계: 여러 자식 프로세스 생성
+            for (var i = 0; i < 3; i++) {
+                var child = document.createElement('div');
+                child.className = 'process-node child';
+                child.id = 'child-' + i;
+                child.innerHTML = 'Child ' + (i + 1) + ' (PID: ' + (101 + i) + ')<div class="label">Running</div>';
+                container.appendChild(child);
+            }
+            log.innerHTML = "<strong>1단계:</strong> 3개의 자식 프로세스가 실행 중입니다.";
+            pendingBit.textContent = '0 (없음)';
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: 모든 자식이 동시에 종료
+            var children = container.querySelectorAll('.process-node.child');
+            for (var i = 0; i < children.length; i++) {
+                children[i].querySelector('.label').textContent = 'Terminated';
+                children[i].style.opacity = '0.5';
+            }
+            log.innerHTML = "<strong>2단계:</strong> 3개의 자식이 <strong>동시에</strong> 종료되었습니다!<br>→ 3개의 SIGCHLD가 전송되지만...";
+            pendingBit.textContent = '1 (설정됨)';
+            pendingBit.style.color = 'var(--accent)';
+            window.simStep++;
+        } else if (window.simStep === 2) {
+            // 3단계: 핸들러가 한 번만 호출됨
+            log.innerHTML = "<strong>3단계:</strong> Pending 비트는 <strong>하나만</strong> 설정됩니다!<br>→ 핸들러는 <strong>한 번만</strong> 호출됩니다.<br>→ 하지만 <code>while</code> 루프로 모든 자식을 수거해야 합니다!";
+            window.simStep++;
+        } else if (window.simStep === 3) {
+            // 4단계: while 루프로 모든 자식 수거
+            var children = container.querySelectorAll('.process-node.child');
+            var reapedCount = 0;
+            for (var i = 0; i < children.length; i++) {
+                setTimeout(function(idx) {
+                    return function() {
+                        children[idx].querySelector('.label').textContent = 'Reaped';
+                        children[idx].style.background = 'var(--success-bg)';
+                        children[idx].style.borderColor = 'var(--success)';
+                        reapedCount++;
+                        if (reapedCount === children.length) {
+                            log.innerHTML = "<strong>4단계:</strong> <code>while</code> 루프로 <strong>모든 자식(3개)</strong>을 수거했습니다!<br>✅ 올바른 핸들러 구현";
+                        }
+                    };
+                }(i), i * 300);
+            }
+            pendingBit.textContent = '0 (없음)';
+            pendingBit.style.color = 'var(--primary)';
+            window.simStep++;
+        } else {
+            // 리셋
+            container.innerHTML = '<div class="process-node parent">Parent<div class="label">Waiting</div></div>';
+            pendingBit.textContent = '0 (없음)';
+            pendingBit.style.color = 'var(--primary)';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+    
+    // Race Condition 시뮬레이션
+    window.nextRaceStep = function() {
+        var parent = document.getElementById('race-parent');
+        var child = document.getElementById('race-child');
+        var parentState = document.getElementById('parent-state');
+        var childState = document.getElementById('child-state');
+        var jobList = document.getElementById('job-list');
+        var log = document.getElementById('race-log');
+        
+        if (!parent || !child || !log || !jobList) return;
+        
+        if (window.simStep === 0) {
+            // 1단계: Fork 호출
+            parentState.textContent = 'Fork() 호출';
+            child.style.display = 'flex';
+            childState.textContent = 'Created';
+            log.innerHTML = "<strong>1단계:</strong> 부모가 <code>Fork()</code>를 호출하여 자식을 생성했습니다.";
+            jobList.textContent = '[] (비어있음)';
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: 자식이 즉시 종료 (부모가 addjob하기 전)
+            childState.textContent = 'Terminated';
+            child.style.opacity = '0.5';
+            log.innerHTML = "<strong>2단계:</strong> ⚠️ 자식이 <strong>즉시 종료</strong>되었습니다!<br>(부모가 <code>addjob</code> 호출하기 전)";
+            jobList.textContent = '[] (비어있음)';
+            window.simStep++;
+        } else if (window.simStep === 2) {
+            // 3단계: SIGCHLD 핸들러가 deletejob 호출
+            log.innerHTML = "<strong>3단계:</strong> SIGCHLD 핸들러가 실행되어 <code>deletejob(pid)</code>를 호출합니다.<br>하지만 작업 리스트는 비어있어서 삭제할 것이 없습니다.";
+            jobList.textContent = '[] (비어있음)';
+            parentState.textContent = 'addjob() 호출 중...';
+            window.simStep++;
+        } else if (window.simStep === 3) {
+            // 4단계: 부모가 addjob 호출 (이미 삭제된 작업을 추가!)
+            parentState.textContent = 'addjob() 완료';
+            jobList.textContent = '[PID: 101]';
+            jobList.style.color = 'var(--accent)';
+            log.innerHTML = "<strong>4단계:</strong> ❌ 부모가 <code>addjob(pid)</code>를 호출했습니다!<br>하지만 핸들러는 이미 실행되었고, 작업 리스트에 없는 PID를 추가하려고 합니다.<br><strong>Race Condition 발생!</strong>";
+            window.simStep++;
+        } else {
+            // 리셋
+            parentState.textContent = 'Fork() 호출';
+            child.style.display = 'none';
+            child.style.opacity = '1';
+            jobList.textContent = '[] (비어있음)';
+            jobList.style.color = 'var(--accent)';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+    
+    // 캔버스 그리기 함수들
+    function drawSignalFlow() {
+        var c = document.getElementById('cvs_signal_flow');
+        if (!c) {
+            console.warn('Canvas cvs_signal_flow not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 280;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // 커널
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(50, 20, 120, 60);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Kernel", 80, 55);
+        
+        // 프로세스 1
+        ctx.fillStyle = "#4f46e5";
+        ctx.fillRect(250, 20, 120, 60);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Process A", 270, 55);
+        
+        // 프로세스 2
+        ctx.fillStyle = "#4f46e5";
+        ctx.fillRect(450, 20, 120, 60);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Process B", 470, 55);
+        
+        // 시그널 전송 화살표
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(170, 50);
+        ctx.lineTo(250, 50);
+        ctx.stroke();
+        ctx.fillStyle = "#f43f5e";
+        ctx.fillText("Signal", 200, 40);
+        
+        // 이벤트 발생
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(50, 120, 120, 40);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Event 발생", 60, 145);
+        
+        // 이벤트에서 커널로
+        ctx.strokeStyle = "#10b981";
+        ctx.beginPath();
+        ctx.moveTo(110, 120);
+        ctx.lineTo(110, 80);
+        ctx.stroke();
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("1. 이벤트 발생 (예: 자식 종료)", 50, 200);
+        ctx.fillText("2. 커널이 시그널 전송", 50, 220);
+        ctx.fillText("3. 프로세스가 시그널 수신 및 처리", 50, 240);
+    }
+    
+    function drawSignalSend() {
+        var c = document.getElementById('cvs_signal_send');
+        if (!c) {
+            console.warn('Canvas cvs_signal_send not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 240;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // 프로세스 1 (전송자)
+        ctx.fillStyle = "#4f46e5";
+        ctx.fillRect(50, 80, 100, 60);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Process A", 60, 115);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("kill(pid, SIG)", 55, 135);
+        
+        // 커널
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(200, 80, 100, 60);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("Kernel", 220, 115);
+        
+        // 프로세스 2 (수신자)
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(350, 80, 100, 60);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Process B", 360, 115);
+        
+        // 화살표
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(150, 110);
+        ctx.lineTo(200, 110);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(300, 110);
+        ctx.lineTo(350, 110);
+        ctx.stroke();
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("1. Process A가 kill() 호출", 50, 180);
+        ctx.fillText("2. 커널이 Process B에 시그널 전송", 50, 200);
+        ctx.fillText("3. Process B가 시그널 수신", 50, 220);
+    }
+    
+    function drawProcessHierarchy() {
+        var c = document.getElementById('cvs_process_hierarchy');
+        if (!c) {
+            console.warn('Canvas cvs_process_hierarchy not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 300;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // PID 0 (swapper)
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(250, 20, 100, 50);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("PID 0", 280, 35);
+        ctx.font = "11px sans-serif";
+        ctx.fillText("swapper/idle", 265, 50);
+        
+        // PID 1 (init/systemd)
+        ctx.fillStyle = "#4f46e5";
+        ctx.fillRect(250, 100, 100, 50);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("PID 1", 280, 115);
+        ctx.font = "11px sans-serif";
+        ctx.fillText("init/systemd", 265, 130);
+        
+        // 연결선
+        ctx.strokeStyle = "#64748b";
+        ctx.beginPath();
+        ctx.moveTo(300, 70);
+        ctx.lineTo(300, 100);
+        ctx.stroke();
+        
+        // 자식 프로세스들
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(100, 180, 80, 40);
+        ctx.fillStyle = "#fff";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Child 1", 115, 205);
+        
+        ctx.fillRect(250, 180, 80, 40);
+        ctx.fillText("Child 2", 265, 205);
+        
+        ctx.fillRect(400, 180, 80, 40);
+        ctx.fillText("Child 3", 415, 205);
+        
+        // PID 1에서 자식들로 연결
+        ctx.strokeStyle = "#64748b";
+        ctx.beginPath();
+        ctx.moveTo(280, 150);
+        ctx.lineTo(140, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(300, 150);
+        ctx.lineTo(290, 180);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(320, 150);
+        ctx.lineTo(440, 180);
+        ctx.stroke();
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("PID 0: 커널 내부 프로세스 (idle)", 50, 260);
+        ctx.fillText("PID 1: 모든 사용자 프로세스의 조상", 50, 280);
+    }
+    
+    function drawNonlocalJump() {
+        var c = document.getElementById('cvs_nonlocal_jump');
+        if (!c) {
+            console.warn('Canvas cvs_nonlocal_jump not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 320;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+        
+        // 함수 스택
+        ctx.fillStyle = "#e0e7ff";
+        ctx.fillRect(50, 40, 200, 50);
+        ctx.strokeRect(50, 40, 200, 50);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("main()", 60, 70);
+        ctx.fillText("setjmp(env) → 0", 120, 70);
+        
+        ctx.fillStyle = "#c7d2fe";
+        ctx.fillRect(50, 100, 200, 50);
+        ctx.strokeRect(50, 100, 200, 50);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("func1()", 60, 130);
+        
+        ctx.fillStyle = "#a5b4fc";
+        ctx.fillRect(50, 160, 200, 50);
+        ctx.strokeRect(50, 160, 200, 50);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("func2()", 60, 190);
+        
+        ctx.fillStyle = "#818cf8";
+        ctx.fillRect(50, 220, 200, 50);
+        ctx.strokeRect(50, 220, 200, 50);
+        ctx.fillStyle = "#fff";
+        ctx.fillText("func3()", 60, 250);
+        ctx.fillText("longjmp(env, 1)", 120, 250);
+        
+        // 점프 화살표
+        ctx.strokeStyle = "#f43f5e";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(250, 245);
+        ctx.lineTo(300, 245);
+        ctx.lineTo(300, 65);
+        ctx.lineTo(250, 65);
+        ctx.stroke();
+        
+        // 화살표 머리
+        ctx.beginPath();
+        ctx.moveTo(250, 65);
+        ctx.lineTo(240, 60);
+        ctx.lineTo(240, 70);
+        ctx.closePath();
+        ctx.fillStyle = "#f43f5e";
+        ctx.fill();
+        
+        // 복귀 후
+        ctx.fillStyle = "#fee2e2";
+        ctx.fillRect(350, 40, 200, 50);
+        ctx.strokeRect(350, 40, 200, 50);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("main()", 360, 70);
+        ctx.fillText("setjmp(env) → 1", 420, 70);
+        
+        // 설명
+        ctx.fillStyle = "#334155";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("1. setjmp()로 복귀 지점 설정 (반환값: 0)", 50, 300);
+        ctx.fillText("2. 깊은 함수 호출 스택", 50, 315);
+        ctx.fillText("3. longjmp()로 한 번에 복귀 (반환값: 1)", 350, 300);
+    }
+    
+    // 캔버스 그리기 훅
+    window.runCanvasDrawing = function(id) {
+        if (id === 'signal-concept') drawSignalFlow();
+        else if (id === 'sending-signals') drawSignalSend();
+        else if (id === 'multitasking') drawProcessHierarchy();
+        else if (id === 'setjmp-longjmp') drawNonlocalJump();
+    };
+    
+    // 모달 열기 전처리
+    window.onModalOpening = function(id) {
+        if (id === 'pending-signals') {
+            setTimeout(function() {
+                var container = document.getElementById('pending-container');
+                var log = document.getElementById('pending-log');
+                var pendingBit = document.getElementById('pending-bit');
+                if (container && log && pendingBit) {
+                    container.innerHTML = '<div class="process-node parent">Parent<div class="label">Waiting</div></div>';
+                    pendingBit.textContent = '0 (없음)';
+                    pendingBit.style.color = 'var(--primary)';
+                    log.innerText = "👇 버튼을 눌러 여러 자식이 종료되는 상황을 시뮬레이션하세요.";
+                    window.simStep = 0;
+                }
+            }, 50);
+        } else if (id === 'race-conditions') {
+            setTimeout(function() {
+                var parent = document.getElementById('race-parent');
+                var child = document.getElementById('race-child');
+                var parentState = document.getElementById('parent-state');
+                var jobList = document.getElementById('job-list');
+                var log = document.getElementById('race-log');
+                if (parent && child && parentState && jobList && log) {
+                    parentState.textContent = 'Fork() 호출';
+                    child.style.display = 'none';
+                    child.style.opacity = '1';
+                    jobList.textContent = '[] (비어있음)';
+                    jobList.style.color = 'var(--accent)';
+                    log.innerText = "👇 버튼을 눌러 Race Condition을 시뮬레이션하세요.";
+                    window.simStep = 0;
+                }
+            }, 50);
+        }
+    };
+</script>
+</body>
+</html>
+

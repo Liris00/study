@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Memory Hierarchy (Ultimate Edition)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-dark: #4338ca;
+            --secondary: #1e293b;
+            --bg-main: #f8fafc;
+            --text-main: #334155;
+            --accent: #f43f5e;
+            --accent-bg: #ffe4e6;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --code-bg: #1e293b;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+
+        /* 레이아웃 */
+        .sidebar { width: 280px; background: var(--secondary); color: white; display: flex; flex-direction: column; padding: 25px; flex-shrink: 0; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; }
+        .main { flex: 1; padding: 40px 60px; overflow-y: auto; background: #f1f5f9; position: relative; }
+        
+        /* 사이드바 스타일 */
+        .brand { font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; letter-spacing: -0.5px; }
+        .brand span { font-size: 0.85rem; font-weight: 400; color: #94a3b8; margin-left: 5px; }
+        
+        .menu-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin: 20px 0 10px 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item { padding: 14px 15px; margin-bottom: 8px; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; color: #cbd5e1; display: flex; align-items: center; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(3px); }
+        .nav-item.active { background: var(--primary); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .nav-icon { margin-right: 12px; font-size: 1.2rem; }
+
+        /* 메인 콘텐츠 스타일 */
+        .section-container { display: none; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-width: 1100px; margin: 0 auto; }
+        .section-container.active { display: block; }
+        
+        .header { margin-bottom: 40px; }
+        .header h1 { font-size: 2.2rem; margin: 0 0 12px 0; color: #0f172a; font-weight: 800; letter-spacing: -1px; }
+        .header p { font-size: 1.1rem; color: #64748b; }
+        
+        /* 카드 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; padding-bottom: 60px; }
+        .card { background: #fff; border-radius: 20px; padding: 30px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 20px 30px -5px rgba(0,0,0,0.1); }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary); opacity: 0; transition: 0.3s; }
+        .card:hover::before { opacity: 1; }
+        
+        .card-icon { font-size: 2.2rem; margin-bottom: 20px; background: var(--primary-light); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; color: var(--primary); }
+        .card h3 { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin: 0 0 10px 0; }
+        .card p { font-size: 1rem; color: #64748b; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
+        
+        .btn-learn { margin-top: auto; background: #f8fafc; color: var(--primary); padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .card:hover .btn-learn { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* 태그 */
+        .tag-container { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tag { font-size: 0.75rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; display: inline-block; letter-spacing: 0.5px; }
+        .tag.core { background: #fee2e2; color: #ef4444; }
+        .tag.exam { background: #dbeafe; color: #2563eb; }
+        .tag.logic { background: #fef3c7; color: #d97706; }
+
+        /* 모달 스타일 */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-content { background: #fff; width: 90%; max-width: 950px; height: 90vh; border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        
+        .modal-header { padding: 25px 35px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+        .modal-title { font-size: 1.6rem; font-weight: 800; color: #0f172a; }
+        .close-btn { font-size: 2rem; cursor: pointer; background: none; border: none; color: #94a3b8; transition: 0.2s; line-height: 1; }
+        .close-btn:hover { color: var(--accent); transform: rotate(90deg); }
+        
+        .modal-body { padding: 40px; overflow-y: auto; line-height: 1.8; color: #334155; font-size: 1.05rem; }
+        
+        /* --- 업그레이드 기능 스타일 (High Polish) --- */
+        
+        /* 1. Univ AI 스타일 설명 박스 */
+        .easy-explain { background-color: var(--success-bg); border-left: 6px solid var(--success); padding: 25px; margin: 25px 0; border-radius: 0 12px 12px 0; box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .easy-explain h4 { color: #059669; margin: 0 0 12px 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+        .easy-explain h4::before { content: '💡'; font-size: 1.2rem; }
+        .easy-explain ul { margin: 0; padding-left: 20px; }
+        .easy-explain li { margin-bottom: 6px; }
+
+        /* 2. 수식 토글 (Accordion) */
+        details { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; margin: 20px 0; overflow: hidden; transition: 0.3s; }
+        details[open] { border-color: var(--primary); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1); }
+        summary { font-weight: 700; color: var(--primary); padding: 15px 20px; cursor: pointer; background: #f8fafc; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '👇'; font-size: 1.2rem; transition: 0.2s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .derivation { padding: 20px; font-size: 1rem; background: #fff; border-top: 1px solid #e2e8f0; }
+
+        /* 3. 탭 인터페이스 */
+        .tab-container { margin-top: 30px; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
+        .tab-header { display: flex; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; font-weight: 600; color: #64748b; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
+        .tab-btn:hover { background: rgba(255,255,255,0.5); color: var(--primary); }
+        .tab-btn.active { background: #fff; color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-pane { display: none; padding: 25px; background: #fff; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s; }
+        
+        /* 코드 블록 (Dark Theme) */
+        pre { background: var(--code-bg); color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-family: 'Consolas', monospace; line-height: 1.5; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        code { font-family: inherit; }
+        .code-comment { color: #94a3b8; font-style: italic; }
+        .code-highlight { color: #fb7185; font-weight: bold; background: rgba(251, 113, 133, 0.1); padding: 2px 4px; border-radius: 4px; }
+        .code-keyword { color: #818cf8; }
+
+        /* 4. 시뮬레이션 UI (Interactive) */
+        .sim-box { border: 2px solid #e2e8f0; padding: 30px; border-radius: 16px; text-align: center; margin: 25px 0; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .cache-container { display: flex; justify-content: center; gap: 20px; margin: 30px 0; align-items: flex-end; }
+        .cache-slot-wrapper { text-align: center; }
+        .slot-label { font-size: 0.85rem; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+        .cache-slot { width: 140px; height: 80px; border: 3px dashed #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; font-weight: 800; font-size: 1.2rem; color: #cbd5e1; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: #f8fafc; }
+        
+        .cache-slot.filled { border-style: solid; border-color: var(--primary); background: var(--primary-light); color: var(--primary); transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2); }
+        .cache-slot.conflict { animation: shake 0.5s; border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+        
+        .sim-log { margin-bottom: 20px; font-size: 1.1rem; color: #334155; font-weight: 500; min-height: 30px; }
+        .sim-controls button { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 1rem; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); }
+        .sim-controls button:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        .sim-controls button:active { transform: translateY(0); }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .math-block { background: #fff; padding: 20px; border: 1px solid #e2e8f0; text-align: center; margin: 20px 0; border-radius: 12px; font-family: 'Times New Roman', serif; font-size: 1.3rem; font-style: italic; color: #1e293b; box-shadow: inset 0 0 10px rgba(0,0,0,0.02); }
+        canvas { width: 100%; height: 240px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; display: block; margin: 20px 0; }
+        
+        /* 추가 스타일 */
+        .tech-note {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .tech-note h4 {
+            margin: 0 0 10px 0;
+            color: #475569;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .exam-point {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .exam-point h4 {
+            margin: 0 0 10px 0;
+            color: #be123c;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 30px 0 15px 0;
+            font-weight: 700;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+        }
+        h4 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin: 20px 0 10px 0;
+            font-weight: 700;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th {
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 700;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+            color: #475569;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Ultimate Edition</span></div>
+    <div class="menu-label">Chapter 6. Memory Hierarchy</div>
+    <div class="nav-item active" onclick="showSection('sec-basic', this)"><span class="nav-icon">📚</span> 1. 캐시의 기본 원리</div>
+    <div class="nav-item" onclick="showSection('sec-mapping', this)"><span class="nav-icon">🗺️</span> 2. 매핑과 시뮬레이션</div>
+    <div class="nav-item" onclick="showSection('sec-perf', this)"><span class="nav-icon">📊</span> 3. 성능과 정책</div>
+    <div class="nav-item" onclick="showSection('sec-opt', this)"><span class="nav-icon">🚀</span> 4. 최적화 (Blocking)</div>
+</div>
+
+<div class="main">
+    <div id="sec-basic" class="section-container active">
+        <div class="header"><h1>1. 캐시 메모리 개요</h1><p>속도 차이를 극복하는 메모리 계층 구조의 핵심</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('cache-concept')">
+                <span class="card-icon">🏰</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>캐시란 무엇인가?</h3>
+                <p>CPU와 메인 메모리 사이의 병목 현상을 해결하는 고속 완충 지대입니다.</p>
+                <div class="btn-learn">쉬운 설명 (호텔 비유)</div>
+            </div>
+            <div class="card" onclick="openModal('cache-org')">
+                <span class="card-icon">🗂️</span>
+                <div class="tag-container"><span class="tag exam">구조</span></div>
+                <h3>S, E, B 구조</h3>
+                <p>Set(집합), Line(라인), Block(블록)으로 구성된 캐시 주소 체계 완벽 정리.</p>
+                <div class="btn-learn">도서관 비유 보기</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-mapping" class="section-container">
+        <div class="header"><h1>2. 매핑 방식과 시뮬레이션</h1><p>데이터 충돌이 왜 발생하는지 직접 확인해보세요.</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('direct-mapped')">
+                <span class="card-icon">🕹️</span>
+                <div class="tag-container"><span class="tag core">Interactive</span></div>
+                <h3>Direct Mapped (E=1)</h3>
+                <p>한 주소는 오직 한 곳에만! 충돌 미스(Conflict Miss) 발생 과정을 <strong>시뮬레이션</strong>으로 체험합니다.</p>
+                <div class="btn-learn">시뮬레이션 시작 ▶</div>
+            </div>
+            <div class="card" onclick="openModal('set-associative')">
+                <span class="card-icon">🤝</span>
+                <div class="tag-container"><span class="tag exam">빈출</span></div>
+                <h3>Set Associative (E>1)</h3>
+                <p>유연성을 더해 충돌을 줄이는 방식. E개의 자리 중 빈 곳을 찾아 들어갑니다.</p>
+                <div class="btn-learn">동작 원리 (Canvas)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-perf" class="section-container">
+        <div class="header"><h1>3. 쓰기 정책 & 메모리 마운틴</h1><p>데이터 일관성 유지와 성능 시각화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('write-policy')">
+                <span class="card-icon">✍️</span>
+                <div class="tag-container"><span class="tag logic">정책</span></div>
+                <h3>Write Policy</h3>
+                <p>Write-Through vs Write-Back. 성능과 안전성 사이의 트레이드오프.</p>
+                <div class="btn-learn">정책 비교표 보기</div>
+            </div>
+            <div class="card" onclick="openModal('mountain')">
+                <span class="card-icon">⛰️</span>
+                <div class="tag-container"><span class="tag exam">그래프</span></div>
+                <h3>The Memory Mountain</h3>
+                <p>Stride(공간 지역성)와 Size(시간 지역성)에 따른 읽기 성능 변화 그래프.</p>
+                <div class="btn-learn">그래프 해석</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-opt" class="section-container">
+        <div class="header"><h1>4. 캐시 친화적 코드 & 블로킹</h1><p>프로그래머가 할 수 있는 최적화 기법</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('loop-order')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag logic">Code 분석</span></div>
+                <h3>Loop Reordering</h3>
+                <p>ijk vs kij. 루프 순서만 바꿔도 속도가 빨라진다? 실제 코드로 확인합니다.</p>
+                <div class="btn-learn">상세 분석 보기</div>
+            </div>
+            <div class="card" onclick="openModal('blocking')">
+                <span class="card-icon">🧱</span>
+                <div class="tag-container"><span class="tag exam">수식 유도</span></div>
+                <h3>Blocking (Tiling)</h3>
+                <p>큰 행렬을 작은 블록으로 쪼개기. <strong>미스율 공식 유도 과정</strong>이 포함되어 있습니다.</p>
+                <div class="btn-learn">원리 및 수식</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 전역 초기화 (안정성 최우선) ---
+    window.simStep = 0;
+
+    function initializePage() {
+        // 모든 섹션 비활성화
+        var sections = document.querySelectorAll('.section-container');
+        for(var i=0; i<sections.length; i++) sections[i].classList.remove('active');
+        
+        // 첫 번째 섹션 활성화
+        var firstSection = document.getElementById('sec-basic');
+        if(firstSection) firstSection.classList.add('active');
+        
+        // 네비게이션 초기화
+        var navs = document.querySelectorAll('.nav-item');
+        for(var i=0; i<navs.length; i++) navs[i].classList.remove('active');
+        var firstNav = document.querySelector('.nav-item');
+        if(firstNav) firstNav.classList.add('active');
+    }
+
+    // 섹션 전환 함수
+    window.showSection = function(id, el) {
+        var sections = document.querySelectorAll('.section-container');
+        for(var i=0; i<sections.length; i++) sections[i].classList.remove('active');
+        document.getElementById(id).classList.add('active');
+
+        var navs = document.querySelectorAll('.nav-item');
+        for(var i=0; i<navs.length; i++) navs[i].classList.remove('active');
+        el.classList.add('active');
+    }
+
+    // --- 2. 모달 제목 정의 ---
+    const modalTitles = {
+        'cache-concept': '캐시 메모리란?',
+        'cache-org': '캐시의 주소 구조 (S, E, B)',
+        'direct-mapped': 'Direct Mapped Cache 시뮬레이션',
+        'set-associative': 'Set Associative Cache 동작',
+        'write-policy': '쓰기 정책 (Write Policy)',
+        'mountain': '메모리 마운틴 (Memory Mountain)',
+        'loop-order': '루프 순서와 공간 지역성',
+        'blocking': '블로킹 (Blocking) 기법'
+    };
+
+    // --- 3. 콘텐츠 데이터 (풍부한 내용) ---
+    const contents = {
+        'cache-concept': `
+            <h3>캐시 메모리 개요</h3>
+            <div class="easy-explain">
+                <h4>🎓 Univ AI의 쉬운 설명: 호텔 금고 비유</h4>
+                <p>Intel Core i7의 캐시 계층을 <strong>호텔 서비스</strong>에 비유해볼까요?</p>
+                <ul>
+                    <li><strong>L1 캐시 (개인 금고):</strong> 방 안에 있어서 가장 빠르지만, 아주 귀중한 소량만 넣을 수 있습니다. (접근: 4 cycle)</li>
+                    <li><strong>L2 캐시 (방 안의 옷장):</strong> 금고보다 크지만, 문을 열고 닫는 데 시간이 조금 더 걸립니다. (접근: 11 cycle)</li>
+                    <li><strong>L3 캐시 (호텔 로비 창고):</strong> 모든 투숙객(코어)이 공유하며 가장 큽니다. 로비까지 다녀와야 합니다. (접근: 30-40 cycle)</li>
+                    <li><strong>메인 메모리 (집):</strong> 호텔 밖 멀리 있는 집입니다. 한번 다녀오려면 아주 오래 걸립니다. (접근: 100+ cycle)</li>
+                </ul>
+            </div>
+            <p>CPU는 데이터를 찾을 때 <strong>L1 → L2 → L3 → 메모리</strong> 순서로 뒤집니다. 가까운 곳에서 찾을수록(Hit) 시스템 성능이 비약적으로 향상됩니다.</p>
+        `,
+        'cache-org': `
+            <h3>캐시 주소 구조 (S, E, B)</h3>
+            <div class="easy-explain">
+                <h4>📚 도서관 비유: 책 찾기</h4>
+                <p>거대한 도서관(메모리)에서 책(데이터)을 빠르게 찾기 위해 주소를 3부분으로 나눕니다.</p>
+                <ul>
+                    <li><strong>Set Index (S):</strong> <strong>'책장 번호'</strong>입니다. 주소를 보고 몇 번 책장으로 갈지 가장 먼저 결정합니다.</li>
+                    <li><strong>Tag (T):</strong> 책장에 꽂힌 책의 <strong>'제목(ID)'</strong>입니다. 내가 찾는 그 책이 맞는지 확인하는 용도입니다.</li>
+                    <li><strong>Block Offset (B):</strong> 책을 펼쳤을 때 <strong>'몇 페이지'</strong>를 읽을지 결정합니다.</li>
+                </ul>
+            </div>
+            <div class="math-block">
+                Address = [ Tag ] [ Set Index ] [ Block Offset ]
+            </div>
+            <ul>
+                <li>캐시 크기(C) = S × E × B (세트 수 × 라인 수 × 블록 크기)</li>
+                <li>유효 비트(Valid Bit): 해당 자리에 실제 데이터가 있는지(1) 쓰레기 값인지(0) 표시합니다.</li>
+            </ul>
+        `,
+        'direct-mapped': `
+            <h3>Direct Mapped Cache 시뮬레이션</h3>
+            <p>가장 단순하지만 충돌이 잦은 구조입니다. 주소 0번과 8번이 같은 <strong>Set 0</strong>에 매핑되어 서로를 밀어내는(Thrashing) 상황을 시뮬레이션합니다.</p>
+            
+            <div class="sim-box">
+                <div class="cache-container">
+                    <div class="cache-slot-wrapper">
+                        <div class="slot-label">Set 0 (라인 1개뿐)</div>
+                        <div class="cache-slot" id="sim-slot">Empty</div>
+                    </div>
+                </div>
+                <div class="sim-log" id="sim-log">👇 아래 버튼을 눌러 시뮬레이션을 시작하세요.</div>
+                <div class="sim-controls">
+                    <button onclick="window.nextSimStep()">다음 단계 진행 ▶</button>
+                </div>
+            </div>
+            
+            <div class="exam-point">
+                <h4>🚩 핵심: 충돌 미스 (Conflict Miss)</h4>
+                <p>서로 다른 데이터(0번, 8번)가 우연히 같은 Set Index를 가질 때 발생합니다. Direct Mapped는 자리가 하나뿐이라 기존 데이터를 무조건 쫓아내야 합니다.</p>
+            </div>
+        `,
+        'set-associative': `
+            <h3>E-way Set Associative Cache</h3>
+            <p>Direct Mapped의 단점을 해결하기 위해, 한 Set에 <strong>E개의 자리(Line)</strong>를 마련했습니다. 이제 자리가 부족할 일이 줄어듭니다.</p>
+            
+            <div class="easy-explain">
+                <h4>💡 유연한 저장소</h4>
+                <p>마치 도서관 책장(Set) 한 칸에 책을 꽂을 자리가 2개(2-way) 있는 것과 같습니다. <br>
+                이미 한 자리가 찼더라도, 옆자리가 비어있으면 기존 책을 버리지 않고 새 책을 꽂을 수 있습니다.</p>
+            </div>
+
+            <canvas id="cvs_assoc"></canvas>
+            
+            <ul>
+                <li><strong>병렬 검색:</strong> 해당 Set에 있는 E개의 Tag를 <strong>동시에 비교</strong>하므로 속도가 빠릅니다.</li>
+                <li><strong>교체 정책:</strong> 만약 E개의 자리가 다 찼다면? 보통 <strong>LRU (가장 오랫동안 안 쓴 것)</strong>를 버리고 새 데이터를 넣습니다.</li>
+            </ul>
+        `,
+        'write-policy': `
+            <h3>쓰기 정책 (Write Policy)</h3>
+            <p>캐시의 내용이 변경되었을 때, 메인 메모리에는 언제 반영할까요? 속도와 안전성 사이의 선택입니다.</p>
+
+            <table>
+                <tr>
+                    <th>방식</th>
+                    <th>설명</th>
+                    <th>장점 및 단점</th>
+                </tr>
+                <tr>
+                    <td><strong>Write-Through</strong></td>
+                    <td>캐시와 메모리에 <strong>동시에</strong> 씁니다.</td>
+                    <td>데이터가 항상 일치하여 안전하지만, 메모리 접근 속도가 느려 <strong>전체 성능이 저하</strong>됩니다.</td>
+                </tr>
+                <tr>
+                    <td><strong>Write-Back</strong></td>
+                    <td><strong>캐시에만</strong> 쓰고, 나중에 쫓겨날 때 메모리에 씁니다.</td>
+                    <td><strong>빠릅니다.</strong> 하지만 데이터가 변경되었음을 표시하는 'Dirty Bit' 관리가 필요합니다.</td>
+                </tr>
+            </table>
+
+            <div class="tech-note">
+                <h4>Write Miss 정책 (데이터가 캐시에 없을 때)</h4>
+                <ul>
+                    <li><strong>Write Allocate:</strong> 메모리에서 데이터를 캐시로 가져온 뒤 씁니다. (주로 Write-Back과 짝꿍)</li>
+                    <li><strong>No-Write Allocate:</strong> 캐시를 건너뛰고 메모리에 바로 씁니다. (주로 Write-Through와 짝꿍)</li>
+                </ul>
+            </div>
+        `,
+        'mountain': `
+            <h3>The Memory Mountain</h3>
+            <p>프로그램의 지역성(Locality)에 따른 데이터 처리 속도(Throughput)를 3차원 산맥처럼 시각화한 그래프입니다.</p>
+            
+            <ul>
+                <li><strong>Ridges (능선) - 시간 지역성:</strong> 데이터 크기(Working Set)가 작아서 L1, L2 캐시 안에 쏙 들어갈수록 읽기 속도(높이)가 높습니다. 평평한 고원처럼 보입니다.</li>
+                <li><strong>Slopes (비탈) - 공간 지역성:</strong> Stride(보폭)가 작을수록(순차 접근) 성능이 좋습니다. Stride가 커지면 캐시 미스가 늘어나 비탈길을 따라 성능이 뚝 떨어집니다.</li>
+            </ul>
+            <p><strong>결론:</strong> 우리는 산의 정상(L1 캐시 영역)에 머무르도록 코드를 짜야 합니다.</p>
+        `,
+        'loop-order': `
+            <h3>행렬 곱셈 루프 순서 최적화</h3>
+            <div class="easy-explain">
+                <h4>🍳 요리사 비유: 재료 준비</h4>
+                <p>배열은 메모리에 가로로 쭉 나열되어 있습니다(Row-major). <br>
+                <strong>순서대로 읽는 것(Stride-1)</strong>은 재료를 순서대로 집는 것이고, <strong>건너뛰며 읽는 것</strong>은 재료 하나 집고 저 멀리 가서 다른 재료를 집어오는 격입니다.</p>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('summary', this)">요약표</button>
+                    <button class="tab-btn" onclick="window.switchTab('code', this)">상세 코드 분석</button>
+                </div>
+                
+                <div id="tab-summary" class="tab-pane active">
+                    <table>
+                        <tr><th>코드 순서</th><th>접근 패턴</th><th>Misses/Iter</th><th>성능</th></tr>
+                        <tr><td><code>kij</code>, <code>ikj</code></td><td><strong>Stride-1 (순차)</strong></td><td>0.5 (최소)</td><td>🚀 Best</td></tr>
+                        <tr><td><code>ijk</code>, <code>jik</code></td><td>혼합 (Row/Col)</td><td>1.25</td><td>Normal</td></tr>
+                        <tr><td><code>jki</code>, <code>kji</code></td><td><strong>Stride-N (점프)</strong></td><td>2.0 (최대)</td><td>🐢 Worst</td></tr>
+                    </table>
+                </div>
+
+                <div id="tab-code" class="tab-pane">
+                    <p><strong>Best Case (kij) 분석:</strong></p>
+                    <pre><code><span class="code-keyword">for</span> (k=0; k&lt;n; k++) {
+  <span class="code-keyword">for</span> (i=0; i&lt;n; i++) {
+    r = a[i][k]; <span class="code-comment">// k가 고정되므로 이 값은 레지스터에 유지됨 (Miss 0)</span>
+    <span class="code-keyword">for</span> (j=0; j&lt;n; j++)
+      <span class="code-highlight">c[i][j] += r * b[k][j];</span> 
+      <span class="code-comment">// c[i][0], c[i][1]... (가로 순차 접근 -> Good!)</span>
+      <span class="code-comment">// b[k][0], b[k][1]... (가로 순차 접근 -> Good!)</span>
+  }
+}</code></pre>
+                    <p>메모리 구조(Row-major)와 동일하게 가로로 읽으므로 <strong>공간 지역성(Spatial Locality)</strong>이 최적화됩니다.</p>
+                </div>
+            </div>
+        `,
+        'blocking': `
+            <h3>블로킹 (Blocking) 기법</h3>
+            <p>행렬이 너무 커서 캐시에 다 안 들어간다면? <strong>작은 블록(Sub-matrix)</strong>으로 쪼개서 처리합시다.</p>
+
+            <div class="easy-explain">
+                <h4>📦 이삿짐 비유</h4>
+                <p>큰 짐을 한 번에 다 옮기려다간 지쳐서 다 떨어뜨립니다(Cache Miss). <br>
+                대신 <strong>작은 상자(Block)</strong>에 나눠 담아서 옮기면, 한 상자 안의 물건들은 내 손 닿는 곳(캐시)에 두고 빠르게 정리할 수 있죠.</p>
+            </div>
+
+            <canvas id="cvs_blocking"></canvas>
+            
+            <details>
+                <summary>📐 수식 유도 과정 보기 (클릭하여 펼치기)</summary>
+                <div class="derivation">
+                    <p><strong>1. No Blocking (기본):</strong></p>
+                    <p>행렬 크기 N이 캐시보다 훨씬 크면, 한 줄을 읽을 때마다 이전에 읽은 데이터가 캐시에서 쫓겨납니다.</p>
+                    <div class="math-block">Total Misses = 9/8 * N³</div>
+                    <p>미스율이 N³에 비례하여 매우 높습니다.</p>
+                    <br>
+                    <p><strong>2. Blocking (블록 크기 B):</strong></p>
+                    <p>블록(B x B) 단위로 계산하면, 해당 블록이 캐시에 머무는 동안 데이터를 최대한 재사용합니다.</p>
+                    <div class="math-block">Total Misses = N³ / (4 * B)</div>
+                    <p><strong>결론:</strong> 블록 크기 B가 클수록(캐시에 들어가는 한도 내에서) 분모가 커지므로 <strong>미스율이 감소</strong>합니다!</p>
+                </div>
+            </details>
+        `
+    };
+
+    // --- 4. 인터랙티브 기능 (window 객체 등록) ---
+
+    window.openModal = function(id) {
+        var overlay = document.getElementById('modalOverlay');
+        var title = document.getElementById('modalTitle');
+        var body = document.getElementById('modalBody');
+        
+        title.innerText = modalTitles[id] || '학습 내용';
+        body.innerHTML = contents[id] || '<p>준비 중입니다.</p>';
+        overlay.classList.add('open');
+        
+        // 시뮬레이션 리셋
+        window.simStep = 0;
+
+        // 캔버스 그리기 (렌더링 후 실행)
+        setTimeout(function() {
+            if(id === 'set-associative') drawAssociative();
+            if(id === 'blocking') drawBlocking();
+        }, 50);
+    };
+
+    window.closeModal = function() {
+        document.getElementById('modalOverlay').classList.remove('open');
+    };
+
+    window.switchTab = function(tabName, btn) {
+        var container = btn.closest('.tab-container');
+        var btns = container.querySelectorAll('.tab-btn');
+        var panes = container.querySelectorAll('.tab-pane');
+
+        for(var i=0; i<btns.length; i++) btns[i].classList.remove('active');
+        for(var i=0; i<panes.length; i++) panes[i].classList.remove('active');
+        
+        btn.classList.add('active');
+        container.querySelector('#tab-' + tabName).classList.add('active');
+    };
+
+    window.nextSimStep = function() {
+        var slot = document.getElementById('sim-slot');
+        var log = document.getElementById('sim-log');
+        
+        var steps = [
+            { text: "1. CPU: 주소 0 요청 (Miss!) -> 메모리에서 가져와 저장", val: "Data[0]", state: "filled" },
+            { text: "2. CPU: 주소 8 요청 (Miss!) -> 같은 자리(Set 0)라 충돌! Data[0] 쫓겨남", val: "Data[8]", state: "conflict" },
+            { text: "3. CPU: 주소 0 재요청 (Miss!) -> 아까 쫓겨나서 없네요. Data[8] 쫓겨남", val: "Data[0]", state: "conflict" },
+            { text: "결론: 자리가 하나라서 계속 싸움 (Thrashing 발생)", val: "Data[0]", state: "filled" }
+        ];
+
+        if (window.simStep >= steps.length) {
+            window.simStep = 0;
+            slot.className = "cache-slot";
+            slot.innerText = "Empty";
+            log.innerText = "다시 시작합니다. 버튼을 누르세요.";
+            return;
+        }
+
+        var curr = steps[window.simStep];
+        log.innerText = curr.text;
+        slot.innerText = curr.val;
+        
+        slot.className = "cache-slot";
+        void slot.offsetWidth; // 리플로우 강제 (애니메이션 재시작)
+        slot.classList.add(curr.state);
+
+        window.simStep++;
+    };
+
+    // --- 5. 캔버스 드로잉 ---
+    function drawAssociative() {
+        var c = document.getElementById('cvs_assoc'); if(!c) return;
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth; var h = c.height = 240;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="bold 14px sans-serif";
+
+        // Set Box
+        ctx.strokeStyle = "#1e293b";
+        ctx.strokeRect(50, 60, 350, 120); 
+        ctx.fillStyle="#1e293b"; ctx.fillText("Set i (책장 한 칸)", 50, 50);
+
+        // Way 0
+        ctx.fillStyle="#e0e7ff"; ctx.fillRect(70, 80, 130, 80); 
+        ctx.strokeRect(70, 80, 130, 80);
+        ctx.fillStyle="#4f46e5"; ctx.fillText("Way 0 (빈자리 1)", 85, 125);
+        ctx.strokeRect(80, 90, 40, 60); ctx.fillStyle="#1e293b"; ctx.fillText("Tag", 88, 125);
+
+        // Way 1
+        ctx.fillStyle="#e0e7ff"; ctx.fillRect(250, 80, 130, 80); 
+        ctx.strokeRect(250, 80, 130, 80);
+        ctx.fillStyle="#4f46e5"; ctx.fillText("Way 1 (빈자리 2)", 265, 125);
+        ctx.strokeRect(260, 90, 40, 60); ctx.fillStyle="#1e293b"; ctx.fillText("Tag", 268, 125);
+
+        // Search Logic
+        ctx.beginPath();
+        ctx.moveTo(225, 20); ctx.lineTo(100, 20); ctx.lineTo(100, 80);
+        ctx.moveTo(225, 20); ctx.lineTo(350, 20); ctx.lineTo(350, 80);
+        ctx.strokeStyle = "#f43f5e"; ctx.lineWidth = 3; ctx.stroke();
+
+        ctx.fillStyle="#f43f5e"; ctx.fillText("입력 Tag를 동시에 비교!", 160, 25);
+    }
+
+    function drawBlocking() {
+        var c = document.getElementById('cvs_blocking'); if(!c) return;
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth; var h = c.height = 240;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="bold 14px sans-serif";
+
+        // Matrix A
+        ctx.strokeRect(40, 40, 120, 120); ctx.fillStyle="#1e293b"; ctx.fillText("Matrix A", 65, 30);
+        ctx.fillStyle="#cbd5e1"; ctx.fillRect(40, 40, 120, 120);
+        // Block in A
+        ctx.fillStyle="#f43f5e"; ctx.fillRect(40, 40, 40, 40); ctx.strokeRect(40, 40, 40, 40);
+        ctx.fillStyle="#fff"; ctx.fillText("BxB", 45, 65);
+
+        ctx.fillStyle="#1e293b"; ctx.font="20px sans-serif"; ctx.fillText("X", 180, 110);
+
+        // Matrix B
+        ctx.strokeRect(220, 40, 120, 120); ctx.font="bold 14px sans-serif"; ctx.fillText("Matrix B", 245, 30);
+        ctx.fillStyle="#cbd5e1"; ctx.fillRect(220, 40, 120, 120);
+        // Block in B
+        ctx.fillStyle="#4f46e5"; ctx.fillRect(220, 40, 40, 40); ctx.strokeRect(220, 40, 40, 40);
+        ctx.fillStyle="#fff"; ctx.fillText("BxB", 225, 65);
+
+        // Explanation
+        ctx.fillStyle="#334155"; 
+        ctx.fillText("작은 블록(Tile)만 캐시에 로드하여", 80, 200);
+        ctx.fillText("완전히 계산 끝날 때까지 재사용!", 90, 220);
+        
+        // Arrows
+        ctx.strokeStyle = "#64748b"; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(60, 80); ctx.lineTo(60, 180); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(240, 80); ctx.lineTo(240, 180); ctx.stroke();
+    }
+
+    // 실행 (Loading State Check)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializePage);
+    } else {
+        initializePage();
+    }
+</script>
+</body>
+</html>

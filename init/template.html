@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter X: [제목 입력]</title>
+    
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Template</span></div>
+    <div class="menu-label">Chapter X. [제목]</div>
+    
+    <div class="nav-item active" onclick="showSection('sec-1', this)"><span class="nav-icon">📚</span> 1. [주제 1]</div>
+    <div class="nav-item" onclick="showSection('sec-2', this)"><span class="nav-icon">🎯</span> 2. [주제 2]</div>
+    <div class="nav-item" onclick="showSection('sec-3', this)"><span class="nav-icon">📊</span> 3. [주제 3]</div>
+</div>
+
+<div class="main">
+    <div id="sec-1" class="section-container active">
+        <div class="header"><h1>1. [주제 1 제목]</h1><p>[한 줄 요약]</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('topic-1')">
+                <span class="card-icon">📌</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>[카드 제목]</h3>
+                <p>[카드 설명 텍스트]</p>
+                <div class="btn-learn">자세히 보기</div>
+            </div>
+            
+            </div>
+    </div>
+
+    <div id="sec-2" class="section-container">
+        <div class="header"><h1>2. [주제 2 제목]</h1><p>[한 줄 요약]</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('topic-2')">
+                <span class="card-icon">🕹️</span>
+                <div class="tag-container"><span class="tag exam">빈출</span></div>
+                <h3>[카드 제목 2]</h3>
+                <p>[카드 설명]</p>
+                <div class="btn-learn">자세히 보기</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="sec-3" class="section-container">
+        <div class="header"><h1>3. [주제 3 제목]</h1><p>...</p></div>
+        <div class="grid"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/js/common.js"></script>
+
+<script>
+    // 1. 모달 제목 정의
+    window.modalTitles = {
+        'topic-1': '첫 번째 주제 상세',
+        'topic-2': '두 번째 주제 상세'
+    };
+
+    // 2. 모달 내용 정의 (HTML 태그 사용 가능)
+    window.contents = {
+        'topic-1': `
+            <h3>주제 1의 핵심</h3>
+            <div class="easy-explain">
+                <h4>💡 쉬운 설명</h4>
+                <p>여기에 비유나 설명을 적으세요.</p>
+            </div>
+            <p>일반 설명 텍스트...</p>
+        `,
+        'topic-2': `
+            <h3>주제 2의 상세 내용</h3>
+            <div class="exam-point">
+                <h4>🚩 시험 포인트</h4>
+                <p>여기에 시험에 나올만한 내용을 적으세요.</p>
+            </div>
+            `
+    };
+
+    // 3. 캔버스 드로잉 함수 (필요한 경우만 작성)
+    // common.js에서 openModal 실행 시 자동으로 이 함수를 호출함 (id 전달)
+    window.runCanvasDrawing = function(id) {
+        if (id === 'topic-2') {
+            // drawTopic2(); // 함수 호출
+        }
+    };
+
+    // 개별 드로잉 함수 정의
+    // function drawTopic2() { ... }
+
+</script>
+</body>
+</html>

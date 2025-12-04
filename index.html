@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Logic Master Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap');
+        
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f8fafc; color: #334155; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        
+        /* 헤더 */
+        header { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2.5rem; color: #1e293b; margin-bottom: 10px; }
+        p { color: #64748b; font-size: 1.1rem; }
+
+        /* 과목 섹션 */
+        .subject-title { font-size: 1.5rem; font-weight: 700; color: #4f46e5; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        
+        /* 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        /* 카드 스타일 */
+        .card { background: white; border-radius: 16px; padding: 25px; border: 1px solid #e2e8f0; transition: 0.3s; text-decoration: none; color: inherit; display: block; position: relative; overflow: hidden; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: #4f46e5; }
+        
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-bottom: 15px; }
+        .badge.sys { background: #e0e7ff; color: #4338ca; }
+        .badge.dig { background: #fef3c7; color: #d97706; }
+        
+        .card h3 { margin: 0 0 10px 0; font-size: 1.3rem; color: #0f172a; }
+        .card p { font-size: 0.95rem; color: #64748b; line-height: 1.5; }
+        .status { font-size: 0.8rem; color: #94a3b8; margin-top: 15px; text-align: right; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚡ My Study Hub</h1>
+        <p>모든 강의 요약본을 한곳에서 관리합니다.</p>
+    </header>
+
+    <div class="subject-title">🖥️ 시스템 프로그래밍</div>
+    <div class="grid">
+        <a href="system/chapter06_ultimate.html" class="card">
+            <span class="badge sys">Chapter 6</span>
+            <h3>메모리 계층 구조</h3>
+            <p>캐시의 동작 원리, 지역성(Locality), 블로킹 기법 및 성능 최적화.</p>
+            <div class="status">Last Updated: 2024.05.20</div>
+        </a>
+
+        <a href="system/chapter08_final.html" class="card">
+            <span class="badge sys">Chapter 8</span>
+            <h3>예외와 프로세스</h3>
+            <p>Fork(), Execve(), 좀비 프로세스 및 시그널 처리 시뮬레이션.</p>
+            <div class="status">Last Updated: 2024.05.21</div>
+        </a>
+    </div>
+
+    <div class="subject-title">⚡ 디지털 시스템</div>
+    <div class="grid">
+        <a href="digital/chapter13.html" class="card">
+            <span class="badge dig">Chapter 13</span>
+            <h3>Datapath 설계</h3>
+            <p>ALU, 레지스터 파일, 버스 구조 및 데이터 흐름 제어.</p>
+        </a>
+        </div>
+</div>
+
+</body>
+</html>

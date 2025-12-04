@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Exceptional Control Flow (Final Edition)</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <!-- 
+    ⚠️ 중요: PDF 전체 페이지 확인
+    - PDF의 마지막 페이지 번호: 55
+    - 이 HTML에 포함된 마지막 페이지: 55
+    - 두 값이 일치합니다!
+    -->
+</head>
+<body data-first-section="sec-exception">
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Final Edition</span></div>
+    <div class="menu-label">Chapter 8. ECF & Process</div>
+    <div class="nav-item active" onclick="showSection('sec-exception', this)"><span class="nav-icon">⚠️</span> 1. 예외 (Exception)</div>
+    <div class="nav-item" onclick="showSection('sec-process', this)"><span class="nav-icon">🔄</span> 2. 프로세스 개요</div>
+    <div class="nav-item" onclick="showSection('sec-control', this)"><span class="nav-icon">🎮</span> 3. 프로세스 제어</div>
+    <div class="nav-item" onclick="showSection('sec-zombie', this)"><span class="nav-icon">🧟</span> 4. 좀비와 시그널</div>
+</div>
+
+<div class="main">
+    <div id="sec-exception" class="section-container active">
+        <div class="header"><h1>1. 예외 처리 (Exceptions)</h1><p>시스템 상태 변화에 대응하는 제어 흐름의 변화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('exception-basic')">
+                <span class="card-icon">⚡</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>예외란 무엇인가?</h3>
+                <p>하드웨어와 OS가 협력하여 시스템 이벤트를 처리하는 메커니즘.</p>
+                <div class="btn-learn">쉬운 설명 보기</div>
+            </div>
+            <div class="card" onclick="openModal('exception-class')">
+                <span class="card-icon">📋</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>예외의 4가지 유형</h3>
+                <p>Interrupts, Traps, Faults, Aborts의 차이점 완벽 정리.</p>
+                <div class="btn-learn">비교표 보기 (page 7~15)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-process" class="section-container">
+        <div class="header"><h1>2. 프로세스 (Process)</h1><p>실행 중인 프로그램의 추상화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('process-concept')">
+                <span class="card-icon">🧠</span>
+                <div class="tag-container"><span class="tag core">정의</span></div>
+                <h3>프로세스의 환상 (Illusion)</h3>
+                <p>마치 혼자서 CPU와 메모리를 독점하는 듯한 착각을 일으키는 기술.</p>
+                <div class="btn-learn">상세 설명 (page 17~19)</div>
+            </div>
+            <div class="card" onclick="openModal('context-switch')">
+                <span class="card-icon">🔀</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>문맥 교환 (Context Switch)</h3>
+                <p>CPU가 프로세스를 갈아끼우는 과정. 커널 모드와 유저 모드.</p>
+                <div class="btn-learn">동작 원리 보기 (page 21~24, 28)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-control" class="section-container">
+        <div class="header"><h1>3. 프로세스 제어 (Control)</h1><p>fork, exit, wait, execve 시스템 콜</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('fork-sim')">
+                <span class="card-icon">🍴</span>
+                <div class="tag-container"><span class="tag core">Interactive</span></div>
+                <h3>Fork() 시뮬레이션</h3>
+                <p>한 번 호출되어 두 번 리턴되는 <code>fork()</code>의 마법을 직접 확인하세요.</p>
+                <div class="btn-learn">시뮬레이션 시작 ▶ (page 30~55)</div>
+            </div>
+            <div class="card" onclick="openModal('execve-code')">
+                <span class="card-icon">🚀</span>
+                <div class="tag-container"><span class="tag logic">상세 분석</span></div>
+                <h3>Execve & Wait</h3>
+                <p>프로그램 실행(<code>execve</code>)과 자식 기다리기(<code>wait</code>) 코드 정복.</p>
+                <div class="btn-learn">코드 분석 보기 (page 34~55)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-zombie" class="section-container">
+        <div class="header"><h1>4. 좀비 프로세스 & 상태</h1><p>죽었지만 사라지지 않은 프로세스 처리하기</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('process-state')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag exam">상태도</span></div>
+                <h3>프로세스 상태 전이도</h3>
+                <p>Running, Stopped, Zombie 상태의 변화 과정 시각화.</p>
+                <div class="btn-learn">Canvas 그림 보기</div>
+            </div>
+            <div class="card" onclick="openModal('zombie-reaping')">
+                <span class="card-icon">🧟</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>좀비와 수거 (Reaping)</h3>
+                <p>부모가 <code>wait()</code> 해주지 않으면 발생하는 문제와 해결법.</p>
+                <div class="btn-learn">원리 설명 (page 44~45)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/common.js"></script>
+
+<script>
+    // ============================================
+    // 1. 모달 제목 정의
+    // ============================================
+    window.modalTitles = {
+        'exception-basic': '예외(Exception)의 기본 개념',
+        'exception-class': '예외의 4가지 클래스',
+        'process-concept': '프로세스(Process)란?',
+        'context-switch': '문맥 교환 (Context Switch)',
+        'fork-sim': 'Fork() 함수 동작 시뮬레이션',
+        'execve-code': 'Execve & Wait 코드 상세 분석',
+        'process-graph': '프로세스 그래프 분석',
+        'process-state': '프로세스 상태 전이도',
+        'zombie-reaping': '좀비 프로세스와 Reaping'
+    };
+
+    // ============================================
+    // 2. 모달 콘텐츠 정의
+    // ============================================
+    const contents = {
+        'exception-basic': `
+            <h3>예외(Exception)란?</h3>
+            <p><strong>Exception (예외):</strong> 정상적인 제어 흐름을 중단하고 OS 커널로 제어를 전달하는 메커니즘</p>
+            <p><strong>Handler (핸들러):</strong> 예외가 발생했을 때 실행되는 특별한 함수</p>
+            <p><strong>Event (이벤트):</strong> 예외를 발생시키는 시스템 상태 변화</p>
+            
+            <div class="easy-explain">
+                <h4>👨‍🏫 선생님과 학생 비유</h4>
+                <ul>
+                    <li><strong>Control Flow (제어 흐름):</strong> 학생(CPU)이 교과서(코드)를 순서대로 읽는 것.</li>
+                    <li><strong>Exception (예외):</strong> 갑자기 불이 나거나(Interrupt), 학생이 모르는 걸 질문하거나(Trap), 배가 아프다고 하는(Fault) 상황입니다.</li>
+                    <li><strong>Handler (핸들러):</strong> 선생님(OS Kernel)이 잠시 수업을 멈추고 상황을 처리해주는 절차입니다.</li>
+                </ul>
+            </div>
+            
+            <p>하드웨어와 OS가 협력하여 프로세서의 상태 변화(Event)에 대응하는 메커니즘입니다. 각 예외는 고유 번호를 가지며, <strong>Exception Table</strong>을 통해 처리기(Handler)로 이동합니다.</p>
+        `,
+        'exception-class': `
+            <h3>예외의 4가지 유형 (Classes)</h3>
+            <p><strong>Interrupt (인터럽트):</strong> 외부 I/O 장치에서 발생하는 비동기 예외</p>
+            <p><strong>Trap (트랩):</strong> 의도적으로 발생시키는 동기 예외 (시스템 콜 등)</p>
+            <p><strong>Fault (폴트):</strong> 복구 가능한 오류로 인한 동기 예외 (페이지 폴트 등)</p>
+            <p><strong>Abort (어보트):</strong> 복구 불가능한 심각한 오류로 인한 동기 예외</p>
+            
+            <div class="exam-point">
+                <h4>🚩 시험 핵심: 동기 vs 비동기</h4>
+                <p>Interrupt는 외부 신호라 <strong>비동기(Asynchronous)</strong>이고, 나머지는 명령어 실행 중 발생하므로 <strong>동기(Synchronous)</strong>입니다.</p>
+            </div>
+            
+            <table>
+                <tr><th>유형</th><th>원인</th><th>동기/비동기</th><th>처리 후 동작</th></tr>
+                <tr><td><strong>Interrupt</strong></td><td>외부 I/O (타이머, 키보드)</td><td>비동기 (Async)</td><td>Next 명령어로 복귀</td></tr>
+                <tr><td><strong>Trap</strong></td><td>의도적 호출 (System Call)</td><td>동기 (Sync)</td><td>Next 명령어로 복귀</td></tr>
+                <tr><td><strong>Fault</strong></td><td>오류 (Page Fault)</td><td>동기 (Sync)</td><td>현재 명령어 재시도</td></tr>
+                <tr><td><strong>Abort</strong></td><td>심각한 오류 (HW 고장)</td><td>동기 (Sync)</td><td>프로그램 종료 (Abort)</td></tr>
+            </table>
+        `,
+        'process-concept': `
+            <h3>프로세스 (Process)</h3>
+            <p><strong>Process (프로세스):</strong> 실행 중인 프로그램의 인스턴스</p>
+            <p><strong>Logical Control Flow (논리적 제어 흐름):</strong> 프로세스가 CPU를 독점하는 것처럼 보이는 추상화</p>
+            <p><strong>Private Address Space (개인 주소 공간):</strong> 프로세스가 메모리를 독점하는 것처럼 보이는 추상화</p>
+            
+            <p>실행 중인 프로그램의 인스턴스입니다. 시스템은 프로세스에게 두 가지 <strong>환상(Illusion)</strong>을 제공합니다.</p>
+            
+            <ul>
+                <li><strong>Logical Control Flow (논리적 제어 흐름):</strong> 마치 CPU를 혼자 독점해서 쓰는 것처럼 보입니다. (실제로는 Context Switching으로 나눠 씀)</li>
+                <li><strong>Private Address Space (개인 주소 공간):</strong> 마치 메모리를 혼자 독점해서 쓰는 것처럼 보입니다. (실제로는 Virtual Memory로 관리됨)</li>
+            </ul>
+        `,
+        'context-switch': `
+            <h3>문맥 교환 (Context Switch)</h3>
+            <p><strong>Context Switch (문맥 교환):</strong> OS 커널이 현재 실행 중인 프로세스를 중단하고 다른 프로세스를 실행하는 과정</p>
+            <p><strong>Register Context (레지스터 문맥):</strong> 프로세스의 레지스터 값들 (PC, SP, 범용 레지스터 등)</p>
+            
+            <p>OS 커널이 현재 실행 중인 프로세스를 중단하고, 다른 프로세스를 실행하는 과정입니다.</p>
+            
+            <div class="easy-explain">
+                <h4>🔄 작업 전환 비유</h4>
+                <p>공부(A)를 하다가 밥(B)을 먹으러 갈 때, 어디까지 공부했는지 <strong>책갈피(Register Context)</strong>를 꽂아두고 갑니다. 밥을 다 먹으면 책갈피 꽂은 곳부터 다시 공부를 시작합니다.</p>
+            </div>
+            
+            <ul>
+                <li>현재 프로세스의 레지스터 값을 메모리(커널 스택)에 저장.</li>
+                <li>다음 프로세스의 저장된 레지스터 값을 복원.</li>
+                <li>이 과정은 하드웨어 타이머 인터럽트에 의해 주기적으로 발생합니다.</li>
+            </ul>
+        `,
+        'fork-sim': `
+            <h3>Fork() 함수 분석</h3>
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('sim', this)">시뮬레이션</button>
+                    <button class="tab-btn" onclick="window.switchTab('code', this)">상세 코드 분석</button>
+                </div>
+                
+                <div id="tab-sim" class="tab-pane active">
+                    <p><code>pid = fork()</code> 호출 시 일어나는 일을 확인해보세요.</p>
+                    <div class="sim-box">
+                        <div class="process-container" id="proc-container">
+                            <div class="process-node parent">
+                                Parent (PID: 100)
+                                <div class="label">Running</div>
+                            </div>
+                        </div>
+                        <div class="sim-log" id="sim-log">👇 버튼을 눌러 fork()를 실행하세요.</div>
+                        <div class="sim-controls">
+                            <button onclick="window.nextForkStep()">Fork 실행 ▶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-code" class="tab-pane">
+                    <pre><code><span class="code-type">int</span> <span class="code-function">main</span>() {
+    <span class="code-type">pid_t</span> pid;
+    <span class="code-keyword">int</span> x = 1;
+
+    <span class="code-comment">/* 1단계: fork() 호출 - 한 번 호출되지만 두 번 리턴합니다! */</span>
+    pid = <span class="code-function">fork</span>(); 
+
+    <span class="code-keyword">if</span> (pid == 0) {
+        <span class="code-comment">/* 2단계: [자식 프로세스 영역] */</span>
+        <span class="code-comment">/* 자식에게는 pid 0이 반환됩니다. */</span>
+        <span class="code-function">printf</span>("child: x=%d\\n", ++x); 
+        <span class="code-function">exit</span>(0);
+    } 
+
+    <span class="code-comment">/* 3단계: [부모 프로세스 영역] */</span>
+    <span class="code-comment">/* 부모에게는 자식의 PID(예: 101)가 반환됩니다. */</span>
+    <span class="code-function">printf</span>("parent: x=%d\\n", --x);
+    <span class="code-function">exit</span>(0);
+}</code></pre>
+                    <div class="exam-point">
+                        <h4>🚩 핵심 포인트</h4>
+                        <p>1. <strong>복제:</strong> 자식은 부모의 메모리(변수 x=1 포함)를 그대로 복사하지만, <strong>별도의 공간</strong>을 가집니다.</p>
+                        <p>2. <strong>동시성:</strong> 부모와 자식 중 누가 먼저 실행될지는 알 수 없습니다 (Concurrent).</p>
+                    </div>
+                </div>
+            </div>
+        `,
+        'execve-code': `
+            <h3>Execve & Wait 함수 분석</h3>
+            <p><strong>execve (실행):</strong> 현재 프로세스를 새로운 프로그램으로 덮어쓰는 시스템 콜</p>
+            <p><strong>wait (대기):</strong> 자식 프로세스가 종료될 때까지 부모를 블로킹하는 시스템 콜</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="window.switchTab('summary', this)">요약</button>
+                    <button class="tab-btn" onclick="window.switchTab('code-wait', this)">Wait 분석</button>
+                    <button class="tab-btn" onclick="window.switchTab('code-exec', this)">Execve 분석</button>
+                </div>
+
+                <div id="tab-summary" class="tab-pane active">
+                    <p><strong>execve()</strong>: 현재 프로세스를 새로운 프로그램으로 덮어씁니다. (돌아오지 않음)</p>
+                    <p><strong>wait()</strong>: 자식 프로세스가 종료될 때까지 부모를 잠재웁니다(Block).</p>
+                </div>
+
+                <div id="tab-code-wait" class="tab-pane">
+                    <pre><code><span class="code-type">int</span> child_status;
+
+<span class="code-comment">/* 1단계: 자식 프로세스 생성 */</span>
+<span class="code-keyword">if</span> (<span class="code-function">fork</span>() == 0) {
+    <span class="code-comment">/* 자식 프로세스: 메시지 출력 후 종료 */</span>
+    <span class="code-function">printf</span>("Hello from child\\n");
+    <span class="code-function">exit</span>(0);
+} <span class="code-keyword">else</span> {
+    <span class="code-comment">/* 2단계: 부모 프로세스 */</span>
+    <span class="code-function">printf</span>("Hello from parent\\n");
+    
+    <span class="code-comment">/* 3단계: 자식이 끝날 때까지 대기 (Blocking) */</span>
+    <span class="code-function">wait</span>(&child_status);
+    
+    <span class="code-comment">/* 4단계: 자식 종료 후 실행 */</span>
+    <span class="code-function">printf</span>("Child has terminated\\n");
+}</code></pre>
+                    <div class="exam-point">
+                        <h4>🚩 동기화</h4>
+                        <p><code>wait()</code> 덕분에 부모는 자식이 "Hello"를 출력하고 죽은 뒤에야 "Terminated"를 출력합니다.</p>
+                    </div>
+                </div>
+
+                <div id="tab-code-exec" class="tab-pane">
+                    <pre><code><span class="code-comment">/* ls -lt /usr/include 명령 실행 예시 */</span>
+<span class="code-keyword">if</span> (<span class="code-function">fork</span>() == 0) {
+    <span class="code-comment">/* 1단계: execve 호출 - 성공하면 리턴하지 않습니다! */</span>
+    <span class="code-comment">/* 현재 코드/데이터/스택을 /bin/ls로 덮어씁니다. */</span>
+    <span class="code-keyword">if</span> (<span class="code-function">execve</span>(myargv[0], myargv, environ) < 0) {
+        <span class="code-comment">/* 2단계: 에러 처리 - execve 실패 시에만 실행됨 */</span>
+        <span class="code-function">printf</span>("Command not found.\\n");
+        <span class="code-function">exit</span>(1);
+    }
+}</code></pre>
+                    <div class="tech-note">
+                        <h4>📝 기술적 세부사항</h4>
+                        <ul>
+                            <li><code>execve</code>는 성공하면 현재 프로세스의 메모리 공간을 완전히 새로운 프로그램으로 교체합니다.</li>
+                            <li>PID는 유지되지만, 코드, 데이터, 스택이 모두 새 프로그램으로 교체됩니다.</li>
+                            <li>실패한 경우에만 <code>execve</code>가 -1을 반환하고 원래 코드가 계속 실행됩니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+        'process-graph': `
+            <h3>프로세스 그래프 (Process Graph)</h3>
+            <p><code>fork()</code>가 여러 번 호출될 때 실행 순서를 파악하기 위한 도구입니다.</p>
+            <ul>
+                <li>각 정점(Vertex)은 실행 문장입니다.</li>
+                <li>화살표(Edge)는 실행 순서(a -> b)를 나타냅니다.</li>
+                <li>위상 정렬(Topological Sort)을 통해 가능한 출력 순서를 예측할 수 있습니다.</li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 시험 팁</h4>
+                <p>부모와 자식은 <strong>동시에(Concurrent)</strong> 실행되므로, 물리적인 실행 순서는 보장되지 않습니다. 논리적인 순서만 그래프로 파악하세요.</p>
+            </div>
+        `,
+        'process-state': `
+            <h3>프로세스 상태 전이도</h3>
+            <p>프로세스는 생성부터 소멸까지 여러 상태를 거칩니다.</p>
+            <canvas id="cvs_state"></canvas>
+            <ul>
+                <li><strong>Running:</strong> CPU를 잡고 실행 중이거나, 실행 대기 중인 상태.</li>
+                <li><strong>Stopped:</strong> 시그널(Ctrl-Z) 등에 의해 일시 중단된 상태.</li>
+                <li><strong>Zombie:</strong> 종료되었으나 부모가 아직 수거(Reap)하지 않은 상태.</li>
+            </ul>
+        `,
+        'zombie-reaping': `
+            <h3>좀비 프로세스와 Reaping</h3>
+            <p><strong>Zombie (좀비):</strong> 종료되었지만 부모가 아직 수거하지 않은 프로세스</p>
+            <p><strong>Reaping (수거):</strong> 부모 프로세스가 자식의 종료 상태를 읽고 좀비를 제거하는 과정</p>
+            
+            <div class="easy-explain">
+                <h4>🧟 좀비 비유</h4>
+                <p>프로세스가 종료(<code>exit</code>)되어도, 부모가 사망 신고(<code>wait</code>)를 해주기 전까지는 시스템에 <strong>껍데기(최소한의 정보)</strong>가 남아있습니다. 이것이 좀비입니다.</p>
+            </div>
+            
+            <ul>
+                <li><strong>Reaping (수거):</strong> 부모 프로세스가 <code>wait()</code>나 <code>waitpid()</code>를 호출하여 자식의 종료 상태를 읽고 좀비를 제거하는 과정.</li>
+                <li>부모가 Reaping 없이 먼저 죽으면? <strong>Init 프로세스(PID 1)</strong>가 양부모가 되어 수거해줍니다.</li>
+            </ul>
+        `
+    };
+    
+    // window.contents로도 사용 가능하도록 설정
+    window.contents = contents;
+
+    // ============================================
+    // 3. 챕터별 특수 기능
+    // ============================================
+    
+    // ============================================
+    // 시뮬레이션 함수들
+    // ============================================
+    
+    // Fork 시뮬레이션 단계 진행 함수
+    window.nextForkStep = function() {
+        var container = document.getElementById('proc-container');
+        var log = document.getElementById('sim-log');
+        
+        if (!container || !log) return;
+        
+        // window.simStep 변수 사용 (common.js에서 자동 초기화됨)
+        
+        if (window.simStep === 0) {
+            // 1단계: fork() 호출 - 부모의 주소 공간 복제
+            var child = document.createElement('div');
+            child.className = 'process-node child';
+            child.innerHTML = 'Child (PID: 0)<div class="label">Ready</div><div class="pid-badge">Copy of Parent</div>';
+            container.appendChild(child);
+            log.innerHTML = "<strong>1. fork() 호출:</strong> 부모의 주소 공간(변수, 스택 등)을 복제하여 자식 생성";
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: 리턴 값 차이 - 부모와 자식이 다른 값 반환
+            var nodes = container.querySelectorAll('.process-node');
+            if (nodes.length >= 2) {
+                nodes[0].innerHTML = 'Parent (Ret: 101)<div class="label">Running</div><div class="pid-badge">Return Child PID</div>';
+                nodes[1].innerHTML = 'Child (Ret: 0)<div class="label">Running</div><div class="pid-badge">Return 0</div>';
+                log.innerHTML = "<strong>2. 리턴:</strong> 부모는 자식 PID(101) 반환, 자식은 0 반환";
+                window.simStep++;
+            }
+        } else {
+            // 리셋: 초기 상태로 복귀
+            container.innerHTML = '<div class="process-node parent">Parent (PID: 100)<div class="label">Running</div></div>';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+
+    // ============================================
+    // Canvas 다이어그램 그리기 함수들
+    // ============================================
+    
+    // 프로세스 상태 전이도 그리기
+    function drawProcessState() {
+        var c = document.getElementById('cvs_state');
+        if (!c) {
+            console.warn('Canvas cvs_state not found');
+            return;
+        }
+        var ctx = c.getContext('2d');
+        // clientWidth가 0이면 기본값 사용 (모달이 아직 표시되지 않은 경우)
+        var w = c.width = c.clientWidth || 600;
+        var h = c.height = 240;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.font = "bold 14px sans-serif";
+
+        // 상태 노드 그리기 함수
+        function drawNode(x, y, color, text, subtext) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 45, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#334155";
+            ctx.stroke();
+            ctx.fillStyle = "#fff";
+            ctx.textAlign = "center";
+            ctx.font = "bold 14px sans-serif";
+            ctx.fillText(text, x, y - 5);
+            ctx.font = "11px sans-serif";
+            ctx.fillText(subtext || "", x, y + 15);
+        }
+
+        // 화살표 그리기
+        ctx.strokeStyle = "#94a3b8";
+        
+        // Ready -> Running
+        ctx.beginPath();
+        ctx.moveTo(95, 120);
+        ctx.lineTo(155, 120);
+        ctx.stroke();
+        
+        // Running -> Zombie
+        ctx.beginPath();
+        ctx.moveTo(245, 120);
+        ctx.lineTo(305, 120);
+        ctx.stroke();
+        
+        // Running -> Stopped (곡선)
+        ctx.beginPath();
+        ctx.moveTo(200, 75);
+        ctx.quadraticCurveTo(200, 40, 250, 40);
+        ctx.stroke();
+
+        // 상태 노드 그리기
+        drawNode(50, 120, "#4f46e5", "Ready", "Queue");
+        drawNode(200, 120, "#10b981", "Running", "CPU");
+        drawNode(350, 120, "#64748b", "Zombie", "Terminated");
+        
+        // 레이블 추가
+        ctx.fillStyle = "#334155";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Schedule", 125, 110);
+        ctx.fillText("Exit", 275, 110);
+        ctx.fillText("Signal", 200, 30);
+    }
+    
+    // ============================================
+    // 모달 열기 전처리 및 Canvas 그리기 훅
+    // ============================================
+    
+    // 모달 열기 전처리 (특정 모달이 열릴 때 초기화가 필요한 경우)
+    window.onModalOpening = function(id) {
+        // fork-sim 모달의 경우 HTML에 이미 초기 상태가 정의되어 있으므로
+        // common.js의 openModal에서 window.simStep = 0으로 설정되는 것으로 충분
+        // 추가 초기화가 필요하지 않음
+    };
+    
+    // 캔버스 그리기 훅 (common.js에서 자동 호출됨)
+    // 모달이 열릴 때 해당 모달의 canvas를 그립니다
+    window.runCanvasDrawing = function(id) {
+        if (id === 'process-state') {
+            drawProcessState();
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter X: 제목 (Final Edition)</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-first-section="sec-basic">
+    <!-- data-first-section: 첫 번째로 보여줄 섹션 ID 지정 -->
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Final Edition</span></div>
+    <div class="menu-label">Chapter X. 제목</div>
+    <div class="nav-item active" onclick="showSection('sec-basic', this)"><span class="nav-icon">📚</span> 1. 기본</div>
+    <div class="nav-item" onclick="showSection('sec-advanced', this)"><span class="nav-icon">🚀</span> 2. 고급</div>
+</div>
+
+<div class="main">
+    <div id="sec-basic" class="section-container active">
+        <div class="header"><h1>1. 기본</h1><p>설명</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('modal-id-1')">
+                <span class="card-icon">📖</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>카드 제목</h3>
+                <p>카드 설명</p>
+                <div class="btn-learn">자세히 보기</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-advanced" class="section-container">
+        <div class="header"><h1>2. 고급</h1><p>설명</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('modal-id-2')">
+                <span class="card-icon">⚡</span>
+                <div class="tag-container"><span class="tag exam">시험</span></div>
+                <h3>카드 제목</h3>
+                <p>카드 설명</p>
+                <div class="btn-learn">자세히 보기</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script src="../assets/common.js"></script>
+
+<script>
+    // --- 챕터별 콘텐츠 정의 (공통 JS와 호환) ---
+    // window.contents 또는 const contents 둘 다 사용 가능
+
+    // --- 1. 모달 제목 정의 ---
+    window.modalTitles = {
+        'modal-id-1': '모달 제목 1',
+        'modal-id-2': '모달 제목 2'
+    };
+
+    // --- 2. 콘텐츠 데이터 ---
+    const contents = {
+        'modal-id-1': `
+            <h3>콘텐츠 제목</h3>
+            <p>콘텐츠 내용</p>
+            <div class="easy-explain">
+                <h4>💡 쉬운 설명</h4>
+                <p>설명 내용</p>
+            </div>
+        `,
+        'modal-id-2': `
+            <h3>콘텐츠 제목 2</h3>
+            <p>콘텐츠 내용 2</p>
+        `
+    };
+    
+    // window.contents로도 사용 가능하도록 설정 (공통 JS 호환)
+    window.contents = contents;
+
+    // --- 3. 챕터별 특수 기능 (필요시) ---
+    
+    // 시뮬레이션 함수 예시
+    // window.nextSimStep = function() { ... };
+    
+    // 캔버스 그리기 함수 (common.js의 openModal에서 호출됨)
+    // window.runCanvasDrawing = function(id) {
+    //     if (id === 'some-modal') drawSomething();
+    // };
+    
+    // function drawSomething() {
+    //     var c = document.getElementById('canvas-id');
+    //     if(!c) return;
+    //     var ctx = c.getContext('2d');
+    //     // 그리기 로직
+    // }
+    
+    // 페이지 초기화 후처리 (필요시)
+    // window.onPageInitialized = function() {
+    //     // 초기화 후 추가 작업
+    // };
+    
+    // 모달 열기 전처리 (필요시)
+    // window.onModalOpening = function(id) {
+    //     // 모달 열기 전 추가 작업
+    // };
+</script>
+</body>
+</html>
+

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Exceptional Control Flow (Ultimate Edition)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-dark: #4338ca;
+            --secondary: #1e293b;
+            --bg-main: #f8fafc;
+            --text-main: #334155;
+            --accent: #f43f5e;
+            --accent-bg: #ffe4e6;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --code-bg: #1e293b;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+
+        /* 레이아웃 */
+        .sidebar { width: 280px; background: var(--secondary); color: white; display: flex; flex-direction: column; padding: 25px; flex-shrink: 0; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 10; }
+        .main { flex: 1; padding: 40px 60px; overflow-y: auto; background: #f1f5f9; position: relative; }
+        
+        /* 사이드바 스타일 */
+        .brand { font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; letter-spacing: -0.5px; }
+        .brand span { font-size: 0.85rem; font-weight: 400; color: #94a3b8; margin-left: 5px; }
+        
+        .menu-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin: 20px 0 10px 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item { padding: 14px 15px; margin-bottom: 8px; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; color: #cbd5e1; display: flex; align-items: center; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateX(3px); }
+        .nav-item.active { background: var(--primary); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .nav-icon { margin-right: 12px; font-size: 1.2rem; }
+
+        /* 메인 콘텐츠 스타일 */
+        .section-container { display: none; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-width: 1100px; margin: 0 auto; }
+        .section-container.active { display: block; }
+        
+        .header { margin-bottom: 40px; }
+        .header h1 { font-size: 2.2rem; margin: 0 0 12px 0; color: #0f172a; font-weight: 800; letter-spacing: -1px; }
+        .header p { font-size: 1.1rem; color: #64748b; }
+        
+        /* 카드 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; padding-bottom: 60px; }
+        .card { background: #fff; border-radius: 20px; padding: 30px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 20px 30px -5px rgba(0,0,0,0.1); }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--primary); opacity: 0; transition: 0.3s; }
+        .card:hover::before { opacity: 1; }
+        
+        .card-icon { font-size: 2.2rem; margin-bottom: 20px; background: var(--primary-light); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; color: var(--primary); }
+        .card h3 { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin: 0 0 10px 0; }
+        .card p { font-size: 1rem; color: #64748b; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
+        
+        .btn-learn { margin-top: auto; background: #f8fafc; color: var(--primary); padding: 14px; border-radius: 12px; text-align: center; font-weight: 600; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .card:hover .btn-learn { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* 태그 */
+        .tag-container { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tag { font-size: 0.75rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; display: inline-block; letter-spacing: 0.5px; }
+        .tag.core { background: #fee2e2; color: #ef4444; }
+        .tag.exam { background: #dbeafe; color: #2563eb; }
+        .tag.logic { background: #fef3c7; color: #d97706; }
+
+        /* 모달 스타일 */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        
+        .modal-content { background: #fff; width: 90%; max-width: 950px; height: 90vh; border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        
+        .modal-header { padding: 25px 35px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+        .modal-title { font-size: 1.6rem; font-weight: 800; color: #0f172a; }
+        .close-btn { font-size: 2rem; cursor: pointer; background: none; border: none; color: #94a3b8; transition: 0.2s; line-height: 1; }
+        .close-btn:hover { color: var(--accent); transform: rotate(90deg); }
+        
+        .modal-body { padding: 40px; overflow-y: auto; line-height: 1.8; color: #334155; font-size: 1.05rem; }
+        
+        /* --- 기능별 스타일 --- */
+        .easy-explain { background-color: var(--success-bg); border-left: 6px solid var(--success); padding: 25px; margin: 25px 0; border-radius: 0 12px 12px 0; box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .easy-explain h4 { color: #059669; margin: 0 0 12px 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+        .easy-explain h4::before { content: '💡'; font-size: 1.2rem; }
+
+        details { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; margin: 20px 0; overflow: hidden; transition: 0.3s; }
+        summary { font-weight: 700; color: var(--primary); padding: 15px 20px; cursor: pointer; background: #f8fafc; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '👇'; font-size: 1.2rem; transition: 0.2s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .derivation { padding: 20px; font-size: 1rem; background: #fff; border-top: 1px solid #e2e8f0; }
+
+        pre { background: var(--code-bg); color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-family: 'Consolas', monospace; line-height: 1.5; }
+        .code-comment { color: #94a3b8; font-style: italic; }
+        .code-highlight { color: #fb7185; font-weight: bold; }
+        .code-keyword { color: #818cf8; }
+
+        /* 시뮬레이션 UI */
+        .sim-box { border: 2px solid #e2e8f0; padding: 30px; border-radius: 16px; text-align: center; margin: 25px 0; background: #fff; }
+        .process-container { display: flex; justify-content: space-around; margin: 30px 0; align-items: flex-start; min-height: 100px; }
+        .process-node { width: 120px; padding: 15px; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 700; background: #f8fafc; transition: 0.4s; position: relative; }
+        .process-node.parent { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        .process-node.child { border-color: var(--success); background: var(--success-bg); color: var(--success); animation: popIn 0.5s; }
+        .process-node .label { font-size: 0.8rem; font-weight: 400; margin-top: 5px; color: #64748b; }
+        
+        .sim-log { margin-bottom: 20px; font-size: 1.1rem; color: #334155; font-weight: 500; min-height: 30px; }
+        .sim-controls button { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .sim-controls button:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        canvas { width: 100%; height: 240px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; display: block; margin: 20px 0; }
+        
+        h3 { font-size: 1.3rem; color: var(--primary); margin: 30px 0 15px 0; font-weight: 700; border-left: 5px solid var(--primary); padding-left: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; color: #334155; font-weight: 700; padding: 12px; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; color: #475569; }
+        ul { padding-left: 20px; margin-bottom: 20px; }
+        li { margin-bottom: 8px; }
+        
+        /* 추가 스타일 */
+        .exam-point {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .exam-point h4 {
+            margin: 0 0 10px 0;
+            color: #be123c;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+        .easy-explain ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .easy-explain li {
+            margin-bottom: 6px;
+        }
+        h4 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin: 20px 0 10px 0;
+            font-weight: 700;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">⚡ Logic Master<br><span style="font-weight:400; font-size:0.9rem; opacity:0.8;">Chapter 8 Update</span></div>
+    <div class="menu-label">Chapter 8. ECF & Process</div>
+    <div class="nav-item active" onclick="showSection('sec-exception', this)"><span class="nav-icon">⚠️</span> 1. 예외 (Exception)</div>
+    <div class="nav-item" onclick="showSection('sec-process', this)"><span class="nav-icon">🔄</span> 2. 프로세스 개요</div>
+    <div class="nav-item" onclick="showSection('sec-control', this)"><span class="nav-icon">🎮</span> 3. 프로세스 제어</div>
+    <div class="nav-item" onclick="showSection('sec-zombie', this)"><span class="nav-icon">🧟</span> 4. 좀비와 시그널</div>
+</div>
+
+<div class="main">
+    <div id="sec-exception" class="section-container active">
+        <div class="header"><h1>1. 예외 처리 (Exceptions)</h1><p>시스템 상태 변화에 대응하는 제어 흐름의 변화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('exception-basic')">
+                <span class="card-icon">⚡</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>예외란 무엇인가?</h3>
+                <p>하드웨어와 OS가 협력하여 시스템 이벤트를 처리하는 메커니즘.</p>
+                <div class="btn-learn">쉬운 설명 보기</div>
+            </div>
+            <div class="card" onclick="openModal('exception-class')">
+                <span class="card-icon">📋</span>
+                <div class="tag-container"><span class="tag exam">시험 빈출</span></div>
+                <h3>예외의 4가지 유형</h3>
+                <p>Interrupts, Traps, Faults, Aborts의 차이점 완벽 정리.</p>
+                <div class="btn-learn">비교표 보기 (p.10)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-process" class="section-container">
+        <div class="header"><h1>2. 프로세스 (Process)</h1><p>실행 중인 프로그램의 추상화</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('process-concept')">
+                <span class="card-icon">🧠</span>
+                <div class="tag-container"><span class="tag core">정의</span></div>
+                <h3>프로세스의 환상 (Illusion)</h3>
+                <p>마치 혼자서 CPU와 메모리를 독점하는 듯한 착각을 일으키는 기술.</p>
+                <div class="btn-learn">상세 설명 (p.17)</div>
+            </div>
+            <div class="card" onclick="openModal('context-switch')">
+                <span class="card-icon">🔀</span>
+                <div class="tag-container"><span class="tag exam">중요</span></div>
+                <h3>문맥 교환 (Context Switch)</h3>
+                <p>CPU가 프로세스를 갈아끼우는 과정. 커널 모드와 유저 모드.</p>
+                <div class="btn-learn">동작 원리 보기</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-control" class="section-container">
+        <div class="header"><h1>3. 프로세스 제어 (Control)</h1><p>fork, exit, wait, execve 시스템 콜</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('fork-sim')">
+                <span class="card-icon">🍴</span>
+                <div class="tag-container"><span class="tag core">Interactive</span></div>
+                <h3>Fork() 시뮬레이션</h3>
+                <p>한 번 호출되어 두 번 리턴되는 <code>fork()</code>의 마법을 직접 확인하세요.</p>
+                <div class="btn-learn">시뮬레이션 시작 ▶</div>
+            </div>
+            <div class="card" onclick="openModal('process-graph')">
+                <span class="card-icon">📊</span>
+                <div class="tag-container"><span class="tag logic">그래프</span></div>
+                <h3>프로세스 그래프 (Process Graph)</h3>
+                <p>부모와 자식의 실행 순서를 예측하는 방법. 위상 정렬.</p>
+                <div class="btn-learn">그래프 예제 (p.38)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-zombie" class="section-container">
+        <div class="header"><h1>4. 좀비 프로세스 & 상태</h1><p>죽었지만 사라지지 않은 프로세스 처리하기</p></div>
+        <div class="grid">
+            <div class="card" onclick="openModal('process-state')">
+                <span class="card-icon">🔄</span>
+                <div class="tag-container"><span class="tag exam">상태도</span></div>
+                <h3>프로세스 상태 전이도</h3>
+                <p>Running, Stopped, Zombie 상태의 변화 과정 시각화.</p>
+                <div class="btn-learn">Canvas 그림 보기</div>
+            </div>
+            <div class="card" onclick="openModal('zombie-reaping')">
+                <span class="card-icon">🧟</span>
+                <div class="tag-container"><span class="tag core">개념</span></div>
+                <h3>좀비와 수거 (Reaping)</h3>
+                <p>부모가 <code>wait()</code> 해주지 않으면 발생하는 문제와 해결법.</p>
+                <div class="btn-learn">원리 설명 (p.44)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="window.closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">제목</div>
+            <button class="close-btn" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody">내용</div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 전역 초기화 ---
+    window.simStep = 0;
+
+    function initializePage() {
+        document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
+        var firstSection = document.getElementById('sec-exception');
+        if(firstSection) firstSection.classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        var firstNav = document.querySelector('.nav-item');
+        if(firstNav) firstNav.classList.add('active');
+    }
+
+    window.showSection = function(id, el) {
+        var sections = document.querySelectorAll('.section-container');
+        for(var i=0; i<sections.length; i++) sections[i].classList.remove('active');
+        document.getElementById(id).classList.add('active');
+
+        var navs = document.querySelectorAll('.nav-item');
+        for(var i=0; i<navs.length; i++) navs[i].classList.remove('active');
+        el.classList.add('active');
+    }
+
+    // --- 2. 콘텐츠 데이터 ---
+    const contents = {
+        'exception-basic': `
+            <h3>예외(Exception)란?</h3>
+            <div class="easy-explain">
+                <h4>👨‍🏫 선생님과 학생 비유</h4>
+                <ul>
+                    <li><strong>Control Flow:</strong> 학생(CPU)이 교과서(코드)를 순서대로 읽는 것.</li>
+                    <li><strong>Exception:</strong> 갑자기 불이 나거나(Timer Interrupt), 학생이 모르는 걸 질문하거나(Trap), 배가 아프다고 하는(Fault) 상황입니다.</li>
+                    <li><strong>Handler:</strong> 선생님(OS Kernel)이 수업을 멈추고 상황을 처리해주는 절차입니다.</li>
+                </ul>
+            </div>
+            <p>하드웨어와 OS가 협력하여 프로세서의 상태 변화(Event)에 대응하는 메커니즘입니다. 각 예외는 고유 번호를 가지며, <strong>Exception Table</strong>을 통해 처리기(Handler)로 이동합니다.</p>
+        `,
+        'exception-class': `
+            <h3>예외의 4가지 유형 (Classes)</h3>
+            <table>
+                <tr><th>유형</th><th>원인</th><th>동기/비동기</th><th>처리 후 동작</th></tr>
+                <tr><td><strong>Interrupt</strong></td><td>외부 I/O (타이머, 키보드)</td><td>비동기 (Async)</td><td>Next 명령어로 복귀</td></tr>
+                <tr><td><strong>Trap</strong></td><td>의도적 호출 (System Call)</td><td>동기 (Sync)</td><td>Next 명령어로 복귀</td></tr>
+                <tr><td><strong>Fault</strong></td><td>오류 (Page Fault)</td><td>동기 (Sync)</td><td>현재 명령어 재시도</td></tr>
+                <tr><td><strong>Abort</strong></td><td>심각한 오류 (HW 고장)</td><td>동기 (Sync)</td><td>프로그램 종료 (Abort)</td></tr>
+            </table>
+        `,
+        'process-concept': `
+            <h3>프로세스 (Process)</h3>
+            <p>실행 중인 프로그램의 인스턴스입니다. 시스템은 프로세스에게 두 가지 <strong>환상(Illusion)</strong>을 제공합니다.</p>
+            <ul>
+                <li><strong>Logical Control Flow:</strong> 마치 CPU를 혼자 독점해서 쓰는 것처럼 보입니다. (실제로는 Context Switching으로 나눠 씀)</li>
+                <li><strong>Private Address Space:</strong> 마치 메모리를 혼자 독점해서 쓰는 것처럼 보입니다. (실제로는 Virtual Memory로 관리됨)</li>
+            </ul>
+        `,
+        'context-switch': `
+            <h3>문맥 교환 (Context Switch)</h3>
+            <p>OS 커널이 현재 실행 중인 프로세스를 중단하고, 다른 프로세스를 실행하는 과정입니다.</p>
+            <div class="easy-explain">
+                <h4>🔄 작업 전환 비유</h4>
+                <p>공부(A)를 하다가 밥(B)을 먹으러 갈 때, 어디까지 공부했는지 <strong>책갈피(Register Context)</strong>를 꽂아두고 갑니다. 밥을 다 먹으면 책갈피 꽂은 곳부터 다시 공부를 시작합니다.</p>
+            </div>
+            <ul>
+                <li>현재 프로세스의 레지스터 값을 메모리(커널 스택)에 저장.</li>
+                <li>다음 프로세스의 저장된 레지스터 값을 복원.</li>
+                <li>이 과정은 하드웨어 타이머 인터럽트에 의해 주기적으로 발생합니다.</li>
+            </ul>
+        `,
+        'fork-sim': `
+            <h3>fork() 함수 시뮬레이션</h3>
+            <p><code>pid = fork()</code>: 부모는 자식의 PID를 받고, 자식은 0을 받습니다.</p>
+            
+            <div class="sim-box">
+                <div class="process-container" id="proc-container">
+                    <div class="process-node parent">
+                        Parent (PID: 100)
+                        <div class="label">Running</div>
+                    </div>
+                </div>
+                <div class="sim-log" id="sim-log">👇 버튼을 눌러 fork()를 실행하세요.</div>
+                <div class="sim-controls">
+                    <button onclick="window.nextForkStep()">Fork 실행 ▶</button>
+                </div>
+            </div>
+            
+            <pre><code>int main() {
+    pid_t pid = <span class="code-keyword">fork</span>();
+    <span class="code-keyword">if</span> (pid == 0) {
+        printf(<span class="code-highlight">"Child"</span>);
+    } <span class="code-keyword">else</span> {
+        printf(<span class="code-highlight">"Parent"</span>);
+    }
+}</code></pre>
+        `,
+        'process-graph': `
+            <h3>프로세스 그래프 (Process Graph)</h3>
+            <p><code>fork()</code>가 여러 번 호출될 때 실행 순서를 파악하기 위한 도구입니다.</p>
+            <ul>
+                <li>각 정점(Vertex)은 실행 문장입니다.</li>
+                <li>화살표(Edge)는 실행 순서(a -> b)를 나타냅니다.</li>
+                <li>위상 정렬(Topological Sort)을 통해 가능한 출력 순서를 예측할 수 있습니다.</li>
+            </ul>
+            <div class="exam-point">
+                <h4>🚩 시험 팁</h4>
+                <p>부모와 자식은 <strong>동시에(Concurrent)</strong> 실행되므로, 물리적인 실행 순서는 보장되지 않습니다. 논리적인 순서만 그래프로 파악하세요.</p>
+            </div>
+        `,
+        'process-state': `
+            <h3>프로세스 상태 전이도</h3>
+            <p>프로세스는 생성부터 소멸까지 여러 상태를 거칩니다.</p>
+            <canvas id="cvs_state"></canvas>
+            <ul>
+                <li><strong>Running:</strong> CPU를 잡고 실행 중이거나, 실행 대기 중인 상태.</li>
+                <li><strong>Stopped:</strong> 시그널(Ctrl-Z) 등에 의해 일시 중단된 상태.</li>
+                <li><strong>Zombie:</strong> 종료되었으나 부모가 아직 수거(Reap)하지 않은 상태.</li>
+            </ul>
+        `,
+        'zombie-reaping': `
+            <h3>좀비 프로세스와 Reaping</h3>
+            <div class="easy-explain">
+                <h4>🧟 좀비 비유</h4>
+                <p>프로세스가 종료(<code>exit</code>)되어도, 부모가 사망 신고(<code>wait</code>)를 해주기 전까지는 시스템에 <strong>껍데기(최소한의 정보)</strong>가 남아있습니다. 이것이 좀비입니다.</p>
+            </div>
+            <ul>
+                <li><strong>Reaping:</strong> 부모 프로세스가 <code>wait()</code>나 <code>waitpid()</code>를 호출하여 자식의 종료 상태를 읽고 좀비를 제거하는 과정.</li>
+                <li>부모가 Reaping 없이 먼저 죽으면? <strong>Init 프로세스(PID 1)</strong>가 양부모가 되어 수거해줍니다.</li>
+            </ul>
+        `
+    };
+
+    // --- 3. 인터랙티브 기능 ---
+    const modalTitles = {
+        'exception-basic': '예외(Exception)의 기본 개념',
+        'exception-class': '예외의 4가지 클래스',
+        'process-concept': '프로세스(Process)란?',
+        'context-switch': '문맥 교환 (Context Switch)',
+        'fork-sim': 'Fork() 함수 동작 시뮬레이션',
+        'process-graph': '프로세스 그래프 분석',
+        'process-state': '프로세스 상태 전이도',
+        'zombie-reaping': '좀비 프로세스와 Reaping'
+    };
+
+    window.openModal = function(id) {
+        var overlay = document.getElementById('modalOverlay');
+        var title = document.getElementById('modalTitle');
+        var body = document.getElementById('modalBody');
+        
+        title.innerText = modalTitles[id] || '학습 내용';
+        body.innerHTML = contents[id] || '<p>준비 중입니다.</p>';
+        overlay.classList.add('open');
+        
+        // 시뮬레이션 리셋
+        window.simStep = 0;
+
+        // 캔버스 그리기
+        setTimeout(function() {
+            if(id === 'process-state') drawProcessState();
+        }, 50);
+    };
+
+    window.closeModal = function() {
+        document.getElementById('modalOverlay').classList.remove('open');
+    };
+
+    // Fork 시뮬레이션 로직
+    window.nextForkStep = function() {
+        var container = document.getElementById('proc-container');
+        var log = document.getElementById('sim-log');
+        
+        if (window.simStep === 0) {
+            // 1단계: 복제
+            var child = document.createElement('div');
+            child.className = 'process-node child';
+            child.innerHTML = 'Child (PID: 0)<div class="label">Ready</div>';
+            container.appendChild(child);
+            log.innerText = "1. fork() 호출: 부모의 주소 공간을 복제하여 자식 생성";
+            window.simStep++;
+        } else if (window.simStep === 1) {
+            // 2단계: 리턴 값 차이
+            var nodes = container.querySelectorAll('.process-node');
+            nodes[0].innerHTML = 'Parent (Ret: 101)<div class="label">Running</div>';
+            nodes[1].innerHTML = 'Child (Ret: 0)<div class="label">Running</div>';
+            log.innerText = "2. 리턴: 부모는 자식 PID(101) 반환, 자식은 0 반환";
+            window.simStep++;
+        } else {
+            // 리셋
+            container.innerHTML = '<div class="process-node parent">Parent (PID: 100)<div class="label">Running</div></div>';
+            log.innerText = "다시 시작하려면 버튼을 누르세요.";
+            window.simStep = 0;
+        }
+    };
+
+    // 캔버스 그리기: 프로세스 상태도
+    function drawProcessState() {
+        var c = document.getElementById('cvs_state'); if(!c) return;
+        var ctx = c.getContext('2d');
+        var w = c.width = c.clientWidth; var h = c.height = 240;
+        ctx.clearRect(0,0,w,h); ctx.lineWidth=2; ctx.font="bold 14px sans-serif";
+
+        // States (Nodes)
+        function drawNode(x, y, color, text) {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(x, y, 40, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "#334155"; ctx.stroke();
+            ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.fillText(text, x, y+5);
+        }
+
+        // Arrows
+        ctx.strokeStyle = "#94a3b8";
+        ctx.beginPath(); ctx.moveTo(90, 120); ctx.lineTo(160, 120); ctx.stroke(); // Ready -> Running
+        ctx.beginPath(); ctx.moveTo(240, 120); ctx.lineTo(310, 120); ctx.stroke(); // Running -> Zombie
+        
+        // Draw Nodes
+        drawNode(50, 120, "#4f46e5", "Ready");
+        drawNode(200, 120, "#10b981", "Run");
+        drawNode(350, 120, "#64748b", "Zombie");
+        
+        ctx.fillStyle = "#334155";
+        ctx.fillText("Schedule", 125, 110);
+        ctx.fillText("Exit", 275, 110);
+    }
+
+    // 실행 보장
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializePage);
+    } else {
+        initializePage();
+    }
+</script>
+</body>
+</html>
